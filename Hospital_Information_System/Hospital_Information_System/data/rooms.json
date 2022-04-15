@@ -1,0 +1,464 @@
+[
+  {
+    "$id": "1",
+    "Type": 0,
+    "Name": "Warehouse",
+    "Floor": 0
+  },
+  {
+    "$id": "2",
+    "Type": 4,
+    "Name": "bathroom 0-4-0",
+    "Floor": 0
+  },
+  {
+    "$id": "3",
+    "Type": 4,
+    "Name": "bathroom 0-4-1",
+    "Floor": 0
+  },
+  {
+    "$id": "4",
+    "Type": 4,
+    "Name": "bathroom 0-4-2",
+    "Floor": 0
+  },
+  {
+    "$id": "5",
+    "Type": 4,
+    "Name": "bathroom 0-4-3",
+    "Floor": 0
+  },
+  {
+    "$id": "6",
+    "Type": 4,
+    "Name": "bathroom 0-4-4",
+    "Floor": 0
+  },
+  {
+    "$id": "7",
+    "Type": 4,
+    "Name": "bathroom 0-4-5",
+    "Floor": 0
+  },
+  {
+    "$id": "8",
+    "Type": 4,
+    "Name": "bathroom 0-4-6",
+    "Floor": 0
+  },
+  {
+    "$id": "9",
+    "Type": 3,
+    "Name": "examination 0-3-0",
+    "Floor": 0
+  },
+  {
+    "$id": "10",
+    "Type": 3,
+    "Name": "examination 0-3-1",
+    "Floor": 0
+  },
+  {
+    "$id": "11",
+    "Type": 3,
+    "Name": "examination 0-3-2",
+    "Floor": 0
+  },
+  {
+    "$id": "12",
+    "Type": 3,
+    "Name": "examination 0-3-3",
+    "Floor": 0
+  },
+  {
+    "$id": "13",
+    "Type": 3,
+    "Name": "examination 0-3-4",
+    "Floor": 0
+  },
+  {
+    "$id": "14",
+    "Type": 1,
+    "Name": "operation 0-1-0",
+    "Floor": 0
+  },
+  {
+    "$id": "15",
+    "Type": 1,
+    "Name": "operation 0-1-1",
+    "Floor": 0
+  },
+  {
+    "$id": "16",
+    "Type": 1,
+    "Name": "operation 0-1-2",
+    "Floor": 0
+  },
+  {
+    "$id": "17",
+    "Type": 2,
+    "Name": "recovery 0-2-0",
+    "Floor": 0
+  },
+  {
+    "$id": "18",
+    "Type": 2,
+    "Name": "recovery 0-2-1",
+    "Floor": 0
+  },
+  {
+    "$id": "19",
+    "Type": 2,
+    "Name": "recovery 0-2-2",
+    "Floor": 0
+  },
+  {
+    "$id": "20",
+    "Type": 2,
+    "Name": "recovery 0-2-3",
+    "Floor": 0
+  },
+  {
+    "$id": "21",
+    "Type": 4,
+    "Name": "bathroom 1-4-0",
+    "Floor": 1
+  },
+  {
+    "$id": "22",
+    "Type": 4,
+    "Name": "bathroom 1-4-1",
+    "Floor": 1
+  },
+  {
+    "$id": "23",
+    "Type": 4,
+    "Name": "bathroom 1-4-2",
+    "Floor": 1
+  },
+  {
+    "$id": "24",
+    "Type": 4,
+    "Name": "bathroom 1-4-3",
+    "Floor": 1
+  },
+  {
+    "$id": "25",
+    "Type": 4,
+    "Name": "bathroom 1-4-4",
+    "Floor": 1
+  },
+  {
+    "$id": "26",
+    "Type": 4,
+    "Name": "bathroom 1-4-5",
+    "Floor": 1
+  },
+  {
+    "$id": "27",
+    "Type": 4,
+    "Name": "bathroom 1-4-6",
+    "Floor": 1
+  },
+  {
+    "$id": "28",
+    "Type": 3,
+    "Name": "examination 1-3-0",
+    "Floor": 1
+  },
+  {
+    "$id": "29",
+    "Type": 3,
+    "Name": "examination 1-3-1",
+    "Floor": 1
+  },
+  {
+    "$id": "30",
+    "Type": 3,
+    "Name": "examination 1-3-2",
+    "Floor": 1
+  },
+  {
+    "$id": "31",
+    "Type": 3,
+    "Name": "examination 1-3-3",
+    "Floor": 1
+  },
+  {
+    "$id": "32",
+    "Type": 3,
+    "Name": "examination 1-3-4",
+    "Floor": 1
+  },
+  {
+    "$id": "33",
+    "Type": 1,
+    "Name": "operation 1-1-0",
+    "Floor": 1
+  },
+  {
+    "$id": "34",
+    "Type": 1,
+    "Name": "operation 1-1-1",
+    "Floor": 1
+  },
+  {
+    "$id": "35",
+    "Type": 1,
+    "Name": "operation 1-1-2",
+    "Floor": 1
+  },
+  {
+    "$id": "36",
+    "Type": 2,
+    "Name": "recovery 1-2-0",
+    "Floor": 1
+  },
+  {
+    "$id": "37",
+    "Type": 2,
+    "Name": "recovery 1-2-1",
+    "Floor": 1
+  },
+  {
+    "$id": "38",
+    "Type": 2,
+    "Name": "recovery 1-2-2",
+    "Floor": 1
+  },
+  {
+    "$id": "39",
+    "Type": 2,
+    "Name": "recovery 1-2-3",
+    "Floor": 1
+  },
+  {
+    "$id": "40",
+    "Type": 4,
+    "Name": "bathroom 2-4-0",
+    "Floor": 2
+  },
+  {
+    "$id": "41",
+    "Type": 4,
+    "Name": "bathroom 2-4-1",
+    "Floor": 2
+  },
+  {
+    "$id": "42",
+    "Type": 4,
+    "Name": "bathroom 2-4-2",
+    "Floor": 2
+  },
+  {
+    "$id": "43",
+    "Type": 4,
+    "Name": "bathroom 2-4-3",
+    "Floor": 2
+  },
+  {
+    "$id": "44",
+    "Type": 4,
+    "Name": "bathroom 2-4-4",
+    "Floor": 2
+  },
+  {
+    "$id": "45",
+    "Type": 4,
+    "Name": "bathroom 2-4-5",
+    "Floor": 2
+  },
+  {
+    "$id": "46",
+    "Type": 4,
+    "Name": "bathroom 2-4-6",
+    "Floor": 2
+  },
+  {
+    "$id": "47",
+    "Type": 3,
+    "Name": "examination 2-3-0",
+    "Floor": 2
+  },
+  {
+    "$id": "48",
+    "Type": 3,
+    "Name": "examination 2-3-1",
+    "Floor": 2
+  },
+  {
+    "$id": "49",
+    "Type": 3,
+    "Name": "examination 2-3-2",
+    "Floor": 2
+  },
+  {
+    "$id": "50",
+    "Type": 3,
+    "Name": "examination 2-3-3",
+    "Floor": 2
+  },
+  {
+    "$id": "51",
+    "Type": 3,
+    "Name": "examination 2-3-4",
+    "Floor": 2
+  },
+  {
+    "$id": "52",
+    "Type": 1,
+    "Name": "operation 2-1-0",
+    "Floor": 2
+  },
+  {
+    "$id": "53",
+    "Type": 1,
+    "Name": "operation 2-1-1",
+    "Floor": 2
+  },
+  {
+    "$id": "54",
+    "Type": 1,
+    "Name": "operation 2-1-2",
+    "Floor": 2
+  },
+  {
+    "$id": "55",
+    "Type": 2,
+    "Name": "recovery 2-2-0",
+    "Floor": 2
+  },
+  {
+    "$id": "56",
+    "Type": 2,
+    "Name": "recovery 2-2-1",
+    "Floor": 2
+  },
+  {
+    "$id": "57",
+    "Type": 2,
+    "Name": "recovery 2-2-2",
+    "Floor": 2
+  },
+  {
+    "$id": "58",
+    "Type": 2,
+    "Name": "recovery 2-2-3",
+    "Floor": 2
+  },
+  {
+    "$id": "59",
+    "Type": 4,
+    "Name": "bathroom 3-4-0",
+    "Floor": 3
+  },
+  {
+    "$id": "60",
+    "Type": 4,
+    "Name": "bathroom 3-4-1",
+    "Floor": 3
+  },
+  {
+    "$id": "61",
+    "Type": 4,
+    "Name": "bathroom 3-4-2",
+    "Floor": 3
+  },
+  {
+    "$id": "62",
+    "Type": 4,
+    "Name": "bathroom 3-4-3",
+    "Floor": 3
+  },
+  {
+    "$id": "63",
+    "Type": 4,
+    "Name": "bathroom 3-4-4",
+    "Floor": 3
+  },
+  {
+    "$id": "64",
+    "Type": 4,
+    "Name": "bathroom 3-4-5",
+    "Floor": 3
+  },
+  {
+    "$id": "65",
+    "Type": 4,
+    "Name": "bathroom 3-4-6",
+    "Floor": 3
+  },
+  {
+    "$id": "66",
+    "Type": 3,
+    "Name": "examination 3-3-0",
+    "Floor": 3
+  },
+  {
+    "$id": "67",
+    "Type": 3,
+    "Name": "examination 3-3-1",
+    "Floor": 3
+  },
+  {
+    "$id": "68",
+    "Type": 3,
+    "Name": "examination 3-3-2",
+    "Floor": 3
+  },
+  {
+    "$id": "69",
+    "Type": 3,
+    "Name": "examination 3-3-3",
+    "Floor": 3
+  },
+  {
+    "$id": "70",
+    "Type": 3,
+    "Name": "examination 3-3-4",
+    "Floor": 3
+  },
+  {
+    "$id": "71",
+    "Type": 1,
+    "Name": "operation 3-1-0",
+    "Floor": 3
+  },
+  {
+    "$id": "72",
+    "Type": 1,
+    "Name": "operation 3-1-1",
+    "Floor": 3
+  },
+  {
+    "$id": "73",
+    "Type": 1,
+    "Name": "operation 3-1-2",
+    "Floor": 3
+  },
+  {
+    "$id": "74",
+    "Type": 2,
+    "Name": "recovery 3-2-0",
+    "Floor": 3
+  },
+  {
+    "$id": "75",
+    "Type": 2,
+    "Name": "recovery 3-2-1",
+    "Floor": 3
+  },
+  {
+    "$id": "76",
+    "Type": 2,
+    "Name": "recovery 3-2-2",
+    "Floor": 3
+  },
+  {
+    "$id": "77",
+    "Type": 2,
+    "Name": "recovery 3-2-3",
+    "Floor": 3
+  }
+]
