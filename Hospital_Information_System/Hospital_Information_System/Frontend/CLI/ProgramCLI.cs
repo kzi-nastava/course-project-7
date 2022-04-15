@@ -1,25 +1,59 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 using Hospital_Information_System.Backend;
+using System.Linq;
 
 namespace Hospital_Information_System.Frontend.CLI
 {
 	internal class ProgramCLI
 	{
         private static string dataDirectory = Path.Combine("..", "..", "..", "data");
+        private static string cancelInput = "-q";
         static void Main(string[] args)
         {
             Hospital hospital = new Hospital();
-
-            // Write from memory into disk.
-
-            //InitHospital(ref hospital);
-            //hospital.Save(dataDirectory);
-
-            // Read from disk into memory.
-
             hospital.Load(dataDirectory);
-            Console.WriteLine(hospital);
+
+            // EasyInput.Get
+
+            try
+            {
+                Console.WriteLine("Input a number in range (0, 4):");
+                int res = EasyInput<int>.Get(
+                    new List<Func<int, bool>>
+                    {
+                    num => num > 0,
+                    num => num < 4,
+                    },
+                    new[]
+                    {
+                    "Number must be greater than 0",
+                    "Number must be less than 4",
+                    },
+                    cancelInput
+                );
+
+                Console.WriteLine("Result: " + res);
+            }
+            catch (InputCancelledException ex)
+			{
+                Console.WriteLine(ex.Message);
+			}
+
+            // EasySelect.Get
+
+            try
+			{
+                var choices = Enum.GetValues(typeof(Room.RoomType)).Cast<Room.RoomType>().ToList();
+
+                int selection = EasyInput<Room.RoomType>.Select(choices, cancelInput);
+                Console.WriteLine("Result: " + choices[selection].ToString());
+            }
+            catch (InputCancelledException ex)
+			{
+                Console.WriteLine(ex.Message);
+            }
         }
         private static void InitHospital(ref Hospital hospital)
 		{
