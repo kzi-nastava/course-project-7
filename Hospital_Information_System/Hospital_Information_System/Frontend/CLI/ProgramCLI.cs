@@ -9,52 +9,20 @@ namespace Hospital_Information_System.Frontend.CLI
 	internal class ProgramCLI
 	{
         private static string dataDirectory = Path.Combine("..", "..", "..", "data");
-        private static string cancelInput = "-q";
+        private static string inputCancelString = "-q";
+        private static Hospital hospital;
         static void Main(string[] args)
         {
-            Hospital hospital = new Hospital();
+            hospital = new Hospital();
             hospital.Load(dataDirectory);
 
-            // EasyInput.Get
-
-            try
-            {
-                Console.WriteLine("Input a number in range (0, 4):");
-                int res = EasyInput<int>.Get(
-                    new List<Func<int, bool>>
-                    {
-                    num => num > 0,
-                    num => num < 4,
-                    },
-                    new[]
-                    {
-                    "Number must be greater than 0",
-                    "Number must be less than 4",
-                    },
-                    cancelInput
-                );
-
-                Console.WriteLine("Result: " + res);
-            }
-            catch (InputCancelledException ex)
+			var commandMapping = new Dictionary<string, Action>
 			{
-                Console.WriteLine(ex.Message);
-			}
+				{ "-room-create", CreateRoom }
+			};
 
-            // EasySelect.Get
-
-            try
-			{
-                var choices = Enum.GetValues(typeof(Room.RoomType)).Cast<Room.RoomType>().ToList();
-
-                int selection = EasyInput<Room.RoomType>.Select(choices, cancelInput);
-                Console.WriteLine("Result: " + choices[selection].ToString());
-            }
-            catch (InputCancelledException ex)
-			{
-                Console.WriteLine(ex.Message);
-            }
-        }
+            commandMapping["-room-create"]();
+		}
         private static void InitHospital(ref Hospital hospital)
 		{
             hospital.Rooms.Add(new Room(0, Room.RoomType.WAREHOUSE, "Warehouse"));
@@ -84,6 +52,60 @@ namespace Hospital_Information_System.Frontend.CLI
                     hospital.Rooms.Add(new Room(floor, Room.RoomType.RECOVERY, i));
                 }
             }
+        }
+        private static void CreateRoom()
+		{
+            var room = InputRoom();
+            if (room != null)
+            {
+                hospital.Rooms.Add(room);
+                hospital.Save(dataDirectory);
+            }
+        }
+        private static Room InputRoom()
+        {
+            try
+            {
+                Console.WriteLine("Name:");
+                var name = EasyInput<string>.Get(
+                    new List<Func<string, bool>>
+                    {
+                        s => s.Count() != 0,
+                        s => hospital.Rooms.Find(room => room.Name == s) == null,
+                    },
+                    new[]
+                    {
+                        "Name must not be empty!",
+                        "This name is already taken!",
+                    },
+                    inputCancelString
+                );
+
+                Console.WriteLine("Floor:");
+                var floor = EasyInput<int>.Get(
+                    new List<Func<int, bool>>
+                    {
+                        n => n >= 0
+                    },
+                    new[]
+                    {
+                        "Floor must be a non-negative integer!",
+                    },
+                    inputCancelString
+                );
+
+                Console.WriteLine("Room type:");
+                var type = EasyInput<Room.RoomType>.Select(
+					Enum.GetValues(typeof(Room.RoomType)).Cast<Room.RoomType>().ToList().Where(e => e != Room.RoomType.WAREHOUSE).ToList(),
+                    inputCancelString
+                );
+
+                return new Room(floor, type, name);
+            }
+            catch (InputCancelledException)
+			{
+                return null;
+			}
         }
     }
 }

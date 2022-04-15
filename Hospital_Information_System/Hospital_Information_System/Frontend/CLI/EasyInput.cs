@@ -15,7 +15,7 @@ namespace Hospital_Information_System.Frontend.CLI
 	}
 	/// <summary>
 	/// EasyInput is a helper class for querying user input.
-	/// /// </summary>
+	/// </summary>
 	internal abstract class EasyInput<T>
 	{
 		/// <summary>
@@ -80,7 +80,7 @@ namespace Hospital_Information_System.Frontend.CLI
 		/// <param name="toStrFunc">Function that describes how to format each element into a string. Note that the ordinal number is always inserted.</param>
 		/// <param name="cancel">String upon whose input cancels the operation.</param>
 		/// <returns>Index of the list `elements`.</returns>
-		public static int Select(IList<T> elements, Func<T, string> toStrFunc, string cancel)
+		public static T Select(IList<T> elements, Func<T, string> toStrFunc, string cancel)
 		{
 			for (int i = 0; i < elements.Count; i++)
 			{
@@ -110,7 +110,7 @@ namespace Hospital_Information_System.Frontend.CLI
 				throw ex;
 			}
 
-			return selection;
+			return elements[selection];
 		}
 
 		/// <summary>
@@ -119,7 +119,7 @@ namespace Hospital_Information_System.Frontend.CLI
 		/// <param name="elements">List of elements to choose from.</param>
 		/// <param name="cancel">String upon whose input cancels the operation.</param>
 		/// <returns>Index of the list `elements`.</returns>
-		public static int Select(IList<T> elements, string cancel)
+		public static T Select(IList<T> elements, string cancel)
 		{
 			return Select(elements, (elem => elem.ToString()), cancel);
 		}
