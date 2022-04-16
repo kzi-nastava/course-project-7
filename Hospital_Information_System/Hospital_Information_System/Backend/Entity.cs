@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Hospital_Information_System.Backend
+namespace HospitalIS.Backend
 {
 	public abstract class Entity
 	{

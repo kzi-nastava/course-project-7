@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Hospital_Information_System.Backend
+namespace HospitalIS.Backend
 {
 	class Hospital : Entity
 	{

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Hospital_Information_System.Frontend.CLI
+namespace HospitalIS.Frontend.CLI
 {
 	/// <summary>
 	/// This exception does not imply that an error happened but rather that the user cancelled his input.
@@ -14,6 +14,7 @@ namespace Hospital_Information_System.Frontend.CLI
 
 		}
 	}
+
 	/// <summary>
 	/// EasyInput is a helper class for querying user input.
 	/// </summary>
