@@ -4,12 +4,13 @@ using System.IO;
 
 namespace Hospital_Information_System.Backend
 {
-	class Hospital
+	class Hospital : Entity
 	{
 		private static string fnameRooms = "rooms.json";
 		private static JsonSerializerSettings settings = new JsonSerializerSettings{ PreserveReferencesHandling = PreserveReferencesHandling.Objects};
 
 		public List<Room> Rooms { get; set; } = new List<Room>();
+
 		public void Save(string directory)
 		{
 

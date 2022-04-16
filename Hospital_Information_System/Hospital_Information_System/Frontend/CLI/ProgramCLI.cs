@@ -8,22 +8,28 @@ namespace Hospital_Information_System.Frontend.CLI
 {
 	internal class ProgramCLI
 	{
-        private static string dataDirectory = Path.Combine("..", "..", "..", "data");
-        private static string inputCancelString = "-q";
+        private static readonly string dataDirectory = Path.Combine("..", "..", "..", "data");
+        private static readonly string inputCancelString = "-q";
         private static Hospital hospital;
-        static void Main(string[] args)
+        static void Main()
         {
             hospital = new Hospital();
             hospital.Load(dataDirectory);
+            //InitHospital();
+            //hospital.Save(dataDirectory);
 
-			var commandMapping = new Dictionary<string, Action>
+            var commandMapping = new Dictionary<string, Action>
 			{
-				{ "-room-create", CreateRoom }
+				{ "-room-create", CreateRoom },
+                { "-room-delete", DeleteRoom },
 			};
 
-            commandMapping["-room-create"]();
-		}
-        private static void InitHospital(ref Hospital hospital)
+            //commandMapping["-room-create"]();
+            commandMapping["-room-delete"]();
+
+            hospital.Save(dataDirectory);
+        }
+        private static void InitHospital()
 		{
             hospital.Rooms.Add(new Room(0, Room.RoomType.WAREHOUSE, "Warehouse"));
 
@@ -53,13 +59,44 @@ namespace Hospital_Information_System.Frontend.CLI
                 }
             }
         }
+        private static void DeleteRoom()
+		{
+            Console.WriteLine("Enter index of rooms to delete, separated by whitespace.\nEnter a newline to finish.");
+
+            try
+            {
+                var roomsToDelete = EasyInput<Room>.SelectMultiple(
+                    hospital.Rooms.Where(r => !r.Deleted && r.Type != Room.RoomType.WAREHOUSE).ToList(), 
+                    r => r.Name, 
+                    inputCancelString
+                );
+
+                foreach (var room in roomsToDelete)
+                {
+                    room.Deleted = true;
+                }
+            }
+            catch (InputCancelledException)
+			{
+			}
+		}
+
+        private static void PrintRooms(List<Room> markedRooms)
+		{
+            int i = 0;
+            foreach (var room in hospital.Rooms)
+			{
+                Console.Write($"[{(markedRooms.Contains(room) ? 'x' : ' ')}]");
+                Console.Write($"{i++} {room.Name}\n");
+            }
+		}
+
         private static void CreateRoom()
 		{
             var room = InputRoom();
             if (room != null)
             {
                 hospital.Rooms.Add(room);
-                hospital.Save(dataDirectory);
             }
         }
         private static Room InputRoom()

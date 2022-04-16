@@ -2,7 +2,7 @@
 
 namespace Hospital_Information_System.Backend
 {
-	public class Room
+	public class Room : Entity
 	{
 		public enum RoomType
 		{

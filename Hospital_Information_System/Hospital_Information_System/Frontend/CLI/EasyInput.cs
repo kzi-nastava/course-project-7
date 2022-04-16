@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Hospital_Information_System.Frontend.CLI
 {
@@ -19,13 +20,8 @@ namespace Hospital_Information_System.Frontend.CLI
 	internal abstract class EasyInput<T>
 	{
 		/// <summary>
-		/// Get continuously asks for user input until it satisfies all rules or the user cancels the operation.
+		/// Continuously asks for user input until it satisfies all rules or the user cancels the operation.
 		/// </summary>
-		/// <param name="rules">List of predicates the result must satisfy.</param>
-		/// <param name="errorMsg">Message that gets printed in case the corresponding rule is not satisfied.</param>
-		/// <param name="cancel">String upon whose input cancels the operation.</param>
-		/// <returns>Valid input converted into <typeparamref name="T"/>.</returns>
-		/// <exception cref="InputCancelledException">Thrown if the user inputs the exact value for 'cancel'.</exception>
 		public static T Get(IList<Func<T, bool>> rules, IList<string> errorMsg, string cancel)
 		{
 			T result = default;
@@ -74,12 +70,8 @@ namespace Hospital_Information_System.Frontend.CLI
 		}
 
 		/// <summary>
-		/// Select requests for the index of given list.
+		/// Select one element from the given list.
 		/// </summary>
-		/// <param name="elements">List of elements to choose from.</param>
-		/// <param name="toStrFunc">Function that describes how to format each element into a string. Note that the ordinal number is always inserted.</param>
-		/// <param name="cancel">String upon whose input cancels the operation.</param>
-		/// <returns>Index of the list `elements`.</returns>
 		public static T Select(IList<T> elements, Func<T, string> toStrFunc, string cancel)
 		{
 			for (int i = 0; i < elements.Count; i++)
@@ -113,15 +105,62 @@ namespace Hospital_Information_System.Frontend.CLI
 			return elements[selection];
 		}
 
-		/// <summary>
-		/// Select requests for the index of given list.
-		/// </summary>
-		/// <param name="elements">List of elements to choose from.</param>
-		/// <param name="cancel">String upon whose input cancels the operation.</param>
-		/// <returns>Index of the list `elements`.</returns>
 		public static T Select(IList<T> elements, string cancel)
 		{
 			return Select(elements, (elem => elem.ToString()), cancel);
+		}
+
+		public static IList<T> SelectMultiple(IList<T> elements, string cancel)
+		{
+			return SelectMultiple(elements, e => e.ToString(), cancel);
+		}
+		/// <summary>
+		/// Select multiple elements from the given list, separated by whitespace. An empty input implies end of selection.
+		/// </summary>
+		public static IList<T> SelectMultiple(IList<T> elements, Func<T, string> toStrFunc, string cancel)
+		{
+			// TODO @magley: Find a way to not print all the elements at once, for the sake of brievity (idea: ranges, pages, ...)
+
+			bool[] isSelected = new bool[elements.Count];
+			
+			while (true)
+			{
+				printWithSelection(elements, toStrFunc, isSelected);
+				string input = Console.ReadLine();
+
+				if (input == cancel)
+				{
+					throw new InputCancelledException();
+				}
+				else if (input == "")
+				{
+					break;
+				}
+
+				input
+					.Split(' ')
+					.Where(x => int.TryParse(x, out _))
+					.Select(int.Parse)
+					.Where(x => x >= 0 && x < elements.Count)
+					.ToList()
+					.ForEach(i => { isSelected[i] ^= true; });
+			}
+
+			return (from e 
+					in elements 
+					where isSelected[elements.IndexOf(e)] 
+					select e
+			).ToList(); 
+		}
+		private static void printWithSelection(IList<T> elements, Func<T, string> toStrFunc, IList<bool> isSelected)
+		{
+			// [x] 1. Room 1
+			// [ ] 2. Room 2
+			// etc.
+			for (int i = 0; i < elements.Count; i++)
+			{
+				Console.WriteLine($"[{(isSelected[i] ? 'x' : ' ')}] {i}. {toStrFunc.Invoke(elements[i])}");
+			}
 		}
 	}
 }
