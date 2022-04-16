@@ -34,29 +34,23 @@ namespace Hospital_Information_System.Frontend.CLI
             hospital.Rooms.Add(new Room(0, Room.RoomType.WAREHOUSE, "Warehouse"));
 
             const int floorNo = 4;
-            const int bathroomsPerFloor = 7;
-            const int examinationRoomsPerFloor = 5;
-            const int operationRoomsPerFloor = 3;
-            const int recoveryRoomsPerFloor = 4;
+			var roomCountPerFloor = new List<KeyValuePair<Room.RoomType, int>>
+			{
+				new KeyValuePair<Room.RoomType, int>(Room.RoomType.BATHROOM, 7),
+                new KeyValuePair<Room.RoomType, int>(Room.RoomType.EXAMINATION, 5),
+                new KeyValuePair<Room.RoomType, int>(Room.RoomType.OPERATION, 3),
+                new KeyValuePair<Room.RoomType, int>(Room.RoomType.RECOVERY, 4),
+            };
 
-            for (int floor = 0; floor < floorNo; floor++)
+			for (int floor = 0; floor < floorNo; floor++)
             {
-                for (int i = 0; i < bathroomsPerFloor; i++)
-                {
-                    hospital.Rooms.Add(new Room(floor, Room.RoomType.BATHROOM, i));
-                }
-                for (int i = 0; i < examinationRoomsPerFloor; i++)
-                {
-                    hospital.Rooms.Add(new Room(floor, Room.RoomType.EXAMINATION, i));
-                }
-                for (int i = 0; i < operationRoomsPerFloor; i++)
-                {
-                    hospital.Rooms.Add(new Room(floor, Room.RoomType.OPERATION, i));
-                }
-                for (int i = 0; i < recoveryRoomsPerFloor; i++)
-                {
-                    hospital.Rooms.Add(new Room(floor, Room.RoomType.RECOVERY, i));
-                }
+                foreach (var rc in roomCountPerFloor)
+				{
+                    for (int i = 0; i < rc.Value; i++)
+					{
+                        hospital.Rooms.Add(new Room(floor, rc.Key, i));
+                    }
+				}
             }
         }
         private static void DeleteRoom()
