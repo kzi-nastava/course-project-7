@@ -16,7 +16,7 @@ namespace Hospital_Information_System.Backend
 		{
 			Floor = 0;
 			Type = RoomType.OTHER;
-			Name = "unknown";
+			Name = "";
 		}
 		public Room(int floor, RoomType type, string name)
 		{

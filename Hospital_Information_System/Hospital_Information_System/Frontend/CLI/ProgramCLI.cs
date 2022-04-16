@@ -22,15 +22,18 @@ namespace Hospital_Information_System.Frontend.CLI
 			{
 				{ "-room-create", CreateRoom },
                 { "-room-delete", DeleteRoom },
-			};
+                { "-room-update", UpdateRoom },
+            };
 
             //commandMapping["-room-create"]();
-            commandMapping["-room-delete"]();
+            //hospital.Save(dataDirectory);
 
+            commandMapping["-room-update"]();
             hospital.Save(dataDirectory);
         }
         private static void InitHospital()
 		{
+            hospital.Rooms.Clear();
             hospital.Rooms.Add(new Room(0, Room.RoomType.WAREHOUSE, "Warehouse"));
 
             const int floorNo = 4;
@@ -74,35 +77,63 @@ namespace Hospital_Information_System.Frontend.CLI
 			{
 			}
 		}
-
-        private static void PrintRooms(List<Room> markedRooms)
-		{
-            int i = 0;
-            foreach (var room in hospital.Rooms)
-			{
-                Console.Write($"[{(markedRooms.Contains(room) ? 'x' : ' ')}]");
-                Console.Write($"{i++} {room.Name}\n");
-            }
-		}
-
         private static void CreateRoom()
 		{
-            var room = InputRoom();
-            if (room != null)
-            {
-                hospital.Rooms.Add(room);
-            }
-        }
-        private static Room InputRoom()
-        {
+            Room room = new Room();
             try
             {
+                InputRoom(room, Enum.GetValues(typeof(RoomProperty)).Cast<RoomProperty>().ToList());
+                hospital.Rooms.Add(room);
+            }
+            catch (InputCancelledException)
+			{
+			}
+        }
+        private static void UpdateRoom()
+		{
+            try
+            {
+                Console.WriteLine("Select which room to update:");
+
+                Room room = EasyInput<Room>.Select(
+                    hospital.Rooms.Where(r => !r.Deleted && r.Type != Room.RoomType.WAREHOUSE).ToList(),
+                    r => r.Name,
+                    inputCancelString
+                );
+
+                Console.WriteLine(room.ToString());
+                Console.WriteLine("Select which properties to update:");
+
+                var propertiesToUpdate = EasyInput<RoomProperty>.SelectMultiple(
+                    Enum.GetValues(typeof(RoomProperty)).Cast<RoomProperty>().ToList(),
+                    e => Enum.GetName(typeof(RoomProperty), e),
+                    inputCancelString
+                ).ToList();
+
+                InputRoom(room, propertiesToUpdate);
+            }
+            catch (InputCancelledException)
+            {
+			}
+		}
+        internal enum RoomProperty
+		{
+            NAME,
+            FLOOR,
+            TYPE,
+        }
+        private static void InputRoom(Room room, List<RoomProperty> whichProperties)
+        {
+            Room temp = new Room();
+
+            if (whichProperties.Contains(RoomProperty.NAME))
+            {
                 Console.WriteLine("Name:");
-                var name = EasyInput<string>.Get(
+                temp.Name = EasyInput<string>.Get(
                     new List<Func<string, bool>>
                     {
                         s => s.Count() != 0,
-                        s => hospital.Rooms.Find(room => room.Name == s) == null,
+                        s => new Room[]{null, room}.Contains(hospital.Rooms.Find(room => room.Name == s)),
                     },
                     new[]
                     {
@@ -111,9 +142,12 @@ namespace Hospital_Information_System.Frontend.CLI
                     },
                     inputCancelString
                 );
+            }
 
+            if (whichProperties.Contains(RoomProperty.FLOOR))
+            {
                 Console.WriteLine("Floor:");
-                var floor = EasyInput<int>.Get(
+                temp.Floor = EasyInput<int>.Get(
                     new List<Func<int, bool>>
                     {
                         n => n >= 0
@@ -124,19 +158,27 @@ namespace Hospital_Information_System.Frontend.CLI
                     },
                     inputCancelString
                 );
+            }
 
+            if (whichProperties.Contains(RoomProperty.TYPE))
+            {
                 Console.WriteLine("Room type:");
-                var type = EasyInput<Room.RoomType>.Select(
-					Enum.GetValues(typeof(Room.RoomType)).Cast<Room.RoomType>().ToList().Where(e => e != Room.RoomType.WAREHOUSE).ToList(),
+                temp.Type = EasyInput<Room.RoomType>.Select(
+                    Enum.GetValues(typeof(Room.RoomType))
+                        .Cast<Room.RoomType>()
+                        .Where(e => e != Room.RoomType.WAREHOUSE)
+                        .ToList(),
                     inputCancelString
                 );
-
-                return new Room(floor, type, name);
             }
-            catch (InputCancelledException)
-			{
-                return null;
-			}
+
+            CopyRoom(room, temp, whichProperties);          
+        }
+        private static void CopyRoom(Room target, Room source, List<RoomProperty> whichProperties)
+		{
+            if (whichProperties.Contains(RoomProperty.NAME)) target.Name = source.Name;
+            if (whichProperties.Contains(RoomProperty.FLOOR)) target.Floor = source.Floor;
+            if (whichProperties.Contains(RoomProperty.TYPE)) target.Type = source.Type;
         }
     }
 }
