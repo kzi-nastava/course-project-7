@@ -26,7 +26,7 @@ namespace HospitalIS.Backend
 		}
 		public override string ToString()
 		{
-			return JsonConvert.SerializeObject(this, Formatting.Indented);
+			return $"Equipment{{Id = {Id}, Type = {(int)Type} ({Type}), Use = {(int)Use} ({Use})}}";
 		}
 	}
 }

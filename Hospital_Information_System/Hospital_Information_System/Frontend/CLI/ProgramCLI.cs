@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using HospitalIS.Backend;
+using HospitalIS.Frontend.CLI.Model;
 
 namespace HospitalIS.Frontend.CLI
 { 
@@ -16,12 +17,15 @@ namespace HospitalIS.Frontend.CLI
             { "-room-create", () => RoomModel.CreateRoom(hospital, inputCancelString) },
             { "-room-update", () => RoomModel.UpdateRoom(hospital, inputCancelString) },
             { "-room-delete", () => RoomModel.DeleteRoom(hospital, inputCancelString) },
+            { "-equipment-search", () => EquipmentModel.Search(hospital, inputCancelString) }
         };
         static void Main()
         {
 			hospital = new Backend.Hospital();
-            //hospital.Load(dataDirectory);
-            InitHospital();
+            hospital.Load(dataDirectory);
+            //InitHospital();
+
+            commandMapping["-equipment-search"]();
 
             hospital.Save(dataDirectory);
         }

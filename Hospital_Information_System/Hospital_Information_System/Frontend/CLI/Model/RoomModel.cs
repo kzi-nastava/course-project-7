@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using HospitalIS.Backend;
 using System.Linq;
 
-namespace HospitalIS.Frontend.CLI
+namespace HospitalIS.Frontend.CLI.Model
 {
 	internal abstract class RoomModel
 	{
