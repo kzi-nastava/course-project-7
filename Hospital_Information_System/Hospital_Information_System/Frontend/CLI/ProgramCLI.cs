@@ -24,10 +24,10 @@ namespace HospitalIS.Frontend.CLI
 			hospital = new Backend.Hospital();
             hospital.Load(dataDirectory);
             //InitHospital();
+            //hospital.Save(dataDirectory);
 
-            commandMapping["-equipment-search"]();
-
-            hospital.Save(dataDirectory);
+            //commandMapping["-room-delete"]();
+            //hospital.Save(dataDirectory);
         }
         private static void InitHospital()
         {

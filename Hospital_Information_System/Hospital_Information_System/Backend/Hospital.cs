@@ -1,10 +1,14 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 namespace HospitalIS.Backend
 {
+	internal class WarehouseNotFoundException: Exception
+	{
+	}
 	internal class Hospital : Entity
 	{
 		private static readonly JsonSerializerSettings settings;
@@ -14,8 +18,21 @@ namespace HospitalIS.Backend
 
 		private List<Room> _rooms = new List<Room>();
 		private List<Equipment> _equipment = new List<Equipment>();
-		public IReadOnlyList<Room> Rooms => _rooms;
-		public IReadOnlyList<Equipment> Equipment => _equipment;
+		public IReadOnlyList<Room> Rooms => (from o in _rooms where !o.Deleted select o).ToList();
+		public IReadOnlyList<Equipment> Equipment => (from o in _equipment where !o.Deleted select o).ToList();
+
+		public IReadOnlyList<Room> RoomsAll() { return _rooms; }
+		public IReadOnlyList<Equipment> EquipmentAll() { return _equipment; }
+
+		public Room GetWarehouse()
+		{
+			foreach (var r in Rooms)
+			{
+				if (r.Type == Room.RoomType.WAREHOUSE)
+					return r;
+			}
+			throw new WarehouseNotFoundException();     
+		}
 
 		static Hospital()
 		{
@@ -23,8 +40,8 @@ namespace HospitalIS.Backend
 		}
 		public void Save(string directory)
 		{
-			File.WriteAllText(Path.Combine(directory, fnameRooms), JsonConvert.SerializeObject(Rooms, Formatting.Indented, settings));
-			File.WriteAllText(Path.Combine(directory, fnameEquipment), JsonConvert.SerializeObject(Equipment, Formatting.Indented, settings));
+			File.WriteAllText(Path.Combine(directory, fnameRooms), JsonConvert.SerializeObject(_rooms, Formatting.Indented, settings));
+			File.WriteAllText(Path.Combine(directory, fnameEquipment), JsonConvert.SerializeObject(_equipment, Formatting.Indented, settings));
 
 			// RoomHasEquipment
 
@@ -50,13 +67,13 @@ namespace HospitalIS.Backend
 		}
 		public void Add(Room room)
 		{
-			room.Id = Rooms.Count > 0 ? Rooms.Last().Id + 1 : 0;
+			room.Id = _rooms.Count > 0 ? _rooms.Last().Id + 1 : 0;
 			_rooms.Add(room);
 		}
 
 		public void Add(Equipment equipment)
 		{
-			equipment.Id = Equipment.Count > 0 ? Equipment.Last().Id + 1 : 0;
+			equipment.Id = _equipment.Count > 0 ? _equipment.Last().Id + 1 : 0;
 			_equipment.Add(equipment);
 		}
 	}

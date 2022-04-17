@@ -25,6 +25,8 @@ namespace HospitalIS.Frontend.CLI.Model
 				foreach (var room in roomsToDelete)
 				{
 					room.Deleted = true;
+					hospital.GetWarehouse().Equipment.AddRange(room.Equipment);
+					room.Equipment.Clear();
 				}
 			}
 			catch (InputCancelledException)

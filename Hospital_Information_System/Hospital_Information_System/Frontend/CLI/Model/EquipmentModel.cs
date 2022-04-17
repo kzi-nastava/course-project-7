@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
+	internal class DanglingEquipmentException : Exception
+	{
+	}
 	internal abstract class EquipmentModel
 	{
 		private static readonly string hintSearchSelectCriteria = "Select search criteria";
@@ -82,7 +85,7 @@ namespace HospitalIS.Frontend.CLI.Model
 				if (room.Equipment.Find(eq => eq.Id == equipment.Id) != null)
 					return room;
 			}
-			return null; // Shouldn't ever happen
+			throw new DanglingEquipmentException();
 		}
 	}
 }
