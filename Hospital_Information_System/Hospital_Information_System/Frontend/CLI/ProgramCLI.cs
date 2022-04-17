@@ -13,9 +13,9 @@ namespace HospitalIS.Frontend.CLI
         static void Main()
         {
 			hospital = new Backend.Hospital();
-            hospital.Load(dataDirectory);
-            //InitHospital();
-            //hospital.Save(dataDirectory);
+            //hospital.Load(dataDirectory);
+            InitHospital();
+            hospital.Save(dataDirectory);
 
             var commandMapping = new Dictionary<string, Action>
             {
@@ -50,7 +50,7 @@ namespace HospitalIS.Frontend.CLI
                 {
                     for (int i = 0; i < rc.Value; i++)
                     {
-                        hospital.Rooms.Add(new Room(floor, rc.Key, i));
+                        hospital.Add(new Room(floor, rc.Key, i));
                     }
                 }
             }

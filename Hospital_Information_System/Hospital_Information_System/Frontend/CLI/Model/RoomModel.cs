@@ -33,13 +33,11 @@ namespace HospitalIS.Frontend.CLI
 		}
 		internal static void CreateRoom(Hospital hospital, string inputCancelString)
 		{
-			Room room = new Room();
 			var allRoomProperties = Enum.GetValues(typeof(RoomProperty)).Cast<RoomProperty>().ToList();
 			try
 			{
-				var newRoom = InputRoom(hospital, inputCancelString, allRoomProperties);
-				CopyRoom(room, newRoom, allRoomProperties);
-				hospital.Rooms.Add(room);
+				Room room = InputRoom(hospital, inputCancelString, allRoomProperties);
+				hospital.Add(room);
 			}
 			catch (InputCancelledException)
 			{

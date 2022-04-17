@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace HospitalIS.Backend
 {
@@ -8,8 +9,7 @@ namespace HospitalIS.Backend
 	{
 		private static string fnameRooms = "rooms.json";
 		private static JsonSerializerSettings settings = new JsonSerializerSettings{ PreserveReferencesHandling = PreserveReferencesHandling.Objects};
-
-		public List<Room> Rooms { get; set; } = new List<Room>();
+		internal List<Room> Rooms { get; set; } = new List<Room>();
 
 		public void Save(string directory)
 		{
@@ -23,6 +23,11 @@ namespace HospitalIS.Backend
 		public override string ToString()
 		{
 			return JsonConvert.SerializeObject(this, Formatting.Indented);
+		}
+		public void Add(Room room)
+		{
+			room.Id = Rooms.LastOrDefault().Id + 1;
+			Rooms.Add(room);
 		}
 	}
 }
