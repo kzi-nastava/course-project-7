@@ -32,8 +32,7 @@ namespace HospitalIS.Frontend.CLI
         }
         private static void InitHospital()
         {
-            hospital.Rooms.Clear();
-            hospital.Rooms.Add(new Room(0, Room.RoomType.WAREHOUSE, "Warehouse"));
+            hospital.Add(new Room(0, Room.RoomType.WAREHOUSE, "Warehouse"));
 
             const int floorNo = 4;
             var roomCountPerFloor = new List<KeyValuePair<Room.RoomType, int>>

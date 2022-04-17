@@ -1,33 +1,34 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 namespace HospitalIS.Backend
 {
-	class Hospital : Entity
+	internal class Hospital : Entity
 	{
-		private static string fnameRooms = "rooms.json";
-		private static JsonSerializerSettings settings = new JsonSerializerSettings{ PreserveReferencesHandling = PreserveReferencesHandling.Objects};
-		internal List<Room> Rooms { get; set; } = new List<Room>();
+		private static readonly JsonSerializerSettings settings;
+		private static readonly string fnameRooms = "rooms.json";
 
+		private List<Room> _rooms = new List<Room>();
+		public IReadOnlyList<Room> Rooms => _rooms;
+		static Hospital()
+		{
+			settings = new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects };
+		}
 		public void Save(string directory)
 		{
-
 			File.WriteAllText(Path.Combine(directory, fnameRooms), JsonConvert.SerializeObject(Rooms, Formatting.Indented, settings));
 		}
 		public void Load(string directory)
 		{
-			Rooms = JsonConvert.DeserializeObject<List<Room>>(File.ReadAllText(Path.Combine(directory, fnameRooms)), settings);
-		}
-		public override string ToString()
-		{
-			return JsonConvert.SerializeObject(this, Formatting.Indented);
+			_rooms = JsonConvert.DeserializeObject<List<Room>>(File.ReadAllText(Path.Combine(directory, fnameRooms)), settings);
 		}
 		public void Add(Room room)
 		{
-			room.Id = Rooms.LastOrDefault().Id + 1;
-			Rooms.Add(room);
+			room.Id = (Rooms.Last()?.Id ?? -1) + 1;
+			_rooms.Add(room);
 		}
 	}
 }
