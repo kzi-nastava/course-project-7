@@ -12,12 +12,16 @@ namespace HospitalIS.Backend
 		public RoomType Type { get; set; }
 		public string Name { get; set; }
 		public int Floor { get; set; }
+		[JsonIgnore]
+		public List<Equipment> Equipment = new List<Equipment>();
+
 		public Room()
 		{
 			Floor = 0;
 			Type = RoomType.OTHER;
 			Name = "";
 		}
+
 		public Room(int floor, RoomType type, string name)
 		{
 			Floor = floor;
