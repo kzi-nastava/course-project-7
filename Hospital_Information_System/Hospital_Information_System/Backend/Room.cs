@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace HospitalIS.Backend
 {
@@ -11,6 +12,8 @@ namespace HospitalIS.Backend
 		public RoomType Type { get; set; }
 		public string Name { get; set; }
 		public int Floor { get; set; }
+		[JsonIgnore]
+		public List<Equipment> Equipment = new List<Equipment>();
 
 		public Room()
 		{
@@ -18,6 +21,7 @@ namespace HospitalIS.Backend
 			Type = RoomType.OTHER;
 			Name = "";
 		}
+
 		public Room(int floor, RoomType type, string name)
 		{
 			Floor = floor;

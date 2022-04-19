@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using HospitalIS.Backend;
 using System.Linq;
 
-namespace HospitalIS.Frontend.CLI
+namespace HospitalIS.Frontend.CLI.Model
 {
 	internal abstract class RoomModel
 	{
@@ -25,6 +25,8 @@ namespace HospitalIS.Frontend.CLI
 				foreach (var room in roomsToDelete)
 				{
 					room.Deleted = true;
+					hospital.GetWarehouse().Equipment.AddRange(room.Equipment);
+					room.Equipment.Clear();
 				}
 			}
 			catch (InputCancelledException)
@@ -33,13 +35,11 @@ namespace HospitalIS.Frontend.CLI
 		}
 		internal static void CreateRoom(Hospital hospital, string inputCancelString)
 		{
-			Room room = new Room();
 			var allRoomProperties = Enum.GetValues(typeof(RoomProperty)).Cast<RoomProperty>().ToList();
 			try
 			{
-				var newRoom = InputRoom(hospital, inputCancelString, allRoomProperties);
-				CopyRoom(room, newRoom, allRoomProperties);
-				hospital.Rooms.Add(room);
+				Room room = InputRoom(hospital, inputCancelString, allRoomProperties);
+				hospital.Add(room);
 			}
 			catch (InputCancelledException)
 			{

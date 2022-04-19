@@ -1,28 +1,80 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace HospitalIS.Backend
 {
-	class Hospital : Entity
+	internal class WarehouseNotFoundException: Exception
 	{
-		private static string fnameRooms = "rooms.json";
-		private static JsonSerializerSettings settings = new JsonSerializerSettings{ PreserveReferencesHandling = PreserveReferencesHandling.Objects};
+	}
+	internal class Hospital : Entity
+	{
+		private static readonly JsonSerializerSettings settings;
+		private static readonly string fnameRooms = "rooms.json";
+		private static readonly string fnameEquipment = "equipment.json";
+		private static readonly string fnameRoomHasEquipment = "roomHasEquipment.json";
 
-		public List<Room> Rooms { get; set; } = new List<Room>();
+		private List<Room> _rooms = new List<Room>();
+		private List<Equipment> _equipment = new List<Equipment>();
+		public IReadOnlyList<Room> Rooms => (from o in _rooms where !o.Deleted select o).ToList();
+		public IReadOnlyList<Equipment> Equipment => (from o in _equipment where !o.Deleted select o).ToList();
 
+		public IReadOnlyList<Room> RoomsAll() { return _rooms; }
+		public IReadOnlyList<Equipment> EquipmentAll() { return _equipment; }
+
+		public Room GetWarehouse()
+		{
+			foreach (var r in Rooms)
+			{
+				if (r.Type == Room.RoomType.WAREHOUSE)
+					return r;
+			}
+			throw new WarehouseNotFoundException();     
+		}
+
+		static Hospital()
+		{
+			settings = new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects };
+		}
 		public void Save(string directory)
 		{
+			File.WriteAllText(Path.Combine(directory, fnameRooms), JsonConvert.SerializeObject(_rooms, Formatting.Indented, settings));
+			File.WriteAllText(Path.Combine(directory, fnameEquipment), JsonConvert.SerializeObject(_equipment, Formatting.Indented, settings));
 
-			File.WriteAllText(Path.Combine(directory, fnameRooms), JsonConvert.SerializeObject(Rooms, Formatting.Indented, settings));
+			// RoomHasEquipment
+
+			Dictionary<int, List<int>> roomHasEquipment = new Dictionary<int, List<int>>();
+			foreach (var r in Rooms)
+			{
+				roomHasEquipment[r.Id] = (from eq in r.Equipment select eq.Id).ToList();
+			}
+			File.WriteAllText(Path.Combine(directory, fnameRoomHasEquipment), JsonConvert.SerializeObject(roomHasEquipment, Formatting.Indented, settings));
 		}
 		public void Load(string directory)
 		{
-			Rooms = JsonConvert.DeserializeObject<List<Room>>(File.ReadAllText(Path.Combine(directory, fnameRooms)), settings);
+			_rooms = JsonConvert.DeserializeObject<List<Room>>(File.ReadAllText(Path.Combine(directory, fnameRooms)), settings);
+			_equipment = JsonConvert.DeserializeObject<List<Equipment>>(File.ReadAllText(Path.Combine(directory, fnameEquipment)), settings);
+
+			// RoomHasEquipment
+
+			var roomHasEquipment = JsonConvert.DeserializeObject<Dictionary<int, List<int>>>(File.ReadAllText(Path.Combine(directory, fnameRoomHasEquipment)), settings);
+			foreach (var kv in roomHasEquipment)
+			{
+				_rooms[kv.Key].Equipment = (from id in kv.Value select _equipment[id]).ToList();
+			}
 		}
-		public override string ToString()
+		public void Add(Room room)
 		{
-			return JsonConvert.SerializeObject(this, Formatting.Indented);
+			room.Id = _rooms.Count > 0 ? _rooms.Last().Id + 1 : 0;
+			_rooms.Add(room);
+		}
+
+		public void Add(Equipment equipment)
+		{
+			equipment.Id = _equipment.Count > 0 ? _equipment.Last().Id + 1 : 0;
+			_equipment.Add(equipment);
 		}
 	}
 }
