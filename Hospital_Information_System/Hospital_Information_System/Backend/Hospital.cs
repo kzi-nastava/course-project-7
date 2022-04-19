@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using HospitalIS.Backend.Repository;
 
 namespace HospitalIS.Backend
 {
@@ -42,28 +43,13 @@ namespace HospitalIS.Backend
 		{
 			File.WriteAllText(Path.Combine(directory, fnameRooms), JsonConvert.SerializeObject(_rooms, Formatting.Indented, settings));
 			File.WriteAllText(Path.Combine(directory, fnameEquipment), JsonConvert.SerializeObject(_equipment, Formatting.Indented, settings));
-
-			// RoomHasEquipment
-
-			Dictionary<int, List<int>> roomHasEquipment = new Dictionary<int, List<int>>();
-			foreach (var r in Rooms)
-			{
-				roomHasEquipment[r.Id] = (from eq in r.Equipment select eq.Id).ToList();
-			}
-			File.WriteAllText(Path.Combine(directory, fnameRoomHasEquipment), JsonConvert.SerializeObject(roomHasEquipment, Formatting.Indented, settings));
+			RoomHasEquipmentRepository.Save(this, Path.Combine(directory, fnameRoomHasEquipment), settings);
 		}
 		public void Load(string directory)
 		{
 			_rooms = JsonConvert.DeserializeObject<List<Room>>(File.ReadAllText(Path.Combine(directory, fnameRooms)), settings);
 			_equipment = JsonConvert.DeserializeObject<List<Equipment>>(File.ReadAllText(Path.Combine(directory, fnameEquipment)), settings);
-
-			// RoomHasEquipment
-
-			var roomHasEquipment = JsonConvert.DeserializeObject<Dictionary<int, List<int>>>(File.ReadAllText(Path.Combine(directory, fnameRoomHasEquipment)), settings);
-			foreach (var kv in roomHasEquipment)
-			{
-				_rooms[kv.Key].Equipment = (from id in kv.Value select _equipment[id]).ToList();
-			}
+			RoomHasEquipmentRepository.Load(this, Path.Combine(directory, fnameRoomHasEquipment), settings);
 		}
 		public void Add(Room room)
 		{

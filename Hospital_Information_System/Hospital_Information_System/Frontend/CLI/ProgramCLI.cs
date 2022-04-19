@@ -23,9 +23,10 @@ namespace HospitalIS.Frontend.CLI
         static void Main()
         {
 			hospital = new Backend.Hospital();
-            hospital.Load(dataDirectory);
+            
             //InitHospital();
             //hospital.Save(dataDirectory);
+            hospital.Load(dataDirectory);
 
             commandMapping["-equipment-filter"]();
             //hospital.Save(dataDirectory);
