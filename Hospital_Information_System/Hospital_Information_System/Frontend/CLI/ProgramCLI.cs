@@ -17,7 +17,8 @@ namespace HospitalIS.Frontend.CLI
             { "-room-create", () => RoomModel.CreateRoom(hospital, inputCancelString) },
             { "-room-update", () => RoomModel.UpdateRoom(hospital, inputCancelString) },
             { "-room-delete", () => RoomModel.DeleteRoom(hospital, inputCancelString) },
-            { "-equipment-search", () => EquipmentModel.Search(hospital, inputCancelString) }
+            { "-equipment-search", () => EquipmentModel.Search(hospital, inputCancelString) },
+            { "-equipment-filter", () => EquipmentModel.Filter(hospital, inputCancelString) },
         };
         static void Main()
         {
@@ -26,7 +27,7 @@ namespace HospitalIS.Frontend.CLI
             //InitHospital();
             //hospital.Save(dataDirectory);
 
-            //commandMapping["-room-delete"]();
+            commandMapping["-equipment-filter"]();
             //hospital.Save(dataDirectory);
         }
         private static void InitHospital()
