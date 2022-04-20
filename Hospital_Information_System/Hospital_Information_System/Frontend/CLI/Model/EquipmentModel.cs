@@ -175,7 +175,7 @@ namespace HospitalIS.Frontend.CLI.Model
 			return result;
 		}
 
-		private static Room GetRoom(Equipment equipment, Hospital hospital)
+		internal static Room GetRoom(Equipment equipment, Hospital hospital)
 		{
 			if (equipment.Id == -1)
 				return null;

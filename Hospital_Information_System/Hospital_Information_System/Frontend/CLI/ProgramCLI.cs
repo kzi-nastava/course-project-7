@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using HospitalIS.Backend;
 using HospitalIS.Frontend.CLI.Model;
+using System.Threading;
 
 namespace HospitalIS.Frontend.CLI
 { 
@@ -19,17 +20,28 @@ namespace HospitalIS.Frontend.CLI
             { "-room-delete", () => RoomModel.DeleteRoom(hospital, inputCancelString) },
             { "-equipment-search", () => EquipmentModel.Search(hospital, inputCancelString) },
             { "-equipment-filter", () => EquipmentModel.Filter(hospital, inputCancelString) },
+            { "-equipment-relocate", () => EquipmentRelocartionModel.Relocate(hospital, inputCancelString) },
         };
+
+        static void SayHelloAtTime(DateTime when)
+		{
+            Thread.Sleep((int)(when - DateTime.Now).TotalMilliseconds);
+            Console.WriteLine("Hello from other thread!");
+		}
         static void Main()
         {
-			hospital = new Backend.Hospital();
-            
+            hospital = new Backend.Hospital();
+
             //InitHospital();
             //hospital.Save(dataDirectory);
             hospital.Load(dataDirectory);
 
-            commandMapping["-equipment-filter"]();
-            //hospital.Save(dataDirectory);
+            commandMapping["-equipment-relocate"]();
+            hospital.Save(dataDirectory);
+
+            //Console.WriteLine("Now!");
+            //Thread t = new Thread(new ThreadStart(() => SayHelloAtTime(DateTime.Now.AddSeconds(3))));
+            //t.Start();
         }
         private static void InitHospital()
         {
