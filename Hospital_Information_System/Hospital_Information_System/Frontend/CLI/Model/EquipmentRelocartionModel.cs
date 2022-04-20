@@ -104,7 +104,6 @@ namespace HospitalIS.Frontend.CLI.Model
 			{
 				Console.WriteLine(hintInputEquipment);
 				temp.Equipment = InputRelocationEquipment(hospital, inputCancelString, reference);
-				temp.RoomOld = EquipmentModel.GetRoom(temp.Equipment, hospital);
 			}
 
 			if (properties.Contains(EquipmentRelocationProperty.NEW_ROOM))
@@ -153,7 +152,7 @@ namespace HospitalIS.Frontend.CLI.Model
 				hospital.Rooms.ToList(),
 				new List<Func<Room, bool>>()
 				{
-					rm => equipmentRelocation == null || (equipmentRelocation.RoomOld != rm),
+					rm => equipmentRelocation == null || (EquipmentModel.GetRoom(equipmentRelocation.Equipment, hospital) != rm),
 					rm => equipmentRelocation == null || (equipmentRelocation.RoomNew != rm)
 				},
 				new[]

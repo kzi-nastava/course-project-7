@@ -4,8 +4,8 @@
     "Id": 0,
     "Deleted": false,
     "Equipment": 0,
-    "RoomOld": 0,
-    "RoomNew": 2,
-    "ScheduledFor": "2022-04-20T17:08:00"
+    "RoomOld": -1,
+    "RoomNew": 1,
+    "ScheduledFor": "2022-04-20T17:30:00"
   }
 ]

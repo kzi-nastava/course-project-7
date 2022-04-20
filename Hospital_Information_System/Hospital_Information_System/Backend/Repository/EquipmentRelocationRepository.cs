@@ -22,7 +22,6 @@ namespace HospitalIS.Backend.Repository
 			Id = equipmentRelocation.Id;
 			Deleted = equipmentRelocation.Deleted;
 			Equipment = equipmentRelocation.Equipment.Id;
-			RoomOld = equipmentRelocation.RoomOld.Id;
 			RoomNew = equipmentRelocation.RoomNew.Id;
 			ScheduledFor = equipmentRelocation.ScheduledFor;
 		}
@@ -30,7 +29,6 @@ namespace HospitalIS.Backend.Repository
 		{
 			var result = new EquipmentRelocation(
 				hospital.Equipment[Equipment],
-				hospital.Rooms[RoomOld],
 				hospital.Rooms[RoomNew],
 				ScheduledFor
 			);
