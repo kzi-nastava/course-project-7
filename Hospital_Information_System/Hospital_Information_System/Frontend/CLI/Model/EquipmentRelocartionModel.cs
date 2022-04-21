@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using HospitalIS.Backend;
+using HospitalIS.Backend.Repository;
 using System.Linq;
+
 
 namespace HospitalIS.Frontend.CLI.Model
 {
@@ -98,7 +99,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		private static EquipmentRelocation InputRelocation(Hospital hospital, string inputCancelString, List<EquipmentRelocationProperty> properties, EquipmentRelocation editingRelocation)
 		{
 			EquipmentRelocation temp = new EquipmentRelocation();
-			EquipmentRelocation reference = editingRelocation == null ? temp : editingRelocation;
+			EquipmentRelocation reference = editingRelocation ?? temp;
 
 			if (properties.Contains(EquipmentRelocationProperty.EQUIPMENT))
 			{
@@ -152,7 +153,7 @@ namespace HospitalIS.Frontend.CLI.Model
 				hospital.Rooms.ToList(),
 				new List<Func<Room, bool>>()
 				{
-					rm => equipmentRelocation == null || (EquipmentModel.GetRoom(equipmentRelocation.Equipment, hospital) != rm),
+					rm => equipmentRelocation == null || (RoomHasEquipmentRepository.GetRoom(hospital, equipmentRelocation.Equipment) != rm),
 					rm => equipmentRelocation == null || (equipmentRelocation.RoomNew != rm)
 				},
 				new[]

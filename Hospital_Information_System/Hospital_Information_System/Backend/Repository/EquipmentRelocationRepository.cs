@@ -6,12 +6,15 @@ using System.IO;
 
 namespace HospitalIS.Backend.Repository
 {
+	internal class EquipmentRelocationShouldNotHappenException : Exception
+	{
+
+	}
 	internal class EquipmentRelocationJSON
 	{
 		public int Id = -1;
 		public bool Deleted = false;
 		public int Equipment = -1;
-		public int RoomOld = -1;
 		public int RoomNew = -1;
 		public DateTime ScheduledFor = DateTime.MinValue;
 		internal EquipmentRelocationJSON()
@@ -56,6 +59,18 @@ namespace HospitalIS.Backend.Repository
 				from eq in equipmentRelocationJSON
 				select eq.GetRelocation(hospital)
 			).ToList();
+		}
+
+		internal static void PerformRelocation(Hospital hospital, EquipmentRelocation relocation)
+		{
+			if (!hospital.EquipmentRelocations.Contains(relocation))
+				throw new EntityNotFoundException();
+
+			if (relocation.ScheduledFor > DateTime.Now)
+				throw new EquipmentRelocationShouldNotHappenException();
+
+			relocation.RoomNew.Equipment.Add(relocation.Equipment);
+			RoomHasEquipmentRepository.GetRoom(hospital, relocation.Equipment).Equipment.Remove(relocation.Equipment);
 		}
 	}
 }

@@ -56,6 +56,15 @@ namespace HospitalIS.Backend
 			_equipment = JsonConvert.DeserializeObject<List<Equipment>>(File.ReadAllText(Path.Combine(directory, fnameEquipment)), settings);
 			_equipmentRelocations = EquipmentRelocationRepository.Load(this, Path.Combine(directory, fnameEquipmentRelocation), settings);
 			RoomHasEquipmentRepository.Load(this, Path.Combine(directory, fnameRoomHasEquipment), settings);
+
+			var now = DateTime.Now;
+			foreach (var relocation in EquipmentRelocations)
+			{
+				if (relocation.ScheduledFor < now)
+				{
+					EquipmentRelocationRepository.PerformRelocation(this, relocation);
+				}
+			}
 		}
 		public void Add(Room room)
 		{

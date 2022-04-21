@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using HospitalIS.Backend;
+using HospitalIS.Backend.Repository;
 using HospitalIS.Frontend.CLI.Model;
 using System.Threading;
 
@@ -36,8 +37,10 @@ namespace HospitalIS.Frontend.CLI
             //hospital.Save(dataDirectory);
             hospital.Load(dataDirectory);
 
-            commandMapping["-equipment-relocate"]();
+            //commandMapping["-equipment-relocate"]();
+
             hospital.Save(dataDirectory);
+
 
             //Console.WriteLine("Now!");
             //Thread t = new Thread(new ThreadStart(() => SayHelloAtTime(DateTime.Now.AddSeconds(3))));
