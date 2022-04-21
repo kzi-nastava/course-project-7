@@ -24,27 +24,19 @@ namespace HospitalIS.Frontend.CLI
             { "-equipment-relocate", () => EquipmentRelocartionModel.Relocate(hospital, inputCancelString) },
         };
 
-        static void SayHelloAtTime(DateTime when)
-		{
-            Thread.Sleep((int)(when - DateTime.Now).TotalMilliseconds);
-            Console.WriteLine("Hello from other thread!");
-		}
         static void Main()
         {
             hospital = new Backend.Hospital();
 
             //InitHospital();
             //hospital.Save(dataDirectory);
+
             hospital.Load(dataDirectory);
 
             //commandMapping["-equipment-relocate"]();
+            Console.ReadLine();
 
             hospital.Save(dataDirectory);
-
-
-            //Console.WriteLine("Now!");
-            //Thread t = new Thread(new ThreadStart(() => SayHelloAtTime(DateTime.Now.AddSeconds(3))));
-            //t.Start();
         }
         private static void InitHospital()
         {

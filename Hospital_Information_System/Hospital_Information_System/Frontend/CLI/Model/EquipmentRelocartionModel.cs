@@ -88,7 +88,7 @@ namespace HospitalIS.Frontend.CLI.Model
 
 				foreach (var relocation in relocationsToDelete)
 				{
-					relocation.Deleted = true;
+					hospital.Remove(relocation);
 				}
 			}
 			catch (InputCancelledException)

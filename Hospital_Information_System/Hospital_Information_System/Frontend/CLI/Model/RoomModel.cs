@@ -24,9 +24,7 @@ namespace HospitalIS.Frontend.CLI.Model
 				var roomsToDelete = EasyInput<Room>.SelectMultiple(GetModifiableRooms(hospital), r => r.Name, inputCancelString);
 				foreach (var room in roomsToDelete)
 				{
-					room.Deleted = true;
-					hospital.GetWarehouse().Equipment.AddRange(room.Equipment);
-					room.Equipment.Clear();
+					hospital.Remove(room);
 				}
 			}
 			catch (InputCancelledException)

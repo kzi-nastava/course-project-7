@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using System.IO;
+using System.Threading;
 
 namespace HospitalIS.Backend.Repository
 {
-	internal class EquipmentRelocationShouldNotHappenException : Exception
-	{
-
-	}
 	internal class EquipmentRelocationJSON
 	{
 		public int Id = -1;
@@ -45,7 +42,7 @@ namespace HospitalIS.Backend.Repository
 		internal static void Save(Hospital hospital, string fullFilename, JsonSerializerSettings settings)
 		{
 			List<EquipmentRelocationJSON> relocations = (
-				from eqReloc in hospital.EquipmentRelocations
+				from eqReloc in hospital.EquipmentRelocationsAll()
 				select new EquipmentRelocationJSON(eqReloc)
 			).ToList();
 
@@ -63,14 +60,20 @@ namespace HospitalIS.Backend.Repository
 
 		internal static void PerformRelocation(Hospital hospital, EquipmentRelocation relocation)
 		{
+			int dt = (int)(relocation.ScheduledFor - DateTime.Now).TotalMilliseconds;
+			Thread.Sleep(Math.Max(dt, 0));
+
+			if (relocation.Deleted)
+				return;
+
 			if (!hospital.EquipmentRelocations.Contains(relocation))
 				throw new EntityNotFoundException();
 
-			if (relocation.ScheduledFor > DateTime.Now)
-				throw new EquipmentRelocationShouldNotHappenException();
+			Console.WriteLine("[REMOVE ME] Performed relocation");
 
 			relocation.RoomNew.Equipment.Add(relocation.Equipment);
 			RoomHasEquipmentRepository.GetRoom(hospital, relocation.Equipment).Equipment.Remove(relocation.Equipment);
+			hospital.Remove(relocation);
 		}
 	}
 }

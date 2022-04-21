@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using HospitalIS.Backend.Repository;
+using System.Threading;
 
 namespace HospitalIS.Backend
 {
@@ -21,6 +22,8 @@ namespace HospitalIS.Backend
 		private List<Room> _rooms = new List<Room>();
 		private List<Equipment> _equipment = new List<Equipment>();
 		private List<EquipmentRelocation> _equipmentRelocations = new List<EquipmentRelocation>();
+		private List<Thread> _equipmentRelocationTasks = new List<Thread>();
+
 		public IReadOnlyList<Room> Rooms => (from o in _rooms where !o.Deleted select o).ToList();
 		public IReadOnlyList<Equipment> Equipment => (from o in _equipment where !o.Deleted select o).ToList();
 		public IReadOnlyList<EquipmentRelocation> EquipmentRelocations => (from o in _equipmentRelocations where !o.Deleted select o).ToList();
@@ -60,10 +63,7 @@ namespace HospitalIS.Backend
 			var now = DateTime.Now;
 			foreach (var relocation in EquipmentRelocations)
 			{
-				if (relocation.ScheduledFor < now)
-				{
-					EquipmentRelocationRepository.PerformRelocation(this, relocation);
-				}
+				AddEquipmentRelocationTask(relocation);
 			}
 		}
 		public void Add(Room room)
@@ -82,6 +82,40 @@ namespace HospitalIS.Backend
 		{
 			equipmentRelocation.Id = _equipmentRelocations.Count > 0 ? _equipmentRelocations.Last().Id + 1 : 0;
 			_equipmentRelocations.Add(equipmentRelocation);
+
+			AddEquipmentRelocationTask(equipmentRelocation);
+		}
+
+		public void Remove(Equipment equipment)
+		{
+			equipment.Deleted = true;
+
+			// Remove all equipment relocations that move this equipment.
+			_equipmentRelocations.ForEach(er => { if (er.Equipment == equipment) { Remove(er); } });
+		}
+
+		public void Remove(Room room)
+		{
+			room.Deleted = true;
+
+			// Move all equipment from this room to the warehouse.
+			GetWarehouse().Equipment.AddRange(room.Equipment);
+			room.Equipment.Clear();
+
+			// Remove all equipment relocations that move some equipment to this room.
+			_equipmentRelocations.ForEach(er => { if (er.RoomNew == room) { Remove(er); } });
+		}
+
+		public void Remove(EquipmentRelocation equipmentRelocation)
+		{
+			equipmentRelocation.Deleted = true;
+		}
+
+		protected void AddEquipmentRelocationTask(EquipmentRelocation equipmentRelocation)
+		{
+			Thread t = new Thread(new ThreadStart(() => EquipmentRelocationRepository.PerformRelocation(this, equipmentRelocation)));
+			_equipmentRelocationTasks.Add(t);
+			t.Start();
 		}
 	}
 }
