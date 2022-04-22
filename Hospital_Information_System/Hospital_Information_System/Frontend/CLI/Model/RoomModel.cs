@@ -15,6 +15,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		private const string hintRoomType = "Select room type";
 		private const string hintRoomNameNonEmpty = "Room name must not be empty!";
 		private const string hintRoomFloorNonNegative = "Room floor must be a non-negative integer!";
+
 		internal static void DeleteRoom(string inputCancelString)
 		{
 			Console.WriteLine(hintSelectRooms);
@@ -24,25 +25,27 @@ namespace HospitalIS.Frontend.CLI.Model
 				var roomsToDelete = EasyInput<Room>.SelectMultiple(GetModifiableRooms(), r => r.Name, inputCancelString);
 				foreach (var room in roomsToDelete)
 				{
-					Hospital.Instance.Remove(room);
+					IS.Instance.RoomRepo.Remove(room);
 				}
 			}
 			catch (InputCancelledException)
 			{
 			}
 		}
+
 		internal static void CreateRoom(string inputCancelString)
 		{
 			var allRoomProperties = Enum.GetValues(typeof(RoomProperty)).Cast<RoomProperty>().ToList();
 			try
 			{
 				Room room = InputRoom(inputCancelString, allRoomProperties);
-				Hospital.Instance.Add(room);
+				IS.Instance.RoomRepo.Add(room);
 			}
 			catch (InputCancelledException)
 			{
 			}
 		}
+
 		internal static void UpdateRoom(string inputCancelString)
 		{
 			try
@@ -65,12 +68,14 @@ namespace HospitalIS.Frontend.CLI.Model
 			{
 			}
 		}
+
 		internal enum RoomProperty
 		{
 			NAME,
 			FLOOR,
 			TYPE,
 		}
+
 		internal static Room InputRoom(string inputCancelString, List<RoomProperty> whichProperties)
 		{
 			Room room = new Room();
@@ -95,16 +100,19 @@ namespace HospitalIS.Frontend.CLI.Model
 
 			return room;
 		}
+
 		private static List<Room> GetModifiableRooms()
 		{
-			return Hospital.Instance.Rooms.Where(r => !r.Deleted && r.Type != Room.RoomType.WAREHOUSE).ToList();
+			return IS.Instance.Hospital.Rooms.Where(r => !r.Deleted && r.Type != Room.RoomType.WAREHOUSE).ToList();
 		}
+
 		private static void CopyRoom(Room target, Room source, List<RoomProperty> whichProperties)
 		{
 			if (whichProperties.Contains(RoomProperty.NAME)) target.Name = source.Name;
 			if (whichProperties.Contains(RoomProperty.FLOOR)) target.Floor = source.Floor;
 			if (whichProperties.Contains(RoomProperty.TYPE)) target.Type = source.Type;
 		}
+
 		private static string InputRoomName(string inputCancelString)
 		{
 			return EasyInput<string>.Get(
@@ -113,6 +121,7 @@ namespace HospitalIS.Frontend.CLI.Model
 				inputCancelString
 			);
 		}
+
 		private static int InputRoomFloor(string inputCancelString)
 		{
 			return EasyInput<int>.Get(

@@ -40,7 +40,7 @@ namespace HospitalIS.Frontend.CLI.Model
 
 		private static void ListRelocations()
 		{
-			foreach (var relocation in Hospital.Instance.EquipmentRelocations.OrderBy(rel => rel.ScheduledFor))
+			foreach (var relocation in IS.Instance.Hospital.EquipmentRelocations.OrderBy(rel => rel.ScheduledFor))
 			{
 				Console.WriteLine(relocation);
 			}
@@ -50,7 +50,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		{
 			try
 			{
-				var selectedRelocation = EasyInput<EquipmentRelocation>.Select(Hospital.Instance.EquipmentRelocations.ToList(), inputCancelString);
+				var selectedRelocation = EasyInput<EquipmentRelocation>.Select(IS.Instance.Hospital.EquipmentRelocations.ToList(), inputCancelString);
 				var selectedProperties = EasyInput<EquipmentRelocationProperty>.SelectMultiple(
 					Enum.GetValues(typeof(EquipmentRelocationProperty)).Cast<EquipmentRelocationProperty>().ToList(),
 					inputCancelString
@@ -70,7 +70,7 @@ namespace HospitalIS.Frontend.CLI.Model
 			try
 			{
 				var relocation = InputRelocation(inputCancelString, allRoomProperties, null);
-				Hospital.Instance.Add(relocation);
+				IS.Instance.EquipmentRelocationRepo.Add(relocation);
 			}
 			catch (InputCancelledException)
 			{
@@ -83,11 +83,11 @@ namespace HospitalIS.Frontend.CLI.Model
 
 			try
 			{
-				var relocationsToDelete = EasyInput<EquipmentRelocation>.SelectMultiple(Hospital.Instance.EquipmentRelocations.ToList(), inputCancelString);
+				var relocationsToDelete = EasyInput<EquipmentRelocation>.SelectMultiple(IS.Instance.Hospital.EquipmentRelocations.ToList(), inputCancelString);
 
 				foreach (var relocation in relocationsToDelete)
 				{
-					Hospital.Instance.Remove(relocation);
+					IS.Instance.EquipmentRelocationRepo.Remove(relocation);
 				}
 			}
 			catch (InputCancelledException)
@@ -139,10 +139,10 @@ namespace HospitalIS.Frontend.CLI.Model
 			// TODO @magley: Specify which ones are taken and overwrite
 
 			return EasyInput<Equipment>.Select(
-				Hospital.Instance.Equipment.Where(eq => editingRelocation.RoomOld.Equipment.ContainsKey(eq)).ToList(),
+				IS.Instance.Hospital.Equipment.Where(eq => editingRelocation.RoomOld.Equipment.ContainsKey(eq)).ToList(),
 				new List<Func<Equipment, bool>>()
 				{
-					eq => Hospital.Instance.EquipmentRelocations.Where(
+					eq => IS.Instance.Hospital.EquipmentRelocations.Where(
 						eqRel => eqRel.Equipment == eq && (editingRelocation == null || editingRelocation != eqRel)
 					).ToList().Count == 0,
 				},
@@ -158,7 +158,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		private static Room InputRelocationOldRoom(string inputCancelString)
 		{
 			return EasyInput<Room>.Select(
-				Hospital.Instance.Rooms.ToList(),
+				IS.Instance.Hospital.Rooms.ToList(),
 				new List<Func<Room, bool>>(),
 				new string[] { },
 				eq => eq.ToString(),
@@ -169,7 +169,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		private static Room InputRelocationNewRoom(string inputCancelString, EquipmentRelocation equipmentRelocation)
 		{
 			return EasyInput<Room>.Select(
-				Hospital.Instance.Rooms.ToList(),
+				IS.Instance.Hospital.Rooms.ToList(),
 				new List<Func<Room, bool>>()
 				{
 					room => equipmentRelocation == null || (equipmentRelocation.RoomOld != room)

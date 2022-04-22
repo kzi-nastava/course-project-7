@@ -52,29 +52,29 @@ namespace HospitalIS.Frontend.CLI.Model
 
 		private static List<Equipment> FilterByAmount(Func<int, bool> amountFunc)
 		{
-			return (from eq in Hospital.Instance.Equipment where amountFunc(GetTotalCount(eq)) select eq).ToList();
+			return (from eq in IS.Instance.Hospital.Equipment where amountFunc(GetTotalCount(eq)) select eq).ToList();
 		}
 		private static List<Equipment> FilterByUse(Equipment.EquipmentUse use)
 		{
-			return Hospital.Instance.Equipment.Where(eq => eq.Use == use).ToList();
+			return IS.Instance.Hospital.Equipment.Where(eq => eq.Use == use).ToList();
 		}
 
 		private static List<Equipment> FilterByType(Equipment.EquipmentType type)
 		{
-			return Hospital.Instance.Equipment.Where(eq => eq.Type == type).ToList();
+			return IS.Instance.Hospital.Equipment.Where(eq => eq.Type == type).ToList();
 		}
 
 		internal static int GetTotalCount(Equipment equipment)
 		{
 			int numberOfContainingRooms = 0;
-			Hospital.Instance.Rooms.ForEach(r => { if (r.Equipment.ContainsKey(equipment)) numberOfContainingRooms += r.Equipment[equipment]; });
+			IS.Instance.Hospital.Rooms.ForEach(r => { if (r.Equipment.ContainsKey(equipment)) numberOfContainingRooms += r.Equipment[equipment]; });
 			return numberOfContainingRooms;
 		}
 
 		internal static int GetRoomCount(Equipment equipment)
 		{
 			int numberOfContainingRooms = 0;
-			Hospital.Instance.Rooms.ForEach(r => { if (r.Equipment.ContainsKey(equipment)) numberOfContainingRooms++; });
+			IS.Instance.Hospital.Rooms.ForEach(r => { if (r.Equipment.ContainsKey(equipment)) numberOfContainingRooms++; });
 			return numberOfContainingRooms;
 		}
 
@@ -127,7 +127,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		private static List<Equipment> MatchByType(string searchQuery)
 		{
 			var result = new List<Equipment>();
-			foreach (var equipment in Hospital.Instance.Equipment)
+			foreach (var equipment in IS.Instance.Hospital.Equipment)
 			{
 				var typeName = equipment.Type.ToString().ToLower();
 				if (typeName.Contains(searchQuery.ToLower()))
@@ -141,7 +141,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		private static List<Equipment> MatchByUse(string searchQuery)
 		{
 			var result = new List<Equipment>();
-			foreach (var equipment in Hospital.Instance.Equipment)
+			foreach (var equipment in IS.Instance.Hospital.Equipment)
 			{
 				var useName = equipment.Use.ToString().ToLower();
 				if (useName.Contains(searchQuery.ToLower()))

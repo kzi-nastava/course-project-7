@@ -2,7 +2,6 @@
 using System.IO;
 using System.Collections.Generic;
 using HospitalIS.Backend;
-using HospitalIS.Backend.Repository;
 using HospitalIS.Frontend.CLI.Model;
 
 namespace HospitalIS.Frontend.CLI
@@ -25,16 +24,16 @@ namespace HospitalIS.Frontend.CLI
         static void Main()
         {
             //InitHospital();
-            //Hospital.Instance.Save(dataDirectory);
+            //IS.Instance.Save(dataDirectory);
 
-            Hospital.Instance.Load(dataDirectory);
+            IS.Instance.Load(dataDirectory);
             commandMapping["-equipment-relocate"]();
-            Hospital.Instance.Save(dataDirectory);
+            IS.Instance.Save(dataDirectory);
         }
 
 		private static void InitHospital()
 		{
-            Hospital.Instance.Add(new Room(0, Room.RoomType.WAREHOUSE, "Warehouse"));
+            IS.Instance.RoomRepo.Add(new Room(0, Room.RoomType.WAREHOUSE, "Warehouse"));
 
             const int floorNo = 3;
             var roomCountPerFloor = new List<KeyValuePair<Room.RoomType, int>>
@@ -51,7 +50,7 @@ namespace HospitalIS.Frontend.CLI
                 {
                     for (int i = 0; i < rc.Value; i++)
                     {
-                        Hospital.Instance.Add(new Room(floor, rc.Key, i));
+                        IS.Instance.RoomRepo.Add(new Room(floor, rc.Key, i));
                     }
                 }
             }
@@ -61,15 +60,15 @@ namespace HospitalIS.Frontend.CLI
                 for (int j = 0; j < Enum.GetValues(typeof(Equipment.EquipmentUse)).Length; j++)
 				{
                     Equipment eq = new Equipment((Equipment.EquipmentType)i, (Equipment.EquipmentUse)j);
-                    Hospital.Instance.Add(eq);
+                    IS.Instance.EquipmentRepo.Add(eq);
 				}
             }
 
-            for (int i = 0; i < Hospital.Instance.Rooms.Count * 2; i++)
+            for (int i = 0; i < IS.Instance.Hospital.Rooms.Count * 2; i++)
 			{
-                RoomRepository.AddEquipment(
-                    Hospital.Instance.Rooms[i % Hospital.Instance.Rooms.Count],
-                    Hospital.Instance.Equipment[i % Hospital.Instance.Equipment.Count],
+                IS.Instance.RoomRepo.Add(
+                    IS.Instance.Hospital.Rooms[i % IS.Instance.Hospital.Rooms.Count],
+                    IS.Instance.Hospital.Equipment[i % IS.Instance.Hospital.Equipment.Count],
                     new Random().Next(1, 10)
                 );
             }

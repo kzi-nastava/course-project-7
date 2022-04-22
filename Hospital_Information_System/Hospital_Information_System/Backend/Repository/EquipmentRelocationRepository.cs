@@ -7,33 +7,56 @@ using System.Threading;
 
 namespace HospitalIS.Backend.Repository
 {
-	internal static class EquipmentRelocationRepository
+	internal class EquipmentRelocationRepository : IRepository<EquipmentRelocation>
 	{
-		public static void Load(string fullFilename, JsonSerializerSettings settings)
+		public void Add(EquipmentRelocation entity)
 		{
-			Hospital.Instance.EquipmentRelocations = JsonConvert.DeserializeObject<List<EquipmentRelocation>>(File.ReadAllText(fullFilename), settings);
+			List<EquipmentRelocation> Relocations = IS.Instance.Hospital.EquipmentRelocations;
+
+			entity.Id = Relocations.Count > 0 ? Relocations.Last().Id + 1 : 0;
+			Relocations.Add(entity);
 		}
 
-		public static void Save(string fullFilename, JsonSerializerSettings settings)
+		public EquipmentRelocation GetById(int id)
 		{
-			File.WriteAllText(fullFilename, JsonConvert.SerializeObject(Hospital.Instance.EquipmentRelocations, Formatting.Indented, settings));
+			return IS.Instance.Hospital.EquipmentRelocations.First(e => e.Id == id);
 		}
 
-		public static void Execute(EquipmentRelocation relocation)
+		public void Load(string fullFilename, JsonSerializerSettings settings)
+		{
+			IS.Instance.Hospital.EquipmentRelocations = JsonConvert.DeserializeObject<List<EquipmentRelocation>>(File.ReadAllText(fullFilename), settings);
+		}
+
+		public void Remove(EquipmentRelocation entity)
+		{
+			entity.Deleted = true;
+		}
+
+		public void Remove(Func<EquipmentRelocation, bool> condition)
+		{
+			IS.Instance.Hospital.EquipmentRelocations.ForEach(entity => { if (condition(entity)) Remove(entity); });
+		}
+
+		public void Save(string fullFilename, JsonSerializerSettings settings)
+		{
+			File.WriteAllText(fullFilename, JsonConvert.SerializeObject(IS.Instance.Hospital.EquipmentRelocations, Formatting.Indented, settings));
+		}
+
+		public void Execute(EquipmentRelocation relocation)
 		{
 			Thread.Sleep(Math.Max(relocation.GetTimeToLive(), 0));
 
 			if (relocation.Deleted)
 				return;
 
-			if (!Hospital.Instance.EquipmentRelocations.Contains(relocation))
+			if (!IS.Instance.Hospital.EquipmentRelocations.Contains(relocation))
 				throw new EntityNotFoundException();
 
 			Console.WriteLine("[REMOVE ME] Performed relocation");
 
-			RoomRepository.AddEquipment(relocation.RoomNew, relocation.Equipment);
-			RoomRepository.RemoveEquipment(relocation.RoomOld, relocation.Equipment);
-			Hospital.Instance.Remove(relocation);
+			IS.Instance.RoomRepo.Add(relocation.RoomNew, relocation.Equipment);
+			IS.Instance.RoomRepo.Remove(relocation.RoomOld, relocation.Equipment);
+			IS.Instance.EquipmentRelocationRepo.Remove(relocation);
 		}
 	}
 }

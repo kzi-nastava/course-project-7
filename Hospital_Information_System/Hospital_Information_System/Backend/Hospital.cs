@@ -1,16 +1,12 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using HospitalIS.Backend.Repository;
 using System.Threading;
 
 namespace HospitalIS.Backend
 {
 	internal class WarehouseNotFoundException : Exception
 	{
-		public WarehouseNotFoundException() : base()
+		public WarehouseNotFoundException()
 		{
 		}
 
@@ -22,21 +18,9 @@ namespace HospitalIS.Backend
 		{
 		}
 	}
+
 	internal class Hospital : Entity
 	{
-		private static Hospital _hospital;
-		public static Hospital Instance {
-			get
-			{
-				return _hospital ??= new Hospital();
-			}
-		}
-
-		private static readonly JsonSerializerSettings settings;
-		private const string fnameRooms = "rooms.json";
-		private const string fnameEquipment = "equipment.json";
-		private const string fnameEquipmentRelocation = "equipmentRelocation.json";
-
 		public List<Room> Rooms = new List<Room>();
 		public List<Equipment> Equipment = new List<Equipment>();
 		public List<EquipmentRelocation> EquipmentRelocations = new List<EquipmentRelocation>();
@@ -52,81 +36,9 @@ namespace HospitalIS.Backend
 			throw new WarehouseNotFoundException();
 		}
 
-		static Hospital()
+		public void AddEquipmentRelocationTask(EquipmentRelocation equipmentRelocation)
 		{
-			settings = new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects };
-		}
-
-		public void Save(string directory)
-		{
-			EquipmentRepository.Save(Path.Combine(directory, fnameEquipment), settings);
-			RoomRepository.Save(Path.Combine(directory, fnameRooms), settings);
-			EquipmentRelocationRepository.Save(Path.Combine(directory, fnameEquipmentRelocation), settings);
-		}
-
-		public void Load(string directory)
-		{
-			EquipmentRepository.Load(Path.Combine(directory, fnameEquipment), settings);
-			RoomRepository.Load(Path.Combine(directory, fnameRooms), settings);
-			EquipmentRelocationRepository.Load(Path.Combine(directory, fnameEquipmentRelocation), settings);
-
-			foreach (var relocation in EquipmentRelocations)
-			{
-				AddEquipmentRelocationTask(relocation);
-			}
-		}
-
-		public void Add(Room room)
-		{
-			room.Id = Rooms.Count > 0 ? Rooms.Last().Id + 1 : 0;
-			Rooms.Add(room);
-		}
-
-		public void Add(Equipment equipment)
-		{
-			equipment.Id = Equipment.Count > 0 ? Equipment.Last().Id + 1 : 0;
-			Equipment.Add(equipment);
-		}
-
-		public void Add(EquipmentRelocation equipmentRelocation)
-		{
-			equipmentRelocation.Id = EquipmentRelocations.Count > 0 ? EquipmentRelocations.Last().Id + 1 : 0;
-			EquipmentRelocations.Add(equipmentRelocation);
-
-			AddEquipmentRelocationTask(equipmentRelocation);
-		}
-
-		public void Remove(Equipment equipment)
-		{
-			equipment.Deleted = true;
-
-			// Remove all equipment relocations that move this equipment.
-			EquipmentRelocations.ForEach(er => { if (er.Equipment == equipment) { Remove(er); } });
-		}
-
-		public void Remove(Room room)
-		{
-			room.Deleted = true;
-
-			// Move all equipment from this room to the warehouse.
-			foreach (var kv in room.Equipment)
-			{
-				RoomRepository.AddEquipment(GetWarehouse(), kv.Key, kv.Value);
-			}
-			room.Equipment.Clear();
-
-			// Remove all equipment relocations that move equipment to this room.
-			EquipmentRelocations.ForEach(er => { if (er.RoomNew == room) { Remove(er); } });
-		}
-
-		public void Remove(EquipmentRelocation equipmentRelocation)
-		{
-			equipmentRelocation.Deleted = true;
-		}
-
-		protected void AddEquipmentRelocationTask(EquipmentRelocation equipmentRelocation)
-		{
-			Thread t = new Thread(new ThreadStart(() => EquipmentRelocationRepository.Execute(equipmentRelocation)));
+			Thread t = new Thread(new ThreadStart(() => IS.Instance.EquipmentRelocationRepo.Execute(equipmentRelocation)));
 			EquipmentRelocationTasks.Add(t);
 			t.Start();
 		}
