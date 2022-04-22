@@ -56,23 +56,26 @@ namespace HospitalIS.Backend
 		{
 			settings = new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects };
 		}
+
 		public void Save(string directory)
 		{
-			File.WriteAllText(Path.Combine(directory, fnameEquipment), JsonConvert.SerializeObject(Equipment, Formatting.Indented, settings));
-			File.WriteAllText(Path.Combine(directory, fnameRooms), JsonConvert.SerializeObject(Rooms, Formatting.Indented, settings));
-			EquipmentRelocationRepository.Save(this, Path.Combine(directory, fnameEquipmentRelocation), settings);
+			EquipmentRepository.Save(Path.Combine(directory, fnameEquipment), settings);
+			RoomRepository.Save(Path.Combine(directory, fnameRooms), settings);
+			EquipmentRelocationRepository.Save(Path.Combine(directory, fnameEquipmentRelocation), settings);
 		}
+
 		public void Load(string directory)
 		{
-			Equipment = JsonConvert.DeserializeObject<List<Equipment>>(File.ReadAllText(Path.Combine(directory, fnameEquipment)), settings);
-			Rooms = JsonConvert.DeserializeObject<List<Room>>(File.ReadAllText(Path.Combine(directory, fnameRooms)), settings);
-			EquipmentRelocations = EquipmentRelocationRepository.Load(this, Path.Combine(directory, fnameEquipmentRelocation), settings);
+			EquipmentRepository.Load(Path.Combine(directory, fnameEquipment), settings);
+			RoomRepository.Load(Path.Combine(directory, fnameRooms), settings);
+			EquipmentRelocationRepository.Load(Path.Combine(directory, fnameEquipmentRelocation), settings);
 
 			foreach (var relocation in EquipmentRelocations)
 			{
 				AddEquipmentRelocationTask(relocation);
 			}
 		}
+
 		public void Add(Room room)
 		{
 			room.Id = Rooms.Count > 0 ? Rooms.Last().Id + 1 : 0;
@@ -112,7 +115,7 @@ namespace HospitalIS.Backend
 			}
 			room.Equipment.Clear();
 
-			// Remove all equipment relocations that move some equipment to this room.
+			// Remove all equipment relocations that move equipment to this room.
 			EquipmentRelocations.ForEach(er => { if (er.RoomNew == room) { Remove(er); } });
 		}
 
@@ -123,7 +126,7 @@ namespace HospitalIS.Backend
 
 		protected void AddEquipmentRelocationTask(EquipmentRelocation equipmentRelocation)
 		{
-			Thread t = new Thread(new ThreadStart(() => EquipmentRelocationRepository.PerformRelocation(this, equipmentRelocation)));
+			Thread t = new Thread(new ThreadStart(() => EquipmentRelocationRepository.Execute(equipmentRelocation)));
 			EquipmentRelocationTasks.Add(t);
 			t.Start();
 		}

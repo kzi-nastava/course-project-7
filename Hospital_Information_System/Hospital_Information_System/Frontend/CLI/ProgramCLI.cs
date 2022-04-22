@@ -14,26 +14,26 @@ namespace HospitalIS.Frontend.CLI
 
         private static readonly Dictionary<string, Action> commandMapping = new Dictionary<string, Action>
         {
-            { "-room-create", () => RoomModel.CreateRoom(Hospital.Instance, inputCancelString) },
-            { "-room-update", () => RoomModel.UpdateRoom(Hospital.Instance, inputCancelString) },
-            { "-room-delete", () => RoomModel.DeleteRoom(Hospital.Instance, inputCancelString) },
-            { "-equipment-search", () => EquipmentModel.Search(Hospital.Instance, inputCancelString) },
-            { "-equipment-filter", () => EquipmentModel.Filter(Hospital.Instance, inputCancelString) },
-            { "-equipment-relocate", () => EquipmentRelocartionModel.Relocate(Hospital.Instance, inputCancelString) },
+            { "-room-create", () => RoomModel.CreateRoom(inputCancelString) },
+            { "-room-update", () => RoomModel.UpdateRoom(inputCancelString) },
+            { "-room-delete", () => RoomModel.DeleteRoom(inputCancelString) },
+            { "-equipment-search", () => EquipmentModel.Search(inputCancelString) },
+            { "-equipment-filter", () => EquipmentModel.Filter(inputCancelString) },
+            { "-equipment-relocate", () => EquipmentRelocationModel.Relocate(inputCancelString) },
         };
 
         static void Main()
         {
-            InitHospital();
+            //InitHospital();
+            //Hospital.Instance.Save(dataDirectory);
+
+            Hospital.Instance.Load(dataDirectory);
+            commandMapping["-equipment-relocate"]();
             Hospital.Instance.Save(dataDirectory);
-            //Hospital.Instance.Load(dataDirectory);
-
-            commandMapping["-equipment-filter"]();
-
-			//hospital.Save(dataDirectory);
         }
-        private static void InitHospital()
-        {
+
+		private static void InitHospital()
+		{
             Hospital.Instance.Add(new Room(0, Room.RoomType.WAREHOUSE, "Warehouse"));
 
             const int floorNo = 3;

@@ -14,7 +14,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		private const string hintFilterByType = "Select type of equipment";
 		private const string hintFilterByUse = "Select use of equipment";
 
-		internal static void Filter(Hospital hospital, string inputCancelString)
+		internal static void Filter(string inputCancelString)
 		{
 			Equipment.EquipmentType selectType()
 			{
@@ -36,56 +36,56 @@ namespace HospitalIS.Frontend.CLI.Model
 
 			var filterBy = new Dictionary<string, Func<List<Equipment>>>
 			{
-				["Filter by type"] = () => FilterByType(hospital, selectType()),
-				["Filter by use"] = () => FilterByUse(hospital, selectUse()),
-				["Filter by out of stock"] = () => FilterByAmount(hospital, num => num == 0),
-				["Filter by less than 10"] = () => FilterByAmount(hospital, num => num >= 0 && num < 10),
-				["Filter by more than 10"] = () => FilterByAmount(hospital, num => num >= 10),
+				["Filter by type"] = () => FilterByType(selectType()),
+				["Filter by use"] = () => FilterByUse(selectUse()),
+				["Filter by out of stock"] = () => FilterByAmount(num => num == 0),
+				["Filter by less than 10"] = () => FilterByAmount(num => num >= 0 && num < 10),
+				["Filter by more than 10"] = () => FilterByAmount(num => num >= 10),
 			};
 
 			Console.WriteLine(hintFilter);
 			var filterChoice = EasyInput<string>.Select(filterBy.Keys.ToList(), inputCancelString);
 
 			var filterResults = filterBy[filterChoice]();
-			PrintResults(hospital, filterResults, eq => $"{eq} [total items: {GetTotalCount(hospital, eq)}]");
+			PrintResults(filterResults, eq => $"{eq} [total items: {GetTotalCount(eq)}]");
 		}
 
-		private static List<Equipment> FilterByAmount(Hospital hospital, Func<int, bool> amountFunc)
+		private static List<Equipment> FilterByAmount(Func<int, bool> amountFunc)
 		{
-			return (from eq in hospital.Equipment where amountFunc(GetTotalCount(hospital, eq)) select eq).ToList();
+			return (from eq in Hospital.Instance.Equipment where amountFunc(GetTotalCount(eq)) select eq).ToList();
 		}
-		private static List<Equipment> FilterByUse(Hospital hospital, Equipment.EquipmentUse use)
+		private static List<Equipment> FilterByUse(Equipment.EquipmentUse use)
 		{
-			return hospital.Equipment.Where(eq => eq.Use == use).ToList();
-		}
-
-		private static List<Equipment> FilterByType(Hospital hospital, Equipment.EquipmentType type)
-		{
-			return hospital.Equipment.Where(eq => eq.Type == type).ToList();
+			return Hospital.Instance.Equipment.Where(eq => eq.Use == use).ToList();
 		}
 
-		internal static int GetTotalCount(Hospital hospital, Equipment equipment)
+		private static List<Equipment> FilterByType(Equipment.EquipmentType type)
+		{
+			return Hospital.Instance.Equipment.Where(eq => eq.Type == type).ToList();
+		}
+
+		internal static int GetTotalCount(Equipment equipment)
 		{
 			int numberOfContainingRooms = 0;
-			hospital.Rooms.ForEach(r => { if (r.Equipment.ContainsKey(equipment)) numberOfContainingRooms += r.Equipment[equipment]; });
+			Hospital.Instance.Rooms.ForEach(r => { if (r.Equipment.ContainsKey(equipment)) numberOfContainingRooms += r.Equipment[equipment]; });
 			return numberOfContainingRooms;
 		}
 
-		internal static int GetRoomCount(Hospital hospital, Equipment equipment)
+		internal static int GetRoomCount(Equipment equipment)
 		{
 			int numberOfContainingRooms = 0;
-			hospital.Rooms.ForEach(r => { if (r.Equipment.ContainsKey(equipment)) numberOfContainingRooms++; });
+			Hospital.Instance.Rooms.ForEach(r => { if (r.Equipment.ContainsKey(equipment)) numberOfContainingRooms++; });
 			return numberOfContainingRooms;
 		}
 
-		internal static void Search(Hospital hospital, string inputCancelString)
+		internal static void Search(string inputCancelString)
 		{
 			Console.WriteLine(hintSearchSelectCriteria);
 
 			var matchBy = new Dictionary<string, Func<string, List<Equipment>>>
 			{
-				["Type"] = (string query) => MatchByType(hospital, query),
-				["Use"] = (string query) => MatchByUse(hospital, query)
+				["Type"] = (string query) => MatchByType(query),
+				["Use"] = (string query) => MatchByUse(query)
 			};
 			var critsSelected = EasyInput<string>.SelectMultiple(matchBy.Keys.ToList(), inputCancelString);
 
@@ -100,16 +100,16 @@ namespace HospitalIS.Frontend.CLI.Model
 
 			// TODO @magley: Consider using a HashSet here
 			searchResults = searchResults.GroupBy(e => e.Id).Select(grp => grp.First()).ToList();
-			PrintResults(hospital, searchResults, eq => PrintSingleEquipment(Hospital.Instance, eq));
+			PrintResults(searchResults, eq => PrintSingleEquipment(eq));
 		}
 
-		private static string PrintSingleEquipment(Hospital hospital, Equipment equipment)
+		private static string PrintSingleEquipment(Equipment equipment)
 		{
-			int containingRoomCount = GetRoomCount(hospital, equipment);
+			int containingRoomCount = GetRoomCount(equipment);
 			return $"{equipment} in {containingRoomCount} room{(containingRoomCount != 1 ? "s" : "")}";
 		}
 
-		private static void PrintResults(Hospital hospital, List<Equipment> results, Func<Equipment, string> toStringFunc)
+		private static void PrintResults(List<Equipment> results, Func<Equipment, string> toStringFunc)
 		{
 			if (results.Count == 0)
 			{
@@ -124,10 +124,10 @@ namespace HospitalIS.Frontend.CLI.Model
 			}
 		}
 
-		private static List<Equipment> MatchByType(Hospital hospital, string searchQuery)
+		private static List<Equipment> MatchByType(string searchQuery)
 		{
 			var result = new List<Equipment>();
-			foreach (var equipment in hospital.Equipment)
+			foreach (var equipment in Hospital.Instance.Equipment)
 			{
 				var typeName = equipment.Type.ToString().ToLower();
 				if (typeName.Contains(searchQuery.ToLower()))
@@ -138,10 +138,10 @@ namespace HospitalIS.Frontend.CLI.Model
 			return result;
 		}
 
-		private static List<Equipment> MatchByUse(Hospital hospital, string searchQuery)
+		private static List<Equipment> MatchByUse(string searchQuery)
 		{
 			var result = new List<Equipment>();
-			foreach (var equipment in hospital.Equipment)
+			foreach (var equipment in Hospital.Instance.Equipment)
 			{
 				var useName = equipment.Use.ToString().ToLower();
 				if (useName.Contains(searchQuery.ToLower()))

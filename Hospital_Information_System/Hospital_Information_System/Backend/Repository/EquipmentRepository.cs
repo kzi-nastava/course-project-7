@@ -1,13 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 
 namespace HospitalIS.Backend.Repository
 {
-	internal static class EquipmentRepository
+	static class EquipmentRepository
 	{
-		internal class EquipmentDictionary<V> : JsonConverter
+		internal class EquipmentReferenceConverter : JsonConverter
+		{
+			public override bool CanConvert(Type objectType)
+			{
+				return objectType == typeof(Equipment);
+			}
+
+			public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+			{
+				var equipmentID = serializer.Deserialize<int>(reader);
+				return Hospital.Instance.Equipment.First(eq => eq.Id == equipmentID);
+			}
+
+			public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+			{
+				serializer.Serialize(writer, ((Equipment)value).Id);
+			}
+		}
+
+		internal class EquipmentDictionaryConverter<V> : JsonConverter
 		{
 			public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
 			{
@@ -36,6 +56,16 @@ namespace HospitalIS.Backend.Repository
 			{
 				return objectType == typeof(Dictionary<Equipment, V>);
 			}
+		}
+
+		internal static void Load(string fullFilename, JsonSerializerSettings settings)
+		{
+			Hospital.Instance.Equipment = JsonConvert.DeserializeObject<List<Equipment>>(File.ReadAllText(fullFilename), settings);
+		}
+
+		internal static void Save(string fullFilename, JsonSerializerSettings settings)
+		{
+			File.WriteAllText(fullFilename, JsonConvert.SerializeObject(Hospital.Instance.Equipment, Formatting.Indented, settings));
 		}
 	}
 }
