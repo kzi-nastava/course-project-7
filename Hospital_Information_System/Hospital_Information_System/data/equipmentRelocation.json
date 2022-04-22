@@ -1,2 +1,11 @@
 [
+  {
+    "$id": "1",
+    "Equipment": 0,
+    "RoomNew": 21,
+    "RoomOld": 0,
+    "ScheduledFor": "2022-04-22T16:12:40",
+    "Id": 0,
+    "Deleted": true
+  }
 ]

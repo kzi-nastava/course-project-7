@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using HospitalIS.Backend;
-using HospitalIS.Backend.Repository;
 using System.Linq;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
 	internal abstract class EquipmentModel
 	{
-		private static readonly string hintSearchSelectCriteria = "Select search criteria";
-		private static readonly string hintSearch = "Enter search query";
-		private static readonly string noResults = "No results";
-		private static readonly string hintFilter = "Select criterion to filter by";
-		private static readonly string hintFilterByType = "Select type of equipment";
-		private static readonly string hintFilterByUse = "Select use of equipment";
+		private const string hintSearchSelectCriteria = "Select search criteria";
+		private const string hintSearch = "Enter search query";
+		private const string noResults = "No results";
+		private const string hintFilter = "Select criterion to filter by";
+		private const string hintFilterByType = "Select type of equipment";
+		private const string hintFilterByUse = "Select use of equipment";
 
-		internal static void Filter(Hospital hospital, string inputCancelString)
-		{		
+		internal static void Filter(string inputCancelString)
+		{
 			Equipment.EquipmentType selectType()
 			{
 				Console.WriteLine(hintFilterByType);
@@ -37,81 +36,56 @@ namespace HospitalIS.Frontend.CLI.Model
 
 			var filterBy = new Dictionary<string, Func<List<Equipment>>>
 			{
-				["Filter by type"] = () => FilterByType(hospital, selectType()),
-				["Filter by use"] = () => FilterByUse(hospital, selectUse()),
-				["Filter by out of stock"] = () => FilterByAmountZero(hospital),
-				["Filter by less than 10"] = () => FilterByAmountLessThan10(hospital),
-				["Filter by more than 10"] = () => FilterByAmountMoreThan10(hospital),
+				["Filter by type"] = () => FilterByType(selectType()),
+				["Filter by use"] = () => FilterByUse(selectUse()),
+				["Filter by out of stock"] = () => FilterByAmount(num => num == 0),
+				["Filter by less than 10"] = () => FilterByAmount(num => num >= 0 && num < 10),
+				["Filter by more than 10"] = () => FilterByAmount(num => num >= 10),
 			};
 
 			Console.WriteLine(hintFilter);
 			var filterChoice = EasyInput<string>.Select(filterBy.Keys.ToList(), inputCancelString);
 
 			var filterResults = filterBy[filterChoice]();
-			PrintResults(hospital, filterResults);
+			PrintResults(filterResults, eq => $"{eq} [total items: {GetTotalCount(eq)}]");
 		}
 
-		private static List<Equipment> FilterByAmountZero(Hospital hospital)
+		private static List<Equipment> FilterByAmount(Func<int, bool> amountFunc)
 		{
-			var typesOutOfStock = Enum.GetValues(typeof(Equipment.EquipmentType))
-				.Cast<Equipment.EquipmentType>()
-				.Where(x => (hospital.Equipment.Where(eq => eq.Type == x).Count() == 0))
-				.Select(x => x)
-				.ToList();
-
-			var result = new List<Equipment>();
-			foreach (var type in typesOutOfStock)
-			{
-				result.Add(new Equipment(type, Equipment.EquipmentUse.Unknown));
-			}
-			return result;
+			return (from eq in IS.Instance.Hospital.Equipment where amountFunc(GetTotalCount(eq)) select eq).ToList();
 		}
-		private static List<Equipment> FilterByAmountMoreThan10(Hospital hospital)
+		private static List<Equipment> FilterByUse(Equipment.EquipmentUse use)
 		{
-			var typesMoreThan10 = hospital.Equipment
-				.GroupBy(eq => eq.Type)
-				.Where(group => group.Count() > 10)
-				.Select(eq => eq.Key)
-				.ToList();
-			return hospital.Equipment
-				.Where(eq => typesMoreThan10.Contains(eq.Type))
-				.Select(eq => eq)
-				.OrderBy(eq => eq.Type.ToString())
-				.ToList();
+			return IS.Instance.Hospital.Equipment.Where(eq => eq.Use == use).ToList();
 		}
-		private static List<Equipment> FilterByAmountLessThan10(Hospital hospital)
+
+		private static List<Equipment> FilterByType(Equipment.EquipmentType type)
 		{
-			var typesLessThan10 = hospital.Equipment
-				.GroupBy(eq => eq.Type)
-				.Where(group => group.Count() > 0 && group.Count() < 10)
-				.Select(eq => eq.Key)
-				.ToList();
-
-			return hospital.Equipment
-				.Where(eq => typesLessThan10.Contains(eq.Type))
-				.Select(eq => eq)
-				.OrderBy(eq => eq.Type.ToString())
-				.ToList();
+			return IS.Instance.Hospital.Equipment.Where(eq => eq.Type == type).ToList();
 		}
 
-		private static List<Equipment> FilterByUse(Hospital hospital, Equipment.EquipmentUse use)
+		internal static int GetTotalCount(Equipment equipment)
 		{
-			return hospital.Equipment.Where(eq => eq.Use == use).ToList();
+			int numberOfContainingRooms = 0;
+			IS.Instance.Hospital.Rooms.ForEach(r => { if (r.Equipment.ContainsKey(equipment)) numberOfContainingRooms += r.Equipment[equipment]; });
+			return numberOfContainingRooms;
 		}
 
-		private static List<Equipment> FilterByType(Hospital hospital, Equipment.EquipmentType type)
+		internal static int GetRoomCount(Equipment equipment)
 		{
-			return hospital.Equipment.Where(eq => eq.Type == type).ToList();
+			int numberOfContainingRooms = 0;
+			IS.Instance.Hospital.Rooms.ForEach(r => { if (r.Equipment.ContainsKey(equipment)) numberOfContainingRooms++; });
+			return numberOfContainingRooms;
 		}
 
-		internal static void Search(Hospital hospital, string inputCancelString)
+		internal static void Search(string inputCancelString)
 		{
 			Console.WriteLine(hintSearchSelectCriteria);
 
 			var matchBy = new Dictionary<string, Func<string, List<Equipment>>>
 			{
-				["Type"] = (string query) => MatchByType(hospital, query),
-				["Use"] = (string query) => MatchByUse(hospital, query)
+				["Type"] = (string query) => MatchByType(query),
+				["Use"] = (string query) => MatchByUse(query)
 			};
 			var critsSelected = EasyInput<string>.SelectMultiple(matchBy.Keys.ToList(), inputCancelString);
 
@@ -126,10 +100,16 @@ namespace HospitalIS.Frontend.CLI.Model
 
 			// TODO @magley: Consider using a HashSet here
 			searchResults = searchResults.GroupBy(e => e.Id).Select(grp => grp.First()).ToList();
-			PrintResults(hospital, searchResults);
+			PrintResults(searchResults, eq => PrintSingleEquipment(eq));
 		}
 
-		private static void PrintResults(Hospital hospital, List<Equipment> results)
+		private static string PrintSingleEquipment(Equipment equipment)
+		{
+			int containingRoomCount = GetRoomCount(equipment);
+			return $"{equipment} in {containingRoomCount} room{(containingRoomCount != 1 ? "s" : "")}";
+		}
+
+		private static void PrintResults(List<Equipment> results, Func<Equipment, string> toStringFunc)
 		{
 			if (results.Count == 0)
 			{
@@ -139,18 +119,18 @@ namespace HospitalIS.Frontend.CLI.Model
 			{
 				foreach (var eq in results)
 				{
-					Console.WriteLine($"{eq} in room '{RoomHasEquipmentRepository.GetRoom(hospital, eq)?.Name}'");
+					Console.WriteLine($"{toStringFunc(eq)}");
 				}
 			}
 		}
 
-		private static List<Equipment> MatchByType(Hospital hospital, string searchQuery)
+		private static List<Equipment> MatchByType(string searchQuery)
 		{
 			var result = new List<Equipment>();
-			foreach (var equipment in hospital.Equipment)
+			foreach (var equipment in IS.Instance.Hospital.Equipment)
 			{
 				var typeName = equipment.Type.ToString().ToLower();
-				if (typeName.Contains(searchQuery.ToLower())) 
+				if (typeName.Contains(searchQuery.ToLower()))
 				{
 					result.Add(equipment);
 				}
@@ -158,10 +138,10 @@ namespace HospitalIS.Frontend.CLI.Model
 			return result;
 		}
 
-		private static List<Equipment> MatchByUse(Hospital hospital, string searchQuery)
+		private static List<Equipment> MatchByUse(string searchQuery)
 		{
 			var result = new List<Equipment>();
-			foreach (var equipment in hospital.Equipment)
+			foreach (var equipment in IS.Instance.Hospital.Equipment)
 			{
 				var useName = equipment.Use.ToString().ToLower();
 				if (useName.Contains(searchQuery.ToLower()))

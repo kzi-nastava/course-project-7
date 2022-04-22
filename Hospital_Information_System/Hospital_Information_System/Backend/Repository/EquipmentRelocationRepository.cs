@@ -7,73 +7,56 @@ using System.Threading;
 
 namespace HospitalIS.Backend.Repository
 {
-	internal class EquipmentRelocationJSON
+	internal class EquipmentRelocationRepository : IRepository<EquipmentRelocation>
 	{
-		public int Id = -1;
-		public bool Deleted = false;
-		public int Equipment = -1;
-		public int RoomNew = -1;
-		public DateTime ScheduledFor = DateTime.MinValue;
-		internal EquipmentRelocationJSON()
+		public void Add(EquipmentRelocation entity)
 		{
-		}
-		internal EquipmentRelocationJSON(EquipmentRelocation equipmentRelocation)
-		{
-			Id = equipmentRelocation.Id;
-			Deleted = equipmentRelocation.Deleted;
-			Equipment = equipmentRelocation.Equipment.Id;
-			RoomNew = equipmentRelocation.RoomNew.Id;
-			ScheduledFor = equipmentRelocation.ScheduledFor;
-		}
-		internal EquipmentRelocation GetRelocation(Hospital hospital)
-		{
-			var result = new EquipmentRelocation(
-				hospital.Equipment[Equipment],
-				hospital.Rooms[RoomNew],
-				ScheduledFor
-			);
-			result.Id = Id;
-			result.Deleted = Deleted;
-			return result;
-		}
-	}
-	internal abstract class EquipmentRelocationRepository
-	{
-		internal static void Save(Hospital hospital, string fullFilename, JsonSerializerSettings settings)
-		{
-			List<EquipmentRelocationJSON> relocations = (
-				from eqReloc in hospital.EquipmentRelocations
-				select new EquipmentRelocationJSON(eqReloc)
-			).ToList();
+			List<EquipmentRelocation> Relocations = IS.Instance.Hospital.EquipmentRelocations;
 
-			File.WriteAllText(fullFilename, JsonConvert.SerializeObject(relocations, Formatting.Indented, settings));
+			entity.Id = Relocations.Count > 0 ? Relocations.Last().Id + 1 : 0;
+			Relocations.Add(entity);
 		}
 
-		internal static List<EquipmentRelocation> Load(Hospital hospital, string fullFilename, JsonSerializerSettings settings)
+		public EquipmentRelocation GetById(int id)
 		{
-			var equipmentRelocationJSON = JsonConvert.DeserializeObject<List<EquipmentRelocationJSON>>(File.ReadAllText(fullFilename), settings);
-			return (
-				from eq in equipmentRelocationJSON
-				select eq.GetRelocation(hospital)
-			).ToList();
+			return IS.Instance.Hospital.EquipmentRelocations.First(e => e.Id == id);
 		}
 
-		internal static void PerformRelocation(Hospital hospital, EquipmentRelocation relocation)
+		public void Load(string fullFilename, JsonSerializerSettings settings)
 		{
-			int dt = (int)(relocation.ScheduledFor - DateTime.Now).TotalMilliseconds;
-			Thread.Sleep(Math.Max(dt, 0));
+			IS.Instance.Hospital.EquipmentRelocations = JsonConvert.DeserializeObject<List<EquipmentRelocation>>(File.ReadAllText(fullFilename), settings);
+		}
+
+		public void Remove(EquipmentRelocation entity)
+		{
+			entity.Deleted = true;
+		}
+
+		public void Remove(Func<EquipmentRelocation, bool> condition)
+		{
+			IS.Instance.Hospital.EquipmentRelocations.ForEach(entity => { if (condition(entity)) Remove(entity); });
+		}
+
+		public void Save(string fullFilename, JsonSerializerSettings settings)
+		{
+			File.WriteAllText(fullFilename, JsonConvert.SerializeObject(IS.Instance.Hospital.EquipmentRelocations, Formatting.Indented, settings));
+		}
+
+		public void Execute(EquipmentRelocation relocation)
+		{
+			Thread.Sleep(Math.Max(relocation.GetTimeToLive(), 0));
 
 			if (relocation.Deleted)
 				return;
 
-			if (!hospital.EquipmentRelocations.Contains(relocation))
+			if (!IS.Instance.Hospital.EquipmentRelocations.Contains(relocation))
 				throw new EntityNotFoundException();
 
 			Console.WriteLine("[REMOVE ME] Performed relocation");
 
-			relocation.RoomNew.Equipment.Add(relocation.Equipment);
-			RoomHasEquipmentRepository.GetRoom(hospital, relocation.Equipment).Equipment.Remove(relocation.Equipment);
-			hospital.Remove(relocation);
+			IS.Instance.RoomRepo.Add(relocation.RoomNew, relocation.Equipment);
+			IS.Instance.RoomRepo.Remove(relocation.RoomOld, relocation.Equipment);
+			IS.Instance.EquipmentRelocationRepo.Remove(relocation);
 		}
 	}
 }

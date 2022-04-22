@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
+using HospitalIS.Backend.Repository;
+using System.Linq;
 
 namespace HospitalIS.Backend
 {
@@ -9,11 +12,13 @@ namespace HospitalIS.Backend
 		{
 			WAREHOUSE, OPERATION, RECOVERY, EXAMINATION, BATHROOM, OTHER
 		}
+
 		public RoomType Type { get; set; }
 		public string Name { get; set; }
 		public int Floor { get; set; }
-		[JsonIgnore]
-		public List<Equipment> Equipment = new List<Equipment>();
+
+		[JsonConverter(typeof(EquipmentRepository.EquipmentDictionaryConverter<int>))]
+		public Dictionary<Equipment, int> Equipment = new Dictionary<Equipment, int>();
 
 		public Room()
 		{
@@ -28,12 +33,14 @@ namespace HospitalIS.Backend
 			Type = type;
 			Name = name;
 		}
+
 		public Room(int floor, RoomType type, int roomOrdinal = 0)
 		{
 			Floor = floor;
 			Type = type;
 			Name = $"{type.ToString().ToLower()} {floor}-{(int)type}-{roomOrdinal}";
 		}
+
 		public override string ToString()
 		{
 			return JsonConvert.SerializeObject(this, Formatting.Indented);
