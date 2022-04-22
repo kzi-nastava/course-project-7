@@ -10,24 +10,32 @@ namespace HospitalIS.Backend
 {
 	internal class WarehouseNotFoundException : Exception
 	{
+		public WarehouseNotFoundException() : base()
+		{
+		}
+
+		public WarehouseNotFoundException(string message) : base(message)
+		{
+		}
+
+		public WarehouseNotFoundException(string message, Exception innerException) : base(message, innerException)
+		{
+		}
 	}
 	internal class Hospital : Entity
 	{
 		private static Hospital _hospital;
-		public static Hospital Instance { get
+		public static Hospital Instance {
+			get
 			{
-				if (_hospital == null)
-				{
-					_hospital = new Hospital();
-				}
-				return _hospital;
-			} 
+				return _hospital ??= new Hospital();
+			}
 		}
 
 		private static readonly JsonSerializerSettings settings;
-		private static readonly string fnameRooms = "rooms.json";
-		private static readonly string fnameEquipment = "equipment.json";
-		private static readonly string fnameEquipmentRelocation = "equipmentRelocation.json";
+		private const string fnameRooms = "rooms.json";
+		private const string fnameEquipment = "equipment.json";
+		private const string fnameEquipmentRelocation = "equipmentRelocation.json";
 
 		public List<Room> Rooms = new List<Room>();
 		public List<Equipment> Equipment = new List<Equipment>();
@@ -60,7 +68,6 @@ namespace HospitalIS.Backend
 			Rooms = JsonConvert.DeserializeObject<List<Room>>(File.ReadAllText(Path.Combine(directory, fnameRooms)), settings);
 			EquipmentRelocations = EquipmentRelocationRepository.Load(this, Path.Combine(directory, fnameEquipmentRelocation), settings);
 
-			var now = DateTime.Now;
 			foreach (var relocation in EquipmentRelocations)
 			{
 				AddEquipmentRelocationTask(relocation);

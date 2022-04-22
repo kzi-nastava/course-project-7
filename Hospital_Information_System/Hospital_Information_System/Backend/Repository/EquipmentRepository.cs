@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace HospitalIS.Backend.Repository
 {
-	internal interface EquipmentRepository
+	internal static class EquipmentRepository
 	{
 		internal class EquipmentDictionary<V> : JsonConverter
 		{
