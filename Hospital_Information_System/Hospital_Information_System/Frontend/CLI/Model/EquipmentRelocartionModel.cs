@@ -153,7 +153,7 @@ namespace HospitalIS.Frontend.CLI.Model
 				hospital.Rooms.ToList(),
 				new List<Func<Room, bool>>()
 				{
-					rm => equipmentRelocation == null || (RoomHasEquipmentRepository.GetRoom(hospital, equipmentRelocation.Equipment) != rm),
+					//rm => equipmentRelocation == null || (RoomHasEquipmentRepository.GetRoom(hospital, equipmentRelocation.Equipment) != rm),
 					rm => equipmentRelocation == null || (equipmentRelocation.RoomNew != rm)
 				},
 				new[]

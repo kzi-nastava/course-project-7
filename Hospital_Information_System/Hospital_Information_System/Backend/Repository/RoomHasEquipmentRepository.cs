@@ -6,7 +6,7 @@ using System;
 
 namespace HospitalIS.Backend.Repository
 {
-	internal class DanglingEquipmentException : Exception
+	/*internal class DanglingEquipmentException : Exception
 	{
 	}
 	class RoomHasEquipmentJSON
@@ -63,4 +63,5 @@ namespace HospitalIS.Backend.Repository
 			throw new DanglingEquipmentException();
 		}
 	}
+	*/
 }

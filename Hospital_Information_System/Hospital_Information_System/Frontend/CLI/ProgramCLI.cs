@@ -12,35 +12,33 @@ namespace HospitalIS.Frontend.CLI
     {
         private static readonly string dataDirectory = Path.Combine("..", "..", "..", "data");
         private static readonly string inputCancelString = "-q";
-        private static Hospital hospital;
+        //private static Hospital hospital;
 
         private static readonly Dictionary<string, Action> commandMapping = new Dictionary<string, Action>
         {
-            { "-room-create", () => RoomModel.CreateRoom(hospital, inputCancelString) },
-            { "-room-update", () => RoomModel.UpdateRoom(hospital, inputCancelString) },
-            { "-room-delete", () => RoomModel.DeleteRoom(hospital, inputCancelString) },
-            { "-equipment-search", () => EquipmentModel.Search(hospital, inputCancelString) },
-            { "-equipment-filter", () => EquipmentModel.Filter(hospital, inputCancelString) },
-            { "-equipment-relocate", () => EquipmentRelocartionModel.Relocate(hospital, inputCancelString) },
+            { "-room-create", () => RoomModel.CreateRoom(Hospital.Instance, inputCancelString) },
+            { "-room-update", () => RoomModel.UpdateRoom(Hospital.Instance, inputCancelString) },
+            { "-room-delete", () => RoomModel.DeleteRoom(Hospital.Instance, inputCancelString) },
+            { "-equipment-search", () => EquipmentModel.Search(Hospital.Instance, inputCancelString) },
+            { "-equipment-filter", () => EquipmentModel.Filter(Hospital.Instance, inputCancelString) },
+            { "-equipment-relocate", () => EquipmentRelocartionModel.Relocate(Hospital.Instance, inputCancelString) },
         };
 
         static void Main()
         {
-            hospital = new Backend.Hospital();
+            InitHospital();
+            //Hospital.Instance.Save(dataDirectory);
 
-            //InitHospital();
-            //hospital.Save(dataDirectory);
+            Hospital.Instance.Load(dataDirectory);
 
-            hospital.Load(dataDirectory);
-
-            commandMapping["-room-delete"]();
+            //commandMapping["-room-delete"]();
             Console.ReadLine();
 
-            hospital.Save(dataDirectory);
+            //hospital.Save(dataDirectory);
         }
         private static void InitHospital()
         {
-            hospital.Add(new Room(0, Room.RoomType.WAREHOUSE, "Warehouse"));
+            Hospital.Instance.Add(new Room(0, Room.RoomType.WAREHOUSE, "Warehouse"));
 
             const int floorNo = 4;
             var roomCountPerFloor = new List<KeyValuePair<Room.RoomType, int>>
@@ -57,7 +55,7 @@ namespace HospitalIS.Frontend.CLI
                 {
                     for (int i = 0; i < rc.Value; i++)
                     {
-                        hospital.Add(new Room(floor, rc.Key, i));
+                        Hospital.Instance.Add(new Room(floor, rc.Key, i));
                     }
                 }
             }
@@ -71,8 +69,8 @@ namespace HospitalIS.Frontend.CLI
 
                 Equipment eq = new Equipment(type, use);
 
-                hospital.Add(eq);
-                hospital.Rooms[i % hospital.Rooms.Count].Equipment.Add(eq);
+                Hospital.Instance.Add(eq);
+                RoomRepository.AddEquipment(Hospital.Instance.Rooms[i % Hospital.Instance.Rooms.Count], eq);
             }
         }
     }

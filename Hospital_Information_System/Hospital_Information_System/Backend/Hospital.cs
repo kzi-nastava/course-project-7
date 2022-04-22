@@ -13,10 +13,20 @@ namespace HospitalIS.Backend
 	}
 	internal class Hospital : Entity
 	{
+		private static Hospital _hospital;
+		public static Hospital Instance { get
+			{
+				if (_hospital == null)
+				{
+					_hospital = new Hospital();
+				}
+				return _hospital;
+			} 
+		}
+
 		private static readonly JsonSerializerSettings settings;
 		private static readonly string fnameRooms = "rooms.json";
 		private static readonly string fnameEquipment = "equipment.json";
-		private static readonly string fnameRoomHasEquipment = "roomHasEquipment.json";
 		private static readonly string fnameEquipmentRelocation = "equipmentRelocation.json";
 
 		public List<Room> Rooms = new List<Room>();
@@ -40,17 +50,15 @@ namespace HospitalIS.Backend
 		}
 		public void Save(string directory)
 		{
-			File.WriteAllText(Path.Combine(directory, fnameRooms), JsonConvert.SerializeObject(Rooms, Formatting.Indented, settings));
 			File.WriteAllText(Path.Combine(directory, fnameEquipment), JsonConvert.SerializeObject(Equipment, Formatting.Indented, settings));
+			File.WriteAllText(Path.Combine(directory, fnameRooms), JsonConvert.SerializeObject(Rooms, Formatting.Indented, settings));
 			EquipmentRelocationRepository.Save(this, Path.Combine(directory, fnameEquipmentRelocation), settings);
-			RoomHasEquipmentRepository.Save(this, Path.Combine(directory, fnameRoomHasEquipment), settings);
 		}
 		public void Load(string directory)
 		{
-			Rooms = JsonConvert.DeserializeObject<List<Room>>(File.ReadAllText(Path.Combine(directory, fnameRooms)), settings);
 			Equipment = JsonConvert.DeserializeObject<List<Equipment>>(File.ReadAllText(Path.Combine(directory, fnameEquipment)), settings);
+			Rooms = JsonConvert.DeserializeObject<List<Room>>(File.ReadAllText(Path.Combine(directory, fnameRooms)), settings);
 			EquipmentRelocations = EquipmentRelocationRepository.Load(this, Path.Combine(directory, fnameEquipmentRelocation), settings);
-			RoomHasEquipmentRepository.Load(this, Path.Combine(directory, fnameRoomHasEquipment), settings);
 
 			var now = DateTime.Now;
 			foreach (var relocation in EquipmentRelocations)
@@ -91,7 +99,10 @@ namespace HospitalIS.Backend
 			room.Deleted = true;
 
 			// Move all equipment from this room to the warehouse.
-			GetWarehouse().Equipment.AddRange(room.Equipment);
+			foreach (var kv in room.Equipment)
+			{
+				RoomRepository.AddEquipment(GetWarehouse(), kv.Key, kv.Value);
+			}
 			room.Equipment.Clear();
 
 			// Remove all equipment relocations that move some equipment to this room.

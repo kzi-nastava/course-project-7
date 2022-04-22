@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
+using HospitalIS.Backend.Repository;
+using System.Linq;
 
 namespace HospitalIS.Backend
 {
@@ -12,8 +15,9 @@ namespace HospitalIS.Backend
 		public RoomType Type { get; set; }
 		public string Name { get; set; }
 		public int Floor { get; set; }
-		[JsonIgnore]
-		public List<Equipment> Equipment = new List<Equipment>();
+
+		[JsonConverter(typeof(EquipmentRepository.EquipmentDictionary<int>))]
+		public Dictionary<Equipment, int> Equipment = new Dictionary<Equipment, int>();
 
 		public Room()
 		{

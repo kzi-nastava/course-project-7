@@ -71,8 +71,9 @@ namespace HospitalIS.Backend.Repository
 
 			Console.WriteLine("[REMOVE ME] Performed relocation");
 
-			relocation.RoomNew.Equipment.Add(relocation.Equipment);
-			RoomHasEquipmentRepository.GetRoom(hospital, relocation.Equipment).Equipment.Remove(relocation.Equipment);
+			//relocation.RoomNew.Equipment.Add(relocation.Equipment);
+
+			//RoomHasEquipmentRepository.GetRoom(hospital, relocation.Equipment).Equipment.Remove(relocation.Equipment);
 			hospital.Remove(relocation);
 		}
 	}

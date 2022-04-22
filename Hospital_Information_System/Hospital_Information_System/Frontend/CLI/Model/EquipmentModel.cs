@@ -139,7 +139,7 @@ namespace HospitalIS.Frontend.CLI.Model
 			{
 				foreach (var eq in results)
 				{
-					Console.WriteLine($"{eq} in room '{RoomHasEquipmentRepository.GetRoom(hospital, eq)?.Name}'");
+					//Console.WriteLine($"{eq} in room '{RoomHasEquipmentRepository.GetRoom(hospital, eq)?.Name}'");
 				}
 			}
 		}

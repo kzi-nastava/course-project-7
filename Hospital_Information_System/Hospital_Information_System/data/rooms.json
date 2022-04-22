@@ -1,6 +1,12 @@
 [
   {
     "$id": "1",
+    "Equipment": {
+      "$id": "2",
+      "0": 1,
+      "37": 1,
+      "74": 1
+    },
     "Type": 0,
     "Name": "Warehouse",
     "Floor": 0,
@@ -8,7 +14,13 @@
     "Deleted": false
   },
   {
-    "$id": "2",
+    "$id": "3",
+    "Equipment": {
+      "$id": "4",
+      "1": 1,
+      "38": 1,
+      "75": 1
+    },
     "Type": 4,
     "Name": "bathroom 0-4-0",
     "Floor": 0,
@@ -16,7 +28,13 @@
     "Deleted": false
   },
   {
-    "$id": "3",
+    "$id": "5",
+    "Equipment": {
+      "$id": "6",
+      "2": 1,
+      "39": 1,
+      "76": 1
+    },
     "Type": 4,
     "Name": "bathroom 0-4-1",
     "Floor": 0,
@@ -24,7 +42,13 @@
     "Deleted": false
   },
   {
-    "$id": "4",
+    "$id": "7",
+    "Equipment": {
+      "$id": "8",
+      "3": 1,
+      "40": 1,
+      "77": 1
+    },
     "Type": 4,
     "Name": "bathroom 0-4-2",
     "Floor": 0,
@@ -32,7 +56,13 @@
     "Deleted": false
   },
   {
-    "$id": "5",
+    "$id": "9",
+    "Equipment": {
+      "$id": "10",
+      "4": 1,
+      "41": 1,
+      "78": 1
+    },
     "Type": 4,
     "Name": "bathroom 0-4-3",
     "Floor": 0,
@@ -40,7 +70,13 @@
     "Deleted": false
   },
   {
-    "$id": "6",
+    "$id": "11",
+    "Equipment": {
+      "$id": "12",
+      "5": 1,
+      "42": 1,
+      "79": 1
+    },
     "Type": 3,
     "Name": "examination 0-3-0",
     "Floor": 0,
@@ -48,7 +84,13 @@
     "Deleted": false
   },
   {
-    "$id": "7",
+    "$id": "13",
+    "Equipment": {
+      "$id": "14",
+      "6": 1,
+      "43": 1,
+      "80": 1
+    },
     "Type": 3,
     "Name": "examination 0-3-1",
     "Floor": 0,
@@ -56,7 +98,13 @@
     "Deleted": false
   },
   {
-    "$id": "8",
+    "$id": "15",
+    "Equipment": {
+      "$id": "16",
+      "7": 1,
+      "44": 1,
+      "81": 1
+    },
     "Type": 1,
     "Name": "operation 0-1-0",
     "Floor": 0,
@@ -64,7 +112,13 @@
     "Deleted": false
   },
   {
-    "$id": "9",
+    "$id": "17",
+    "Equipment": {
+      "$id": "18",
+      "8": 1,
+      "45": 1,
+      "82": 1
+    },
     "Type": 2,
     "Name": "recovery 0-2-0",
     "Floor": 0,
@@ -72,7 +126,13 @@
     "Deleted": false
   },
   {
-    "$id": "10",
+    "$id": "19",
+    "Equipment": {
+      "$id": "20",
+      "9": 1,
+      "46": 1,
+      "83": 1
+    },
     "Type": 2,
     "Name": "recovery 0-2-1",
     "Floor": 0,
@@ -80,7 +140,13 @@
     "Deleted": false
   },
   {
-    "$id": "11",
+    "$id": "21",
+    "Equipment": {
+      "$id": "22",
+      "10": 1,
+      "47": 1,
+      "84": 1
+    },
     "Type": 4,
     "Name": "bathroom 1-4-0",
     "Floor": 1,
@@ -88,7 +154,13 @@
     "Deleted": false
   },
   {
-    "$id": "12",
+    "$id": "23",
+    "Equipment": {
+      "$id": "24",
+      "11": 1,
+      "48": 1,
+      "85": 1
+    },
     "Type": 4,
     "Name": "bathroom 1-4-1",
     "Floor": 1,
@@ -96,7 +168,13 @@
     "Deleted": false
   },
   {
-    "$id": "13",
+    "$id": "25",
+    "Equipment": {
+      "$id": "26",
+      "12": 1,
+      "49": 1,
+      "86": 1
+    },
     "Type": 4,
     "Name": "bathroom 1-4-2",
     "Floor": 1,
@@ -104,7 +182,13 @@
     "Deleted": false
   },
   {
-    "$id": "14",
+    "$id": "27",
+    "Equipment": {
+      "$id": "28",
+      "13": 1,
+      "50": 1,
+      "87": 1
+    },
     "Type": 4,
     "Name": "bathroom 1-4-3",
     "Floor": 1,
@@ -112,7 +196,13 @@
     "Deleted": false
   },
   {
-    "$id": "15",
+    "$id": "29",
+    "Equipment": {
+      "$id": "30",
+      "14": 1,
+      "51": 1,
+      "88": 1
+    },
     "Type": 3,
     "Name": "examination 1-3-0",
     "Floor": 1,
@@ -120,7 +210,13 @@
     "Deleted": false
   },
   {
-    "$id": "16",
+    "$id": "31",
+    "Equipment": {
+      "$id": "32",
+      "15": 1,
+      "52": 1,
+      "89": 1
+    },
     "Type": 3,
     "Name": "examination 1-3-1",
     "Floor": 1,
@@ -128,7 +224,13 @@
     "Deleted": false
   },
   {
-    "$id": "17",
+    "$id": "33",
+    "Equipment": {
+      "$id": "34",
+      "16": 1,
+      "53": 1,
+      "90": 1
+    },
     "Type": 1,
     "Name": "operation 1-1-0",
     "Floor": 1,
@@ -136,7 +238,13 @@
     "Deleted": false
   },
   {
-    "$id": "18",
+    "$id": "35",
+    "Equipment": {
+      "$id": "36",
+      "17": 1,
+      "54": 1,
+      "91": 1
+    },
     "Type": 2,
     "Name": "recovery 1-2-0",
     "Floor": 1,
@@ -144,7 +252,13 @@
     "Deleted": false
   },
   {
-    "$id": "19",
+    "$id": "37",
+    "Equipment": {
+      "$id": "38",
+      "18": 1,
+      "55": 1,
+      "92": 1
+    },
     "Type": 2,
     "Name": "recovery 1-2-1",
     "Floor": 1,
@@ -152,7 +266,13 @@
     "Deleted": false
   },
   {
-    "$id": "20",
+    "$id": "39",
+    "Equipment": {
+      "$id": "40",
+      "19": 1,
+      "56": 1,
+      "93": 1
+    },
     "Type": 4,
     "Name": "bathroom 2-4-0",
     "Floor": 2,
@@ -160,7 +280,13 @@
     "Deleted": false
   },
   {
-    "$id": "21",
+    "$id": "41",
+    "Equipment": {
+      "$id": "42",
+      "20": 1,
+      "57": 1,
+      "94": 1
+    },
     "Type": 4,
     "Name": "bathroom 2-4-1",
     "Floor": 2,
@@ -168,7 +294,13 @@
     "Deleted": false
   },
   {
-    "$id": "22",
+    "$id": "43",
+    "Equipment": {
+      "$id": "44",
+      "21": 1,
+      "58": 1,
+      "95": 1
+    },
     "Type": 4,
     "Name": "bathroom 2-4-2",
     "Floor": 2,
@@ -176,7 +308,13 @@
     "Deleted": false
   },
   {
-    "$id": "23",
+    "$id": "45",
+    "Equipment": {
+      "$id": "46",
+      "22": 1,
+      "59": 1,
+      "96": 1
+    },
     "Type": 4,
     "Name": "bathroom 2-4-3",
     "Floor": 2,
@@ -184,7 +322,13 @@
     "Deleted": false
   },
   {
-    "$id": "24",
+    "$id": "47",
+    "Equipment": {
+      "$id": "48",
+      "23": 1,
+      "60": 1,
+      "97": 1
+    },
     "Type": 3,
     "Name": "examination 2-3-0",
     "Floor": 2,
@@ -192,7 +336,13 @@
     "Deleted": false
   },
   {
-    "$id": "25",
+    "$id": "49",
+    "Equipment": {
+      "$id": "50",
+      "24": 1,
+      "61": 1,
+      "98": 1
+    },
     "Type": 3,
     "Name": "examination 2-3-1",
     "Floor": 2,
@@ -200,7 +350,13 @@
     "Deleted": false
   },
   {
-    "$id": "26",
+    "$id": "51",
+    "Equipment": {
+      "$id": "52",
+      "25": 1,
+      "62": 1,
+      "99": 1
+    },
     "Type": 1,
     "Name": "operation 2-1-0",
     "Floor": 2,
@@ -208,7 +364,12 @@
     "Deleted": false
   },
   {
-    "$id": "27",
+    "$id": "53",
+    "Equipment": {
+      "$id": "54",
+      "26": 1,
+      "63": 1
+    },
     "Type": 2,
     "Name": "recovery 2-2-0",
     "Floor": 2,
@@ -216,7 +377,12 @@
     "Deleted": false
   },
   {
-    "$id": "28",
+    "$id": "55",
+    "Equipment": {
+      "$id": "56",
+      "27": 1,
+      "64": 1
+    },
     "Type": 2,
     "Name": "recovery 2-2-1",
     "Floor": 2,
@@ -224,7 +390,12 @@
     "Deleted": false
   },
   {
-    "$id": "29",
+    "$id": "57",
+    "Equipment": {
+      "$id": "58",
+      "28": 1,
+      "65": 1
+    },
     "Type": 4,
     "Name": "bathroom 3-4-0",
     "Floor": 3,
@@ -232,7 +403,12 @@
     "Deleted": false
   },
   {
-    "$id": "30",
+    "$id": "59",
+    "Equipment": {
+      "$id": "60",
+      "29": 1,
+      "66": 1
+    },
     "Type": 4,
     "Name": "bathroom 3-4-1",
     "Floor": 3,
@@ -240,7 +416,12 @@
     "Deleted": false
   },
   {
-    "$id": "31",
+    "$id": "61",
+    "Equipment": {
+      "$id": "62",
+      "30": 1,
+      "67": 1
+    },
     "Type": 4,
     "Name": "bathroom 3-4-2",
     "Floor": 3,
@@ -248,7 +429,12 @@
     "Deleted": false
   },
   {
-    "$id": "32",
+    "$id": "63",
+    "Equipment": {
+      "$id": "64",
+      "31": 1,
+      "68": 1
+    },
     "Type": 4,
     "Name": "bathroom 3-4-3",
     "Floor": 3,
@@ -256,7 +442,12 @@
     "Deleted": false
   },
   {
-    "$id": "33",
+    "$id": "65",
+    "Equipment": {
+      "$id": "66",
+      "32": 1,
+      "69": 1
+    },
     "Type": 3,
     "Name": "examination 3-3-0",
     "Floor": 3,
@@ -264,7 +455,12 @@
     "Deleted": false
   },
   {
-    "$id": "34",
+    "$id": "67",
+    "Equipment": {
+      "$id": "68",
+      "33": 1,
+      "70": 1
+    },
     "Type": 3,
     "Name": "examination 3-3-1",
     "Floor": 3,
@@ -272,7 +468,12 @@
     "Deleted": false
   },
   {
-    "$id": "35",
+    "$id": "69",
+    "Equipment": {
+      "$id": "70",
+      "34": 1,
+      "71": 1
+    },
     "Type": 1,
     "Name": "operation 3-1-0",
     "Floor": 3,
@@ -280,7 +481,12 @@
     "Deleted": false
   },
   {
-    "$id": "36",
+    "$id": "71",
+    "Equipment": {
+      "$id": "72",
+      "35": 1,
+      "72": 1
+    },
     "Type": 2,
     "Name": "recovery 3-2-0",
     "Floor": 3,
@@ -288,7 +494,12 @@
     "Deleted": false
   },
   {
-    "$id": "37",
+    "$id": "73",
+    "Equipment": {
+      "$id": "74",
+      "36": 1,
+      "73": 1
+    },
     "Type": 2,
     "Name": "recovery 3-2-1",
     "Floor": 3,
