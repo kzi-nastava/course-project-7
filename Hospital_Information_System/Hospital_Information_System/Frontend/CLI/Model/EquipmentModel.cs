@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using HospitalIS.Backend;
+using HospitalIS.Backend.Repository;
 using System.Linq;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
-	internal class DanglingEquipmentException : Exception
-	{
-	}
 	internal abstract class EquipmentModel
 	{
 		private static readonly string hintSearchSelectCriteria = "Select search criteria";
@@ -141,11 +139,10 @@ namespace HospitalIS.Frontend.CLI.Model
 			{
 				foreach (var eq in results)
 				{
-					Console.WriteLine($"{eq} in room '{GetRoom(eq, hospital)?.Name}'");
+					Console.WriteLine($"{eq} in room '{RoomHasEquipmentRepository.GetRoom(hospital, eq)?.Name}'");
 				}
 			}
 		}
-
 
 		private static List<Equipment> MatchByType(Hospital hospital, string searchQuery)
 		{
@@ -173,19 +170,6 @@ namespace HospitalIS.Frontend.CLI.Model
 				}
 			}
 			return result;
-		}
-
-		private static Room GetRoom(Equipment equipment, Hospital hospital)
-		{
-			if (equipment.Id == -1)
-				return null;
-
-			foreach (Room room in hospital.Rooms)
-			{
-				if (room.Equipment.Find(eq => eq.Id == equipment.Id) != null)
-					return room;
-			}
-			throw new DanglingEquipmentException();
 		}
 	}
 }

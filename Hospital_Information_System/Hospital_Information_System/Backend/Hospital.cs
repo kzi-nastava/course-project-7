@@ -3,10 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using HospitalIS.Backend.Repository;
+using System.Threading;
 
 namespace HospitalIS.Backend
 {
-	internal class WarehouseNotFoundException: Exception
+	internal class WarehouseNotFoundException : Exception
 	{
 	}
 	internal class Hospital : Entity
@@ -15,14 +17,12 @@ namespace HospitalIS.Backend
 		private static readonly string fnameRooms = "rooms.json";
 		private static readonly string fnameEquipment = "equipment.json";
 		private static readonly string fnameRoomHasEquipment = "roomHasEquipment.json";
+		private static readonly string fnameEquipmentRelocation = "equipmentRelocation.json";
 
-		private List<Room> _rooms = new List<Room>();
-		private List<Equipment> _equipment = new List<Equipment>();
-		public IReadOnlyList<Room> Rooms => (from o in _rooms where !o.Deleted select o).ToList();
-		public IReadOnlyList<Equipment> Equipment => (from o in _equipment where !o.Deleted select o).ToList();
-
-		public IReadOnlyList<Room> RoomsAll() { return _rooms; }
-		public IReadOnlyList<Equipment> EquipmentAll() { return _equipment; }
+		public List<Room> Rooms = new List<Room>();
+		public List<Equipment> Equipment = new List<Equipment>();
+		public List<EquipmentRelocation> EquipmentRelocations = new List<EquipmentRelocation>();
+		public List<Thread> EquipmentRelocationTasks = new List<Thread>();
 
 		public Room GetWarehouse()
 		{
@@ -31,7 +31,7 @@ namespace HospitalIS.Backend
 				if (r.Type == Room.RoomType.WAREHOUSE)
 					return r;
 			}
-			throw new WarehouseNotFoundException();     
+			throw new WarehouseNotFoundException();
 		}
 
 		static Hospital()
@@ -40,41 +40,74 @@ namespace HospitalIS.Backend
 		}
 		public void Save(string directory)
 		{
-			File.WriteAllText(Path.Combine(directory, fnameRooms), JsonConvert.SerializeObject(_rooms, Formatting.Indented, settings));
-			File.WriteAllText(Path.Combine(directory, fnameEquipment), JsonConvert.SerializeObject(_equipment, Formatting.Indented, settings));
-
-			// RoomHasEquipment
-
-			Dictionary<int, List<int>> roomHasEquipment = new Dictionary<int, List<int>>();
-			foreach (var r in Rooms)
-			{
-				roomHasEquipment[r.Id] = (from eq in r.Equipment select eq.Id).ToList();
-			}
-			File.WriteAllText(Path.Combine(directory, fnameRoomHasEquipment), JsonConvert.SerializeObject(roomHasEquipment, Formatting.Indented, settings));
+			File.WriteAllText(Path.Combine(directory, fnameRooms), JsonConvert.SerializeObject(Rooms, Formatting.Indented, settings));
+			File.WriteAllText(Path.Combine(directory, fnameEquipment), JsonConvert.SerializeObject(Equipment, Formatting.Indented, settings));
+			EquipmentRelocationRepository.Save(this, Path.Combine(directory, fnameEquipmentRelocation), settings);
+			RoomHasEquipmentRepository.Save(this, Path.Combine(directory, fnameRoomHasEquipment), settings);
 		}
 		public void Load(string directory)
 		{
-			_rooms = JsonConvert.DeserializeObject<List<Room>>(File.ReadAllText(Path.Combine(directory, fnameRooms)), settings);
-			_equipment = JsonConvert.DeserializeObject<List<Equipment>>(File.ReadAllText(Path.Combine(directory, fnameEquipment)), settings);
+			Rooms = JsonConvert.DeserializeObject<List<Room>>(File.ReadAllText(Path.Combine(directory, fnameRooms)), settings);
+			Equipment = JsonConvert.DeserializeObject<List<Equipment>>(File.ReadAllText(Path.Combine(directory, fnameEquipment)), settings);
+			EquipmentRelocations = EquipmentRelocationRepository.Load(this, Path.Combine(directory, fnameEquipmentRelocation), settings);
+			RoomHasEquipmentRepository.Load(this, Path.Combine(directory, fnameRoomHasEquipment), settings);
 
-			// RoomHasEquipment
-
-			var roomHasEquipment = JsonConvert.DeserializeObject<Dictionary<int, List<int>>>(File.ReadAllText(Path.Combine(directory, fnameRoomHasEquipment)), settings);
-			foreach (var kv in roomHasEquipment)
+			var now = DateTime.Now;
+			foreach (var relocation in EquipmentRelocations)
 			{
-				_rooms[kv.Key].Equipment = (from id in kv.Value select _equipment[id]).ToList();
+				AddEquipmentRelocationTask(relocation);
 			}
 		}
 		public void Add(Room room)
 		{
-			room.Id = _rooms.Count > 0 ? _rooms.Last().Id + 1 : 0;
-			_rooms.Add(room);
+			room.Id = Rooms.Count > 0 ? Rooms.Last().Id + 1 : 0;
+			Rooms.Add(room);
 		}
 
 		public void Add(Equipment equipment)
 		{
-			equipment.Id = _equipment.Count > 0 ? _equipment.Last().Id + 1 : 0;
-			_equipment.Add(equipment);
+			equipment.Id = Equipment.Count > 0 ? Equipment.Last().Id + 1 : 0;
+			Equipment.Add(equipment);
+		}
+
+		public void Add(EquipmentRelocation equipmentRelocation)
+		{
+			equipmentRelocation.Id = EquipmentRelocations.Count > 0 ? EquipmentRelocations.Last().Id + 1 : 0;
+			EquipmentRelocations.Add(equipmentRelocation);
+
+			AddEquipmentRelocationTask(equipmentRelocation);
+		}
+
+		public void Remove(Equipment equipment)
+		{
+			equipment.Deleted = true;
+
+			// Remove all equipment relocations that move this equipment.
+			EquipmentRelocations.ForEach(er => { if (er.Equipment == equipment) { Remove(er); } });
+		}
+
+		public void Remove(Room room)
+		{
+			room.Deleted = true;
+
+			// Move all equipment from this room to the warehouse.
+			GetWarehouse().Equipment.AddRange(room.Equipment);
+			room.Equipment.Clear();
+
+			// Remove all equipment relocations that move some equipment to this room.
+			EquipmentRelocations.ForEach(er => { if (er.RoomNew == room) { Remove(er); } });
+		}
+
+		public void Remove(EquipmentRelocation equipmentRelocation)
+		{
+			equipmentRelocation.Deleted = true;
+		}
+
+		protected void AddEquipmentRelocationTask(EquipmentRelocation equipmentRelocation)
+		{
+			Thread t = new Thread(new ThreadStart(() => EquipmentRelocationRepository.PerformRelocation(this, equipmentRelocation)));
+			EquipmentRelocationTasks.Add(t);
+			t.Start();
 		}
 	}
 }

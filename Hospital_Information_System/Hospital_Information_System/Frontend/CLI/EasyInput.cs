@@ -25,6 +25,11 @@ namespace HospitalIS.Frontend.CLI
 		/// </summary>
 		public static T Get(IList<Func<T, bool>> rules, IList<string> errorMsg, string cancel)
 		{
+			return Get(rules, errorMsg, cancel, s => (T)Convert.ChangeType(s, typeof(T)));
+		}
+
+		public static T Get(IList<Func<T, bool>> rules, IList<string> errorMsg, string cancel, Func<string, T> conversionFunction)
+		{
 			T result = default;
 			while (true)
 			{
@@ -36,7 +41,7 @@ namespace HospitalIS.Frontend.CLI
 
 				try
 				{
-					result = (T)Convert.ChangeType(input, typeof(T));
+					result = conversionFunction(input);
 				}
 				catch
 				{
@@ -44,11 +49,11 @@ namespace HospitalIS.Frontend.CLI
 					continue;
 				}
 
-				int errorIndex = GetBrokenRuleIndex(rules, result);
+				int brokenRuleIndex = GetBrokenRuleIndex(rules, result);
 
-				if (errorIndex != -1)
+				if (brokenRuleIndex != -1)
 				{
-					Console.WriteLine(errorMsg[errorIndex]);
+					Console.WriteLine(errorMsg[brokenRuleIndex]);
 					continue;
 				}
 				else
@@ -73,7 +78,7 @@ namespace HospitalIS.Frontend.CLI
 		/// <summary>
 		/// Select one element from the given list.
 		/// </summary>
-		public static T Select(IList<T> elements, Func<T, string> toStrFunc, string cancel)
+		public static T Select(IList<T> elements, IList<Func<T, bool>> rules, IList<string> errorMsg, Func<T, string> toStrFunc, string cancel)
 		{
 			for (int i = 0; i < elements.Count; i++)
 			{
@@ -84,19 +89,33 @@ namespace HospitalIS.Frontend.CLI
 
 			try
 			{
-				selection = EasyInput<int>.Get(
-					new List<Func<int, bool>>
-					{
+				while (true)
+				{
+					selection = EasyInput<int>.Get(
+						new List<Func<int, bool>>
+						{
 						n => n >= 0,
 						n => n < elements.Count,
-					},
-					new[]
-					{
+						},
+						new[]
+						{
 						"Selection must be greater than 0.",
 						"Selection must be less than " + elements.Count + ".",
-					},
-					cancel
-				);
+						},
+						cancel
+					);
+
+					int brokenRuleIndex = GetBrokenRuleIndex(rules, elements[selection]);
+					if (brokenRuleIndex != -1)
+					{
+						Console.WriteLine(errorMsg[brokenRuleIndex]);
+						continue;
+					}
+					else
+					{
+						break;
+					}
+				}
 			}
 			catch (Exception ex)
 			{
@@ -104,6 +123,11 @@ namespace HospitalIS.Frontend.CLI
 			}
 
 			return elements[selection];
+		}
+
+		public static T Select(IList<T> elements, Func<T, string> toStrFunc, string cancel)
+		{
+			return Select(elements, new List<Func<T, bool>>(), new string[] {}, toStrFunc, cancel);
 		}
 
 		public static T Select(IList<T> elements, string cancel)
