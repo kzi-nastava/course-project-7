@@ -42,7 +42,12 @@ namespace HospitalIS.Backend.Repository
 		{
 			string text = File.ReadAllText(fullFilename);
 			var data = JsonConvert.DeserializeObject<List<RoomHasEquipmentJSON>>(text, settings);
-			data.ForEach(datum => hospital.Rooms[datum.RoomID].Equipment.AddRange(datum.GetEquipmentOf(hospital)));
+
+			foreach (var roomEquipment in data)
+			{
+				var equipment = roomEquipment.GetEquipmentOf(hospital);
+				hospital.Rooms[roomEquipment.RoomID].Equipment.AddRange(equipment);
+			}
 		}
 
 		internal static Room GetRoom(Hospital hospital, Equipment equipment)

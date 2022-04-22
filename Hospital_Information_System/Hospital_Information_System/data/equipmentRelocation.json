@@ -1,18 +1,2 @@
 [
-  {
-    "$id": "1",
-    "Id": 0,
-    "Deleted": true,
-    "Equipment": 0,
-    "RoomNew": 1,
-    "ScheduledFor": "2022-04-21T21:51:30"
-  },
-  {
-    "$id": "2",
-    "Id": 1,
-    "Deleted": true,
-    "Equipment": 1,
-    "RoomNew": 2,
-    "ScheduledFor": "2022-04-21T21:20:30"
-  }
 ]

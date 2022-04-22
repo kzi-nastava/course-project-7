@@ -42,7 +42,7 @@ namespace HospitalIS.Backend.Repository
 		internal static void Save(Hospital hospital, string fullFilename, JsonSerializerSettings settings)
 		{
 			List<EquipmentRelocationJSON> relocations = (
-				from eqReloc in hospital.EquipmentRelocationsAll()
+				from eqReloc in hospital.EquipmentRelocations
 				select new EquipmentRelocationJSON(eqReloc)
 			).ToList();
 

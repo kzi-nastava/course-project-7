@@ -33,7 +33,7 @@ namespace HospitalIS.Frontend.CLI
 
             hospital.Load(dataDirectory);
 
-            //commandMapping["-equipment-relocate"]();
+            commandMapping["-room-delete"]();
             Console.ReadLine();
 
             hospital.Save(dataDirectory);
