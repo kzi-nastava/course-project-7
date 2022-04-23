@@ -57,7 +57,8 @@ namespace HospitalIS.Frontend.CLI.Model
             try
             {
                 Console.WriteLine(hintSelectAppointment);
-                Appointment appointment = EasyInput<Appointment>.Select(GetNonDeletedAppointments(), inputCancelString);
+                Appointment appointment = EasyInput<Appointment>.Select(GetModifiableAppointments(), inputCancelString);
+
                 Console.WriteLine(appointment.ToString());
                 Console.WriteLine(hintSelectProperties);
 
@@ -85,7 +86,7 @@ namespace HospitalIS.Frontend.CLI.Model
 
             try
             {
-                var appointmentsToDelete = EasyInput<Appointment>.SelectMultiple(GetNonDeletedAppointments(), inputCancelString);
+                var appointmentsToDelete = EasyInput<Appointment>.SelectMultiple(GetModifiableAppointments(), inputCancelString);
                 foreach (Appointment appointment in appointmentsToDelete)
                 {
                     IS.Instance.AppointmentRepo.Remove(appointment);
@@ -167,9 +168,15 @@ namespace HospitalIS.Frontend.CLI.Model
                 },
                 inputCancelString);
         }
-        private static List<Appointment> GetNonDeletedAppointments()
+        private static List<Appointment> GetModifiableAppointments()
         {
-            return IS.Instance.Hospital.Appointments.Where(a => !a.Deleted).ToList();
+            return IS.Instance.Hospital.Appointments.Where(a => !a.Deleted && CanModifyAppointment(a.ScheduledFor)).ToList();
+        }
+
+        internal static bool CanModifyAppointment(DateTime scheduledFor)
+        {
+            TimeSpan difference = scheduledFor - DateTime.Now;
+            return difference.TotalDays >= 1;
         }
 
         private static List<Doctor> GetNonDeletedDoctors()
@@ -226,7 +233,7 @@ namespace HospitalIS.Frontend.CLI.Model
 
         private static bool IsAvailable(Patient patient, Appointment referenceAppointment, DateTime newSchedule)
         {
-            foreach (Appointment appointment in GetNonDeletedAppointments())
+            foreach (Appointment appointment in GetModifiableAppointments())
             {
                 if ((patient == appointment.Patient) && (appointment != referenceAppointment))
                 {
@@ -248,7 +255,7 @@ namespace HospitalIS.Frontend.CLI.Model
 
         private static bool IsAvailable(Doctor doctor, Appointment referenceAppointment, DateTime newSchedule)
         {
-            foreach (Appointment appointment in GetNonDeletedAppointments())
+            foreach (Appointment appointment in GetModifiableAppointments())
             {
                 if ((doctor == appointment.Doctor) && (appointment != referenceAppointment))
                 {

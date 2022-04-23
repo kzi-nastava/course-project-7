@@ -30,5 +30,13 @@
     "ScheduledFor": "2022-04-30T12:45:00",
     "Id": 3,
     "Deleted": false
+  },
+  {
+    "$id": "5",
+    "Doctor": 2,
+    "Patient": 1,
+    "ScheduledFor": "2022-04-24T05:00:00",
+    "Id": 4,
+    "Deleted": false
   }
 ]
