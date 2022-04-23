@@ -19,6 +19,9 @@ namespace HospitalIS.Frontend.CLI
             { "-equipment-search", () => EquipmentModel.Search(inputCancelString) },
             { "-equipment-filter", () => EquipmentModel.Filter(inputCancelString) },
             { "-equipment-relocate", () => EquipmentRelocationModel.Relocate(inputCancelString) },
+            { "-appointment-create", () => AppointmentModel.CreateAppointment(inputCancelString) },
+            { "-appointment-update", () => AppointmentModel.UpdateAppointment(inputCancelString) },
+            { "-appointment-delete", () => AppointmentModel.DeleteAppointment(inputCancelString) },
         };
 
         static void Main()
@@ -27,7 +30,9 @@ namespace HospitalIS.Frontend.CLI
             //IS.Instance.Save(dataDirectory);
 
             IS.Instance.Load(dataDirectory);
-            commandMapping["-equipment-relocate"]();
+            commandMapping["-appointment-create"]();
+            //commandMapping["-appointment-update"]();
+            //commandMapping["-appointment-delete"]();
             IS.Instance.Save(dataDirectory);
         }
 

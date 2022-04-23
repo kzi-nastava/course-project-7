@@ -15,6 +15,14 @@ namespace HospitalIS.Frontend.CLI
 		}
 	}
 
+	public class EmptyListInSelectException : Exception
+	{
+		public EmptyListInSelectException() : base("Could not select from empty list.")
+		{
+
+		}
+	}
+
 	/// <summary>
 	/// EasyInput is a helper class for querying user input.
 	/// </summary>
@@ -80,6 +88,11 @@ namespace HospitalIS.Frontend.CLI
 		/// </summary>
 		public static T Select(IList<T> elements, IList<Func<T, bool>> rules, IList<string> errorMsg, Func<T, string> toStrFunc, string cancel)
 		{
+			if (elements.Count == 0)
+            {
+				throw new EmptyListInSelectException();
+            }
+
 			for (int i = 0; i < elements.Count; i++)
 			{
 				Console.WriteLine(i + ". " + toStrFunc.Invoke(elements[i]));
@@ -144,6 +157,11 @@ namespace HospitalIS.Frontend.CLI
 		/// </summary>
 		public static IList<T> SelectMultiple(IList<T> elements, Func<T, string> toStrFunc, string cancel)
 		{
+			if (elements.Count == 0)
+			{
+				throw new EmptyListInSelectException();
+			}
+
 			// TODO @magley: Find a way to not print all the elements at once, for the sake of brievity (idea: ranges, pages, ...)
 
 			bool[] isSelected = new bool[elements.Count];
