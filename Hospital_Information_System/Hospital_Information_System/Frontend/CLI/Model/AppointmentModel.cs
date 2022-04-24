@@ -23,7 +23,7 @@ namespace HospitalIS.Frontend.CLI.Model
         private const int lengthOfAppointmentInMinutes = 15;
         private const int daysBeforeAppointmentUnmodifiable = 1;
 
-        internal class FailedInputAppointmentException : Exception
+        private class FailedInputAppointmentException : Exception
         {
             internal FailedInputAppointmentException(string errorMessage) : base($"Appointment input failed: {errorMessage}.")
             {
@@ -31,7 +31,7 @@ namespace HospitalIS.Frontend.CLI.Model
             }
         }
 
-        internal enum AppointmentProperty
+        private enum AppointmentProperty
         {
             DOCTOR,
             PATIENT,
@@ -127,7 +127,7 @@ namespace HospitalIS.Frontend.CLI.Model
             }
         }
 
-        internal static Appointment InputAppointment(string inputCancelString, List<AppointmentProperty> whichProperties, UserAccount user, Appointment referenceAppointment = null)
+        private static Appointment InputAppointment(string inputCancelString, List<AppointmentProperty> whichProperties, UserAccount user, Appointment referenceAppointment = null)
         {
             var appointment = new Appointment();
 
@@ -180,17 +180,17 @@ namespace HospitalIS.Frontend.CLI.Model
             return appointment;
         }
 
-        internal static Doctor InputDoctor(string inputCancelString, Appointment referenceAppointment)
+        private static Doctor InputDoctor(string inputCancelString, Appointment referenceAppointment)
         {
             return EasyInput<Doctor>.Select(GetAvailableDoctors(referenceAppointment), inputCancelString);
         }
 
-        internal static Patient InputPatient(string inputCancelString, Appointment referenceAppointment)
+        private static Patient InputPatient(string inputCancelString, Appointment referenceAppointment)
         {
             return EasyInput<Patient>.Select(GetAvailablePatients(referenceAppointment), inputCancelString);
         }
 
-        internal static DateTime InputScheduledFor(string inputCancelString, Appointment referenceAppointment)
+        private static DateTime InputScheduledFor(string inputCancelString, Appointment referenceAppointment)
         {
             return EasyInput<DateTime>.Get(
                 new List<Func<DateTime, bool>>()
@@ -212,7 +212,7 @@ namespace HospitalIS.Frontend.CLI.Model
             return IS.Instance.Hospital.Appointments.Where(a => !a.Deleted && CanModifyAppointment(a.ScheduledFor)).ToList();
         }
 
-        internal static bool CanModifyAppointment(DateTime scheduledFor)
+        private static bool CanModifyAppointment(DateTime scheduledFor)
         {
             TimeSpan difference = scheduledFor - DateTime.Now;
             return difference.TotalDays >= daysBeforeAppointmentUnmodifiable;
