@@ -44,6 +44,7 @@ namespace HospitalIS.Frontend.CLI.Model
             try
             {
                 Appointment appointment = InputAppointment(inputCancelString, allAppointmentProperties, user);
+                IS.Instance.UserAccountRepo.AddMadeAppointmentTimestamp(user, DateTime.Now);
                 IS.Instance.AppointmentRepo.Add(appointment);
             }
             catch (InputCancelledException)
@@ -85,6 +86,9 @@ namespace HospitalIS.Frontend.CLI.Model
                 ).ToList();
 
                 var updatedAppointment = InputAppointment(inputCancelString, propertiesToUpdate, user, appointment);
+
+                IS.Instance.UserAccountRepo.AddModifiedAppointmentTimestamp(user, DateTime.Now);
+
                 CopyAppointment(appointment, updatedAppointment, propertiesToUpdate);
             }
             catch (InputCancelledException)
@@ -115,6 +119,7 @@ namespace HospitalIS.Frontend.CLI.Model
                 var appointmentsToDelete = EasyInput<Appointment>.SelectMultiple(selectableAppointments, inputCancelString);
                 foreach (Appointment appointment in appointmentsToDelete)
                 {
+                    IS.Instance.UserAccountRepo.AddModifiedAppointmentTimestamp(user, DateTime.Now);
                     IS.Instance.AppointmentRepo.Remove(appointment);
                 }
             }

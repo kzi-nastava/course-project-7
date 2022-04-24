@@ -1,7 +1,16 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 
 namespace HospitalIS.Backend
 {
+    public class UserAccountForcefullyBlockedException : Exception
+    {
+        public UserAccountForcefullyBlockedException(string exceptionMessage) : base($"User account blocked: {exceptionMessage}")
+        {
+
+        }
+    }
     public class UserAccount : Entity
     {
         public enum AccountType
@@ -18,6 +27,10 @@ namespace HospitalIS.Backend
 
         [JsonConverter(typeof(Repository.PersonRepository.PersonReferenceConverter))]
         public Person Person { get; set; }
+
+        public List<DateTime> AppointmentModifiedTimestamps { get; set; }
+
+        public List<DateTime> AppointmentMadeTimestamps { get; set; }
 
         public bool Blocked { get; set; }
 

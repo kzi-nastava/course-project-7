@@ -30,10 +30,22 @@ namespace HospitalIS.Frontend.CLI
             //InitHospital();
             //IS.Instance.Save(dataDirectory);
 
-            IS.Instance.Load(dataDirectory);
-            user = UserAccountModel.AttemptLogin("gertrude", "123");
-            commandMapping["-appointment-create"]();
-            IS.Instance.Save(dataDirectory);
+            try
+            {
+                IS.Instance.Load(dataDirectory);
+                user = UserAccountModel.AttemptLogin("gertrude", "123");
+                //commandMapping["-appointment-update"]();
+                commandMapping["-appointment-create"]();
+            }
+            catch (UserAccountForcefullyBlockedException e)
+            {
+                Console.WriteLine(e.Message);
+                user = null;
+            }
+            finally
+            {
+                IS.Instance.Save(dataDirectory);
+            }
         }
 
 		private static void InitHospital()
