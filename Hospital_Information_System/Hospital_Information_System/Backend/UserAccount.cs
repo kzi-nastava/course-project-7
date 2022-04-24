@@ -1,0 +1,29 @@
+﻿using Newtonsoft.Json;
+
+namespace HospitalIS.Backend
+{
+    public class UserAccount : Entity
+    {
+        public enum AccountType
+        {
+            PATIENT,
+            DOCTOR,
+        }
+
+        public string Username { get; set; }
+
+        public string Password { get; set; }
+
+        public AccountType Type { get; set; }
+
+        [JsonConverter(typeof(Repository.PersonRepository.PersonReferenceConverter))]
+        public Person Person { get; set; }
+
+        public bool Blocked { get; set; }
+
+        public override string ToString()
+        {
+            return $"UserAccount{{Id = {Id}, Username = {Username}, Password = {Password}, Type = {(int)Type}, Person = {Person.Id}, Blocked = {Blocked}}}";
+        }
+    }
+}

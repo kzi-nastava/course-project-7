@@ -29,6 +29,7 @@ namespace HospitalIS.Backend
 		public List<Patient> Patients = new List<Patient>();
 		public List<Doctor> Doctors = new List<Doctor>();
 		public List<Appointment> Appointments = new List<Appointment>();
+		public List<UserAccount> UserAccounts = new List<UserAccount>();
 
 		public Room GetWarehouse()
 		{

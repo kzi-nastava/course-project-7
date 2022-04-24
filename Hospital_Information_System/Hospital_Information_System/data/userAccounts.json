@@ -1,0 +1,62 @@
+[
+  {
+    "$id": "1",
+    "Username": "marlon",
+    "Password": "123",
+    "Type": 1,
+    "Person": 0,
+    "Blocked": false,
+    "Id": 0,
+    "Deleted": false
+  },
+  {
+    "$id": "2",
+    "Username": "grahame",
+    "Password": "123",
+    "Type": 1,
+    "Person": 1,
+    "Blocked": false,
+    "Id": 1,
+    "Deleted": false
+  },
+  {
+    "$id": "3",
+    "Username": "kolby",
+    "Password": "123",
+    "Type": 1,
+    "Person": 2,
+    "Blocked": false,
+    "Id": 2,
+    "Deleted": false
+  },
+  {
+    "$id": "4",
+    "Username": "gertrude",
+    "Password": "123",
+    "Type": 0,
+    "Person": 3,
+    "Blocked": false,
+    "Id": 3,
+    "Deleted": false
+  },
+  {
+    "$id": "5",
+    "Username": "janeka",
+    "Password": "123",
+    "Type": 0,
+    "Person": 4,
+    "Blocked": false,
+    "Id": 4,
+    "Deleted": false
+  },
+  {
+    "$id": "6",
+    "Username": "bowen",
+    "Password": "123",
+    "Type": 0,
+    "Person": 5,
+    "Blocked": false,
+    "Id": 5,
+    "Deleted": false
+  }
+]
