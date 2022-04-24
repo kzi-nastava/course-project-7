@@ -10,6 +10,7 @@ namespace HospitalIS.Frontend.CLI
     {
         private static readonly string dataDirectory = Path.Combine("..", "..", "..", "data");
         private const string inputCancelString = "-q";
+        private static UserAccount loggedInAccount;
 
         private static readonly Dictionary<string, Action> commandMapping = new Dictionary<string, Action>
         {
@@ -30,9 +31,7 @@ namespace HospitalIS.Frontend.CLI
             //IS.Instance.Save(dataDirectory);
 
             IS.Instance.Load(dataDirectory);
-            commandMapping["-appointment-create"]();
-            //commandMapping["-appointment-update"]();
-            //commandMapping["-appointment-delete"]();
+            loggedInAccount = UserAccountModel.Login(inputCancelString);
             IS.Instance.Save(dataDirectory);
         }
 
