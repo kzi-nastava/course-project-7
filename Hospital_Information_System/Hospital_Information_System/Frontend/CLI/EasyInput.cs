@@ -36,6 +36,11 @@ namespace HospitalIS.Frontend.CLI
 			return Get(rules, errorMsg, cancel, s => (T)Convert.ChangeType(s, typeof(T)));
 		}
 
+		public static T Get(string cancel)
+        {
+			return Get(new List<Func<T, bool>>(), new string[] { }, cancel);
+        }
+
 		public static T Get(IList<Func<T, bool>> rules, IList<string> errorMsg, string cancel, Func<string, T> conversionFunction)
 		{
 			T result = default;
