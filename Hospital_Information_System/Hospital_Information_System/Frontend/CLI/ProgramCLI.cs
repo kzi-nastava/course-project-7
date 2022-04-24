@@ -22,7 +22,7 @@ namespace HospitalIS.Frontend.CLI
             { "-equipment-relocate", () => EquipmentRelocationModel.Relocate(inputCancelString) },
             { "-appointment-create", () => AppointmentModel.CreateAppointment(inputCancelString, user) },
             { "-appointment-update", () => AppointmentModel.UpdateAppointment(inputCancelString, user) },
-            { "-appointment-delete", () => AppointmentModel.DeleteAppointment(inputCancelString) },
+            { "-appointment-delete", () => AppointmentModel.DeleteAppointment(inputCancelString, user) },
         };
 
         static void Main()

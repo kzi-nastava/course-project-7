@@ -100,13 +100,19 @@ namespace HospitalIS.Frontend.CLI.Model
             }
         }
 
-        internal static void DeleteAppointment(string inputCancelString)
+        internal static void DeleteAppointment(string inputCancelString, UserAccount user)
         {
             Console.WriteLine(hintSelectAppointments);
 
             try
             {
-                var appointmentsToDelete = EasyInput<Appointment>.SelectMultiple(GetModifiableAppointments(), inputCancelString);
+                List<Appointment> selectableAppointments = GetModifiableAppointments();
+                if (user.Type == UserAccount.AccountType.PATIENT)
+                {
+                    selectableAppointments = selectableAppointments.Where(a => a.Patient.Person.Id == user.Person.Id).ToList();
+                }
+
+                var appointmentsToDelete = EasyInput<Appointment>.SelectMultiple(selectableAppointments, inputCancelString);
                 foreach (Appointment appointment in appointmentsToDelete)
                 {
                     IS.Instance.AppointmentRepo.Remove(appointment);
