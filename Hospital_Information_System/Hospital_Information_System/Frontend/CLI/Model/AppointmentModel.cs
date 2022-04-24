@@ -15,10 +15,12 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintInputScheduledFor = "Enter date and time for the appointment";
         private const string hintPatientNotAvailable = "Patient is not available at the selected date and time";
         private const string hintDoctorNotAvailable = "Doctor is not available at the selected date and time";
+        private const string hintAppointmentsNotAvailable = "No appointments available.";
         private const string errMsgNoDoctorAvailable = "No valid doctor available";
         private const string errMsgNoPatientAvailable = "No valid patient available";
 
         private const int lengthOfAppointmentInMinutes = 15;
+        private const int daysBeforeAppointmentUnmodifiable = 1;
 
         internal class FailedInputAppointmentException : Exception
         {
@@ -74,6 +76,10 @@ namespace HospitalIS.Frontend.CLI.Model
             catch (InputCancelledException)
             {
             }
+            catch (EmptyListInSelectException)
+            {
+                Console.WriteLine(hintAppointmentsNotAvailable);
+            }
             catch (FailedInputAppointmentException e)
             {
                 Console.WriteLine(e.Message);
@@ -91,6 +97,10 @@ namespace HospitalIS.Frontend.CLI.Model
                 {
                     IS.Instance.AppointmentRepo.Remove(appointment);
                 }
+            }
+            catch (EmptyListInSelectException)
+            {
+                Console.WriteLine(hintAppointmentsNotAvailable);
             }
             catch (InputCancelledException)
             {
@@ -110,7 +120,7 @@ namespace HospitalIS.Frontend.CLI.Model
                 }
                 catch (EmptyListInSelectException)
                 {
-                    appointment.Doctor = referenceAppointment.Doctor ?? throw new FailedInputAppointmentException(errMsgNoDoctorAvailable);
+                    appointment.Doctor = referenceAppointment?.Doctor ?? throw new FailedInputAppointmentException(errMsgNoDoctorAvailable);
                     Console.WriteLine($"No doctors are available for the appointment. Defaulted to old doctor: {appointment.Doctor.ToString()}.");
                 }
             }
@@ -124,7 +134,7 @@ namespace HospitalIS.Frontend.CLI.Model
                 }
                 catch (EmptyListInSelectException)
                 {
-                    appointment.Patient = referenceAppointment.Patient ?? throw new FailedInputAppointmentException(errMsgNoPatientAvailable); ;
+                    appointment.Patient = referenceAppointment?.Patient ?? throw new FailedInputAppointmentException(errMsgNoPatientAvailable);
                     Console.WriteLine($"No patients are available for the appointment. Defaulted to old patient: {appointment.Patient.ToString()}.");
                 }
             }
@@ -134,8 +144,8 @@ namespace HospitalIS.Frontend.CLI.Model
                 Console.WriteLine(hintInputScheduledFor);
 
                 // These should not throw, but we cover the case anyway.
-                appointment.Patient = appointment.Patient ?? referenceAppointment.Patient ?? throw new FailedInputAppointmentException(errMsgNoPatientAvailable);
-                appointment.Doctor = appointment.Doctor ?? referenceAppointment.Doctor ?? throw new FailedInputAppointmentException(errMsgNoDoctorAvailable);
+                appointment.Patient = appointment?.Patient ?? referenceAppointment?.Patient ?? throw new FailedInputAppointmentException(errMsgNoPatientAvailable);
+                appointment.Doctor = appointment?.Doctor ?? referenceAppointment?.Doctor ?? throw new FailedInputAppointmentException(errMsgNoDoctorAvailable);
 
                 appointment.ScheduledFor = InputScheduledFor(inputCancelString, appointment);
             }
@@ -176,7 +186,7 @@ namespace HospitalIS.Frontend.CLI.Model
         internal static bool CanModifyAppointment(DateTime scheduledFor)
         {
             TimeSpan difference = scheduledFor - DateTime.Now;
-            return difference.TotalDays >= 1;
+            return difference.TotalDays >= daysBeforeAppointmentUnmodifiable;
         }
 
         private static List<Doctor> GetNonDeletedDoctors()
