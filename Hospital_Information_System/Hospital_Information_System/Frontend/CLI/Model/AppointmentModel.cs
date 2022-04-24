@@ -235,15 +235,7 @@ namespace HospitalIS.Frontend.CLI.Model
                 return GetNonDeletedDoctors();
             }
 
-            var availableDoctors = new List<Doctor>();
-            foreach (Doctor doctor in GetNonDeletedDoctors())
-            {
-                if (IsAvailable(doctor, referenceAppointment))
-                {
-                    availableDoctors.Add(doctor);
-                }
-            }
-            return availableDoctors;
+            return GetNonDeletedDoctors().Where(d => IsAvailable(d, referenceAppointment)).ToList();
         }
 
         private static List<Patient> GetAvailablePatients(Appointment referenceAppointment)
@@ -253,15 +245,7 @@ namespace HospitalIS.Frontend.CLI.Model
                 return GetNonDeletedPatients();
             }
 
-            var availablePatients = new List<Patient>();
-            foreach (Patient patient in GetNonDeletedPatients())
-            {
-                if (IsAvailable(patient, referenceAppointment))
-                {
-                    availablePatients.Add(patient);
-                }
-            }
-            return availablePatients;
+            return GetNonDeletedPatients().Where(p => IsAvailable(p, referenceAppointment)).ToList();
         }
 
 
@@ -276,12 +260,10 @@ namespace HospitalIS.Frontend.CLI.Model
             {
                 if ((patient == appointment.Patient) && (appointment != referenceAppointment))
                 {
-                    TimeSpan timeSpan = appointment.ScheduledFor - newSchedule;
-                    if (Math.Abs(timeSpan.TotalMinutes) < lengthOfAppointmentInMinutes)
+                    if (AreColliding(appointment.ScheduledFor, newSchedule))
                     {
                         return false;
                     }
-
                 }
             }
             return true;
@@ -298,8 +280,7 @@ namespace HospitalIS.Frontend.CLI.Model
             {
                 if ((doctor == appointment.Doctor) && (appointment != referenceAppointment))
                 {
-                    TimeSpan timeSpan = appointment.ScheduledFor - newSchedule;
-                    if (Math.Abs(timeSpan.TotalMinutes) < lengthOfAppointmentInMinutes)
+                    if (AreColliding(appointment.ScheduledFor, newSchedule))
                     {
                         return false;
                     }
@@ -307,6 +288,12 @@ namespace HospitalIS.Frontend.CLI.Model
                 }
             }
             return true;
+        }
+
+        private static bool AreColliding(DateTime schedule1, DateTime schedule2)
+        {
+            TimeSpan difference = schedule1 - schedule2;
+            return Math.Abs(difference.TotalMinutes) < lengthOfAppointmentInMinutes;
         }
 
         private static void CopyAppointment(Appointment target, Appointment source, List<AppointmentProperty> whichProperties)
