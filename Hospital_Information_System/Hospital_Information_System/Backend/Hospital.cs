@@ -25,6 +25,7 @@ namespace HospitalIS.Backend
 		public List<Equipment> Equipment = new List<Equipment>();
 		public List<EquipmentRelocation> EquipmentRelocations = new List<EquipmentRelocation>();
 		public List<Thread> EquipmentRelocationTasks = new List<Thread>();
+		public List<Person> Persons = new List<Person>();
 		public List<Patient> Patients = new List<Patient>();
 		public List<Doctor> Doctors = new List<Doctor>();
 		public List<Appointment> Appointments = new List<Appointment>();
