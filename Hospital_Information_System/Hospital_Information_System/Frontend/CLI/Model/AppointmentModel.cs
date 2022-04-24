@@ -90,7 +90,7 @@ namespace HospitalIS.Frontend.CLI.Model
             catch (InputCancelledException)
             {
             }
-            catch (EmptyListInSelectException)
+            catch (NothingToSelectException)
             {
                 Console.WriteLine(hintAppointmentsNotAvailable);
             }
@@ -118,7 +118,7 @@ namespace HospitalIS.Frontend.CLI.Model
                     IS.Instance.AppointmentRepo.Remove(appointment);
                 }
             }
-            catch (EmptyListInSelectException)
+            catch (NothingToSelectException)
             {
                 Console.WriteLine(hintAppointmentsNotAvailable);
             }
@@ -138,7 +138,7 @@ namespace HospitalIS.Frontend.CLI.Model
                     Console.WriteLine(hintInputDoctor);
                     appointment.Doctor = InputDoctor(inputCancelString, referenceAppointment);
                 }
-                catch (EmptyListInSelectException)
+                catch (NothingToSelectException)
                 {
                     appointment.Doctor = referenceAppointment?.Doctor ?? throw new FailedInputAppointmentException(errMsgNoDoctorAvailable);
                     Console.WriteLine($"No doctors are available for the appointment. Defaulted to old doctor: {appointment.Doctor.ToString()}.");
@@ -158,7 +158,7 @@ namespace HospitalIS.Frontend.CLI.Model
                         Console.WriteLine(hintInputPatient);
                         appointment.Patient = InputPatient(inputCancelString, referenceAppointment);
                     }
-                    catch (EmptyListInSelectException)
+                    catch (NothingToSelectException)
                     {
                         appointment.Patient = referenceAppointment?.Patient ?? throw new FailedInputAppointmentException(errMsgNoPatientAvailable);
                         Console.WriteLine($"No patients are available for the appointment. Defaulted to old patient: {appointment.Patient.ToString()}.");

@@ -15,9 +15,9 @@ namespace HospitalIS.Frontend.CLI
 		}
 	}
 
-	public class EmptyListInSelectException : Exception
+	public class NothingToSelectException : Exception
 	{
-		public EmptyListInSelectException() : base("Could not select from empty list.")
+		public NothingToSelectException() : base("Could not select from empty list.")
 		{
 
 		}
@@ -95,7 +95,7 @@ namespace HospitalIS.Frontend.CLI
 		{
 			if (elements.Count == 0)
             {
-				throw new EmptyListInSelectException();
+				throw new NothingToSelectException();
             }
 
 			for (int i = 0; i < elements.Count; i++)
@@ -164,7 +164,7 @@ namespace HospitalIS.Frontend.CLI
 		{
 			if (elements.Count == 0)
 			{
-				throw new EmptyListInSelectException();
+				throw new NothingToSelectException();
 			}
 
 			// TODO @magley: Find a way to not print all the elements at once, for the sake of brievity (idea: ranges, pages, ...)
