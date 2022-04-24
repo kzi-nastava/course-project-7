@@ -15,6 +15,7 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintInputScheduledFor = "Enter date and time for the appointment";
         private const string hintPatientNotAvailable = "Patient is not available at the selected date and time";
         private const string hintDoctorNotAvailable = "Doctor is not available at the selected date and time";
+        private const string hintDateTimeNotInFuture = "Date and time must be in the future";
         private const string hintAppointmentsNotAvailable = "No appointments available.";
         private const string errMsgNoDoctorAvailable = "No valid doctor available";
         private const string errMsgNoPatientAvailable = "No valid patient available";
@@ -37,12 +38,12 @@ namespace HospitalIS.Frontend.CLI.Model
             SCHEDULED_FOR,
         }
 
-        internal static void CreateAppointment(string inputCancelString)
+        internal static void CreateAppointment(string inputCancelString, UserAccount user)
         {
             var allAppointmentProperties = Enum.GetValues(typeof(AppointmentProperty)).Cast<AppointmentProperty>().ToList();
             try
             {
-                Appointment appointment = InputAppointment(inputCancelString, allAppointmentProperties);
+                Appointment appointment = InputAppointment(inputCancelString, allAppointmentProperties, user);
                 IS.Instance.AppointmentRepo.Add(appointment);
             }
             catch (InputCancelledException)
@@ -54,23 +55,36 @@ namespace HospitalIS.Frontend.CLI.Model
             }
         }
 
-        internal static void UpdateAppointment(string inputCancelString)
+        internal static void UpdateAppointment(string inputCancelString, UserAccount user)
         {
             try
             {
+                List<Appointment> selectableAppointments = GetModifiableAppointments();
+                if (user.Type == UserAccount.AccountType.PATIENT)
+                {
+                    selectableAppointments = selectableAppointments.Where(a => a.Patient.Person.Id == user.Person.Id).ToList();
+                }
+
                 Console.WriteLine(hintSelectAppointment);
-                Appointment appointment = EasyInput<Appointment>.Select(GetModifiableAppointments(), inputCancelString);
+                Appointment appointment = EasyInput<Appointment>.Select(selectableAppointments, inputCancelString);
 
                 Console.WriteLine(appointment.ToString());
                 Console.WriteLine(hintSelectProperties);
 
+
+                List<AppointmentProperty> selectableProperties = Enum.GetValues(typeof(AppointmentProperty)).Cast<AppointmentProperty>().ToList();
+                if (user.Type == UserAccount.AccountType.PATIENT)
+                {
+                    selectableProperties.Remove(AppointmentProperty.PATIENT);
+                }
+
                 var propertiesToUpdate = EasyInput<AppointmentProperty>.SelectMultiple(
-                    Enum.GetValues(typeof(AppointmentProperty)).Cast<AppointmentProperty>().ToList(),
+                    selectableProperties,
                     a => Enum.GetName(typeof(AppointmentProperty), a),
                     inputCancelString
                 ).ToList();
 
-                var updatedAppointment = InputAppointment(inputCancelString, propertiesToUpdate, appointment);
+                var updatedAppointment = InputAppointment(inputCancelString, propertiesToUpdate, user, appointment);
                 CopyAppointment(appointment, updatedAppointment, propertiesToUpdate);
             }
             catch (InputCancelledException)
@@ -107,7 +121,7 @@ namespace HospitalIS.Frontend.CLI.Model
             }
         }
 
-        internal static Appointment InputAppointment(string inputCancelString, List<AppointmentProperty> whichProperties, Appointment referenceAppointment = null)
+        internal static Appointment InputAppointment(string inputCancelString, List<AppointmentProperty> whichProperties, UserAccount user, Appointment referenceAppointment = null)
         {
             var appointment = new Appointment();
 
@@ -127,15 +141,22 @@ namespace HospitalIS.Frontend.CLI.Model
 
             if (whichProperties.Contains(AppointmentProperty.PATIENT))
             {
-                try
+                if (user.Type == UserAccount.AccountType.PATIENT)
                 {
-                    Console.WriteLine(hintInputPatient);
-                    appointment.Patient = InputPatient(inputCancelString, referenceAppointment);
+                    appointment.Patient = IS.Instance.Hospital.Patients.Find(p => p.Person.Id == user.Person.Id);
                 }
-                catch (EmptyListInSelectException)
+                else
                 {
-                    appointment.Patient = referenceAppointment?.Patient ?? throw new FailedInputAppointmentException(errMsgNoPatientAvailable);
-                    Console.WriteLine($"No patients are available for the appointment. Defaulted to old patient: {appointment.Patient.ToString()}.");
+                    try
+                    {
+                        Console.WriteLine(hintInputPatient);
+                        appointment.Patient = InputPatient(inputCancelString, referenceAppointment);
+                    }
+                    catch (EmptyListInSelectException)
+                    {
+                        appointment.Patient = referenceAppointment?.Patient ?? throw new FailedInputAppointmentException(errMsgNoPatientAvailable);
+                        Console.WriteLine($"No patients are available for the appointment. Defaulted to old patient: {appointment.Patient.ToString()}.");
+                    }
                 }
             }
 
@@ -168,11 +189,13 @@ namespace HospitalIS.Frontend.CLI.Model
             return EasyInput<DateTime>.Get(
                 new List<Func<DateTime, bool>>()
                 {
+                    newSchedule => newSchedule.CompareTo(DateTime.Now) > 0,
                     newSchedule => IsAvailable(referenceAppointment.Patient, referenceAppointment, newSchedule),
                     newSchedule => IsAvailable(referenceAppointment.Doctor, referenceAppointment, newSchedule)
                 },
                 new string[]
                 {
+                    hintDateTimeNotInFuture,
                     hintPatientNotAvailable,
                     hintDoctorNotAvailable
                 },

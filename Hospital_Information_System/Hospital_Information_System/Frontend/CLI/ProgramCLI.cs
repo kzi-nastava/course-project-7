@@ -10,7 +10,7 @@ namespace HospitalIS.Frontend.CLI
     {
         private static readonly string dataDirectory = Path.Combine("..", "..", "..", "data");
         private const string inputCancelString = "-q";
-        private static UserAccount loggedInAccount;
+        private static UserAccount user;
 
         private static readonly Dictionary<string, Action> commandMapping = new Dictionary<string, Action>
         {
@@ -20,8 +20,8 @@ namespace HospitalIS.Frontend.CLI
             { "-equipment-search", () => EquipmentModel.Search(inputCancelString) },
             { "-equipment-filter", () => EquipmentModel.Filter(inputCancelString) },
             { "-equipment-relocate", () => EquipmentRelocationModel.Relocate(inputCancelString) },
-            { "-appointment-create", () => AppointmentModel.CreateAppointment(inputCancelString) },
-            { "-appointment-update", () => AppointmentModel.UpdateAppointment(inputCancelString) },
+            { "-appointment-create", () => AppointmentModel.CreateAppointment(inputCancelString, user) },
+            { "-appointment-update", () => AppointmentModel.UpdateAppointment(inputCancelString, user) },
             { "-appointment-delete", () => AppointmentModel.DeleteAppointment(inputCancelString) },
         };
 
@@ -31,7 +31,8 @@ namespace HospitalIS.Frontend.CLI
             //IS.Instance.Save(dataDirectory);
 
             IS.Instance.Load(dataDirectory);
-            loggedInAccount = UserAccountModel.Login(inputCancelString);
+            user = UserAccountModel.AttemptLogin("gertrude", "123");
+            commandMapping["-appointment-create"]();
             IS.Instance.Save(dataDirectory);
         }
 
