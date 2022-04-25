@@ -22,6 +22,7 @@ namespace HospitalIS.Frontend.CLI.Model
 
         private const int lengthOfAppointmentInMinutes = 15;
         private const int daysBeforeAppointmentUnmodifiable = 1;
+        private const int daysBeforeModificationNeedsRequest = 2;
 
         private class FailedInputAppointmentException : Exception
         {
@@ -89,7 +90,19 @@ namespace HospitalIS.Frontend.CLI.Model
 
                 IS.Instance.UserAccountRepo.AddModifiedAppointmentTimestamp(user, DateTime.Now);
 
-                CopyAppointment(appointment, updatedAppointment, propertiesToUpdate);
+                if (MustRequestModification(appointment.ScheduledFor, user))
+                {
+                    // This will represent the final state of the appointment, so that when the request gets approved we don't need to know which
+                    // properties to copy over, and instead can just copy all of them.
+                    var proposedAppointment = new Appointment();
+                    CopyAppointment(proposedAppointment, appointment, Enum.GetValues(typeof(AppointmentProperty)).Cast<AppointmentProperty>().ToList());
+                    CopyAppointment(proposedAppointment, updatedAppointment, propertiesToUpdate);
+                    IS.Instance.UpdateRequestRepo.Add(new UpdateRequest(user, appointment, proposedAppointment));
+                }
+                else
+                {
+                    CopyAppointment(appointment, updatedAppointment, propertiesToUpdate);
+                }
             }
             catch (InputCancelledException)
             {
@@ -120,7 +133,14 @@ namespace HospitalIS.Frontend.CLI.Model
                 foreach (Appointment appointment in appointmentsToDelete)
                 {
                     IS.Instance.UserAccountRepo.AddModifiedAppointmentTimestamp(user, DateTime.Now);
-                    IS.Instance.AppointmentRepo.Remove(appointment);
+                    if (MustRequestModification(appointment.ScheduledFor, user))
+                    {
+                        IS.Instance.DeleteRequestRepo.Add(new DeleteRequest(user, appointment));
+                    }
+                    else
+                    {
+                        IS.Instance.AppointmentRepo.Remove(appointment);
+                    }
                 }
             }
             catch (NothingToSelectException)
@@ -221,6 +241,17 @@ namespace HospitalIS.Frontend.CLI.Model
         {
             TimeSpan difference = scheduledFor - DateTime.Now;
             return difference.TotalDays >= daysBeforeAppointmentUnmodifiable;
+        }
+
+        private static bool MustRequestModification(DateTime scheduledFor, UserAccount user)
+        {
+            if (user.Type != UserAccount.AccountType.PATIENT)
+            {
+                return false;
+            }
+
+            TimeSpan difference = scheduledFor - DateTime.Now;
+            return difference.TotalDays < daysBeforeModificationNeedsRequest;
         }
 
         private static List<Doctor> GetNonDeletedDoctors()

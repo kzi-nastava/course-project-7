@@ -45,6 +45,25 @@ namespace HospitalIS.Backend.Repository
             File.WriteAllText(fullFilename, JsonConvert.SerializeObject(IS.Instance.Hospital.UserAccounts, Formatting.Indented, settings));
         }
 
+        internal class UserAccountReferenceConverter : JsonConverter
+        {
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(UserAccount);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                var userAccountID = serializer.Deserialize<int>(reader);
+                return IS.Instance.Hospital.UserAccounts.First(userAccount => userAccount.Id == userAccountID);
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                serializer.Serialize(writer, ((UserAccount)value).Id);
+            }
+        }
+
         public void AddModifiedAppointmentTimestamp(UserAccount user, DateTime timestamp)
         {
             user.AppointmentModifiedTimestamps.Add(timestamp);

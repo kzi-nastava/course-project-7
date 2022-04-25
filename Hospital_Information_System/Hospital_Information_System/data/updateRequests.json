@@ -1,0 +1,32 @@
+[
+  {
+    "$id": "1",
+    "OldAppointment": 6,
+    "NewAppointment": {
+      "$id": "2",
+      "Doctor": 0,
+      "Patient": 2,
+      "ScheduledFor": "2022-04-27T10:15:00",
+      "Id": -1,
+      "Deleted": false
+    },
+    "Requestee": 5,
+    "Id": 0,
+    "Deleted": false
+  },
+  {
+    "$id": "3",
+    "OldAppointment": 6,
+    "NewAppointment": {
+      "$id": "4",
+      "Doctor": 0,
+      "Patient": 2,
+      "ScheduledFor": "2022-04-27T10:00:00",
+      "Id": -1,
+      "Deleted": false
+    },
+    "Requestee": 5,
+    "Id": 1,
+    "Deleted": false
+  }
+]

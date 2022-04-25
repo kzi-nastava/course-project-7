@@ -33,9 +33,9 @@ namespace HospitalIS.Frontend.CLI
             try
             {
                 IS.Instance.Load(dataDirectory);
-                user = UserAccountModel.AttemptLogin("gertrude", "123");
-                //commandMapping["-appointment-update"]();
-                commandMapping["-appointment-create"]();
+                user = UserAccountModel.AttemptLogin("bowen", "123");
+                commandMapping["-appointment-update"]();
+                //commandMapping["-appointment-create"]();
             }
             catch (UserAccountForcefullyBlockedException e)
             {

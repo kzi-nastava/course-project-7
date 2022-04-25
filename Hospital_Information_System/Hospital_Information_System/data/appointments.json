@@ -46,5 +46,13 @@
     "ScheduledFor": "2023-01-01T00:00:00",
     "Id": 5,
     "Deleted": false
+  },
+  {
+    "$id": "7",
+    "Doctor": 0,
+    "Patient": 2,
+    "ScheduledFor": "2022-04-27T10:00:00",
+    "Id": 6,
+    "Deleted": false
   }
 ]

@@ -41,5 +41,24 @@ namespace HospitalIS.Backend.Repository
         {
             File.WriteAllText(fullFilename, JsonConvert.SerializeObject(IS.Instance.Hospital.Appointments, Formatting.Indented, settings));
         }
+
+        internal class AppointmentReferenceConverter : JsonConverter
+        {
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(Appointment);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                var appointmentID = serializer.Deserialize<int>(reader);
+                return IS.Instance.Hospital.Appointments.First(appointment => appointment.Id == appointmentID);
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                serializer.Serialize(writer, ((Appointment)value).Id);
+            }
+        }
     }
 }

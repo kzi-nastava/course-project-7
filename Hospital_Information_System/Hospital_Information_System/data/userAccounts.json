@@ -84,7 +84,9 @@
     "Password": "123",
     "Type": 0,
     "Person": 5,
-    "AppointmentModifiedTimestamps": [],
+    "AppointmentModifiedTimestamps": [
+      "2022-04-25T11:18:34.5814238+02:00"
+    ],
     "AppointmentCreatedTimestamps": [],
     "Blocked": false,
     "Id": 5,
