@@ -50,9 +50,9 @@ namespace HospitalIS.Backend.Repository
             user.AppointmentModifiedTimestamps.Add(timestamp);
             DetectTrolling(user);
         }
-        public void AddMadeAppointmentTimestamp(UserAccount user, DateTime timestamp)
+        public void AddCreatedAppointmentTimestamp(UserAccount user, DateTime timestamp)
         {
-            user.AppointmentMadeTimestamps.Add(timestamp);
+            user.AppointmentCreatedTimestamps.Add(timestamp);
             DetectTrolling(user);
         }
 
@@ -65,7 +65,7 @@ namespace HospitalIS.Backend.Repository
                 return;
             }
 
-            if (user.AppointmentMadeTimestamps.Count > appointmentCreationsInGracePeriod)
+            if (user.AppointmentCreatedTimestamps.Count > appointmentCreationsInGracePeriod)
             {
                 user.Blocked = true;
                 throw new UserAccountForcefullyBlockedException(
@@ -89,7 +89,7 @@ namespace HospitalIS.Backend.Repository
                 prunableTimestamps.ForEach(t => timestamps.Remove(t));
             }
 
-            prune(user.AppointmentMadeTimestamps);
+            prune(user.AppointmentCreatedTimestamps);
             prune(user.AppointmentModifiedTimestamps);
         }
     }

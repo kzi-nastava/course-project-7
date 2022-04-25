@@ -30,7 +30,7 @@ namespace HospitalIS.Backend
 
         public List<DateTime> AppointmentModifiedTimestamps { get; set; }
 
-        public List<DateTime> AppointmentMadeTimestamps { get; set; }
+        public List<DateTime> AppointmentCreatedTimestamps { get; set; }
 
         public bool Blocked { get; set; }
 

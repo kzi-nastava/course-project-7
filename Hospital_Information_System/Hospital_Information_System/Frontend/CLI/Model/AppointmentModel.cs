@@ -44,7 +44,7 @@ namespace HospitalIS.Frontend.CLI.Model
             try
             {
                 Appointment appointment = InputAppointment(inputCancelString, allAppointmentProperties, user);
-                IS.Instance.UserAccountRepo.AddMadeAppointmentTimestamp(user, DateTime.Now);
+                IS.Instance.UserAccountRepo.AddCreatedAppointmentTimestamp(user, DateTime.Now);
                 IS.Instance.AppointmentRepo.Add(appointment);
             }
             catch (InputCancelledException)
