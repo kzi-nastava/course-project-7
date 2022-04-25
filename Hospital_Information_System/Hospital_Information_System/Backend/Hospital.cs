@@ -30,6 +30,8 @@ namespace HospitalIS.Backend
 		public List<Doctor> Doctors = new List<Doctor>();
 		public List<Appointment> Appointments = new List<Appointment>();
 		public List<UserAccount> UserAccounts = new List<UserAccount>();
+		public List<UpdateRequest> UpdateRequests = new List<UpdateRequest>();
+		public List<DeleteRequest> DeleteRequests = new List<DeleteRequest>();
 
 		public Room GetWarehouse()
 		{

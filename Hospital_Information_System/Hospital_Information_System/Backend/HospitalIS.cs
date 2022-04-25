@@ -24,6 +24,8 @@ namespace HospitalIS.Backend
 		public DoctorRepository DoctorRepo = new DoctorRepository();
 		public AppointmentRepository AppointmentRepo = new AppointmentRepository();
 		public UserAccountRepository UserAccountRepo = new UserAccountRepository();
+		public UpdateRequestRepository UpdateRequestRepo = new UpdateRequestRepository();
+		public DeleteRequestRepository DeleteRequestRepo = new DeleteRequestRepository();
 
 		private readonly JsonSerializerSettings settings;
 		private const string fnameRooms = "rooms.json";
@@ -34,6 +36,8 @@ namespace HospitalIS.Backend
 		private const string fnameDoctors = "doctors.json";
 		private const string fnameAppointments = "appointments.json";
 		private const string fnameUserAccounts = "userAccounts.json";
+		private const string fnameUpdateRequests = "updateRequests.json";
+		private const string fnameDeleteRequests = "deleteRequests.json";
 
 		public IS()
 		{
@@ -50,6 +54,8 @@ namespace HospitalIS.Backend
 			DoctorRepo.Save(Path.Combine(directory, fnameDoctors), settings);
 			AppointmentRepo.Save(Path.Combine(directory, fnameAppointments), settings);
 			UserAccountRepo.Save(Path.Combine(directory, fnameUserAccounts), settings);
+			UpdateRequestRepo.Save(Path.Combine(directory, fnameUpdateRequests), settings);
+			DeleteRequestRepo.Save(Path.Combine(directory, fnameDeleteRequests), settings);
 		}
 
 		public void Load(string directory)
@@ -62,6 +68,8 @@ namespace HospitalIS.Backend
 			DoctorRepo.Load(Path.Combine(directory, fnameDoctors), settings);
 			AppointmentRepo.Load(Path.Combine(directory, fnameAppointments), settings);
 			UserAccountRepo.Load(Path.Combine(directory, fnameUserAccounts), settings);
+			UpdateRequestRepo.Load(Path.Combine(directory, fnameUpdateRequests), settings);
+			DeleteRequestRepo.Load(Path.Combine(directory, fnameDeleteRequests), settings);
 
 			foreach (var relocation in Hospital.EquipmentRelocations)
 			{
