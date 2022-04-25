@@ -15,6 +15,14 @@ namespace HospitalIS.Frontend.CLI
 		}
 	}
 
+	public class NothingToSelectException : Exception
+	{
+		public NothingToSelectException() : base("Could not select from empty list.")
+		{
+
+		}
+	}
+
 	/// <summary>
 	/// EasyInput is a helper class for querying user input.
 	/// </summary>
@@ -27,6 +35,11 @@ namespace HospitalIS.Frontend.CLI
 		{
 			return Get(rules, errorMsg, cancel, s => (T)Convert.ChangeType(s, typeof(T)));
 		}
+
+		public static T Get(string cancel)
+        {
+			return Get(new List<Func<T, bool>>(), new string[] { }, cancel);
+        }
 
 		public static T Get(IList<Func<T, bool>> rules, IList<string> errorMsg, string cancel, Func<string, T> conversionFunction)
 		{
@@ -80,6 +93,11 @@ namespace HospitalIS.Frontend.CLI
 		/// </summary>
 		public static T Select(IList<T> elements, IList<Func<T, bool>> rules, IList<string> errorMsg, Func<T, string> toStrFunc, string cancel)
 		{
+			if (elements.Count == 0)
+            {
+				throw new NothingToSelectException();
+            }
+
 			for (int i = 0; i < elements.Count; i++)
 			{
 				Console.WriteLine(i + ". " + toStrFunc.Invoke(elements[i]));
@@ -144,6 +162,11 @@ namespace HospitalIS.Frontend.CLI
 		/// </summary>
 		public static IList<T> SelectMultiple(IList<T> elements, Func<T, string> toStrFunc, string cancel)
 		{
+			if (elements.Count == 0)
+			{
+				throw new NothingToSelectException();
+			}
+
 			// TODO @magley: Find a way to not print all the elements at once, for the sake of brievity (idea: ranges, pages, ...)
 
 			bool[] isSelected = new bool[elements.Count];
