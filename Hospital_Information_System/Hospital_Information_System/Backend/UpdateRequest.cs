@@ -7,7 +7,7 @@ namespace HospitalIS.Backend
         [JsonConverter(typeof(Repository.AppointmentRepository.AppointmentReferenceConverter))]
         public Appointment OldAppointment { get; set; }
 
-        // We store this Appointment by value.
+        // We serialize this Appointment by value.
         public Appointment NewAppointment { get; set; }
 
         public UpdateRequest(UserAccount requestee, Appointment oldAppointment, Appointment newAppointment) : base(requestee)
