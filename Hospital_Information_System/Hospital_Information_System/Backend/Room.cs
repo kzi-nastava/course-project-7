@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using HospitalIS.Backend.Repository;
-using System.Linq;
 
 namespace HospitalIS.Backend
 {
@@ -43,7 +41,7 @@ namespace HospitalIS.Backend
 
 		public override string ToString()
 		{
-			return JsonConvert.SerializeObject(this, Formatting.Indented);
+			return $"Room{{Id = {Id}, Name = {Name}, Floor = {Floor}, Type = {Type}}}";
 		}
 	}
 }

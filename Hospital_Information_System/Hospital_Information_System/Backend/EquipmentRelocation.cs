@@ -6,15 +6,15 @@ namespace HospitalIS.Backend
 	internal class EquipmentRelocation : Entity
 	{
 		[JsonConverter(typeof(Repository.EquipmentRepository.EquipmentReferenceConverter))]
-		public Equipment Equipment { get; set; }
+		public Equipment Equipment { get; set; } = null;
 
 		[JsonConverter(typeof(Repository.RoomRepository.RoomReferenceConverter))]
-		public Room RoomNew { get; set; }
+		public Room RoomNew { get; set; } = null;
 
 		[JsonConverter(typeof(Repository.RoomRepository.RoomReferenceConverter))]
-		public Room RoomOld { get; set; }
+		public Room RoomOld { get; set; } = null;
 
-		public DateTime ScheduledFor { get; set; }
+		public DateTime ScheduledFor { get; set; } = null;
 
 		public EquipmentRelocation(Equipment equipment, Room roomOld, Room roomNew, DateTime scheduledFor)
 		{

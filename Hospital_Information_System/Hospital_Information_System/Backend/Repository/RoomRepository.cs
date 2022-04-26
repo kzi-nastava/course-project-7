@@ -28,17 +28,17 @@ namespace HospitalIS.Backend.Repository
 
 		public void Remove(Room entity)
 		{
-			entity.Deleted = true;
-
-			// Move all equipment from this room to the warehouse.
+			// Move all my equipment to the warehouse.
 			foreach (var kv in entity.Equipment)
 			{
-				IS.Instance.RoomRepo.Add(IS.Instance.Hospital.GetWarehouse(), kv.Key, kv.Value);
+				IS.Instance.RoomRepo.Add(GetWarehouse(), kv.Key, kv.Value);
 			}
 			entity.Equipment.Clear();
 
-			// Remove all equipment relocations that move equipment to this room.
+			// Cancel relocations that would go here.
 			IS.Instance.EquipmentRelocationRepo.Remove(relocation => relocation.RoomNew == entity);
+			
+			entity.Deleted = true;
 		}
 
 		public void Remove(Func<Room, bool> condition)
@@ -72,6 +72,16 @@ namespace HospitalIS.Backend.Repository
 			}
 		}
 
+		public Room GetWarehouse()
+		{
+			foreach (var r in IS.Instance.Hospital.Rooms)
+			{
+				if (r.Type == Room.RoomType.WAREHOUSE)
+					return r;
+			}
+			throw new WarehouseNotFoundException();
+		}
+
 		internal class RoomReferenceConverter : JsonConverter
 		{
 			public override bool CanConvert(Type objectType)
@@ -81,8 +91,8 @@ namespace HospitalIS.Backend.Repository
 
 			public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
 			{
-				var roomID = serializer.Deserialize<int>(reader);
-				return IS.Instance.Hospital.Rooms.First(room => room.Id == roomID);
+				var id = serializer.Deserialize<int>(reader);
+				return IS.Instance.Hospital.Rooms.First(room => room.Id == id);
 			}
 
 			public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

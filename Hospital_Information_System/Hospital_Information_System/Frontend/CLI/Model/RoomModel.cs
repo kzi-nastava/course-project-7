@@ -8,13 +8,13 @@ namespace HospitalIS.Frontend.CLI.Model
 	internal abstract class RoomModel
 	{
 		private const string hintSelectRooms = "Select rooms by their number, separated by whitespace.\nEnter a newline to finish";
-		private const string hintSelectRoom = "Select room";
+		private const string hintSelectRoom = "Select room, by its number.\nEnter a newline to finish";
 		private const string hintSelectProperties = "Select properties by their number, separated by whitespace.\nEnter a newline to finish";
 		private const string hintRoomName = "Enter room name";
 		private const string hintRoomFloor = "Enter room floor";
 		private const string hintRoomType = "Select room type";
-		private const string hintRoomNameNonEmpty = "Room name must not be empty!";
-		private const string hintRoomFloorNonNegative = "Room floor must be a non-negative integer!";
+		private const string errRoomNameNonEmpty = "Room name must not be empty!";
+		private const string errRoomFloorNonNegative = "Room floor must be a non-negative integer!";
 
 		internal static void DeleteRoom(string inputCancelString)
 		{
@@ -35,10 +35,10 @@ namespace HospitalIS.Frontend.CLI.Model
 
 		internal static void CreateRoom(string inputCancelString)
 		{
-			var allRoomProperties = Enum.GetValues(typeof(RoomProperty)).Cast<RoomProperty>().ToList();
+			var roomPropertiesAll = Enum.GetValues(typeof(RoomProperty)).Cast<RoomProperty>().ToList();
 			try
 			{
-				Room room = InputRoom(inputCancelString, allRoomProperties);
+				Room room = InputRoom(inputCancelString, roomPropertiesAll);
 				IS.Instance.RoomRepo.Add(room);
 			}
 			catch (InputCancelledException)
@@ -53,8 +53,8 @@ namespace HospitalIS.Frontend.CLI.Model
 				Console.WriteLine(hintSelectRoom);
 				Room room = EasyInput<Room>.Select(GetModifiableRooms(), r => r.Name, inputCancelString);
 				Console.WriteLine(room.ToString());
-				Console.WriteLine(hintSelectProperties);
 
+				Console.WriteLine(hintSelectProperties);
 				var propertiesToUpdate = EasyInput<RoomProperty>.SelectMultiple(
 					Enum.GetValues(typeof(RoomProperty)).Cast<RoomProperty>().ToList(),
 					e => Enum.GetName(typeof(RoomProperty), e),
@@ -117,7 +117,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		{
 			return EasyInput<string>.Get(
 				new List<Func<string, bool>> { s => s.Length != 0 },
-				new[] { hintRoomNameNonEmpty },
+				new[] { errRoomNameNonEmpty },
 				inputCancelString
 			);
 		}
@@ -126,14 +126,16 @@ namespace HospitalIS.Frontend.CLI.Model
 		{
 			return EasyInput<int>.Get(
 				new List<Func<int, bool>> { n => n >= 0 },
-				new[] { hintRoomFloorNonNegative },
+				new[] { errRoomFloorNonNegative },
 				inputCancelString
 			);
 		}
 		private static Room.RoomType InputRoomType(string inputCancelString)
 		{
 			return EasyInput<Room.RoomType>.Select(
-				Enum.GetValues(typeof(Room.RoomType)).Cast<Room.RoomType>().Where(e => e != Room.RoomType.WAREHOUSE).ToList(),
+				Enum.GetValues(typeof(Room.RoomType)).Cast<Room.RoomType>()
+					.Where(e => e != Room.RoomType.WAREHOUSE)
+					.ToList(),
 				inputCancelString
 			);
 		}
