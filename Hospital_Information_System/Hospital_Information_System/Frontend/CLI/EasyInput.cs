@@ -23,6 +23,14 @@ namespace HospitalIS.Frontend.CLI
 		}
 	}
 
+	public class InputFailedException : Exception
+    {
+		public InputFailedException(string errMsg) : base(errMsg)
+        {
+
+        }
+    }
+
 	/// <summary>
 	/// EasyInput is a helper class for querying user input.
 	/// </summary>
