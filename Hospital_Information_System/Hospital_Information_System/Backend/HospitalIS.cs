@@ -73,7 +73,7 @@ namespace HospitalIS.Backend
 
 			foreach (var relocation in Hospital.EquipmentRelocations)
 			{
-				Hospital.AddEquipmentRelocationTask(relocation);
+				EquipmentRelocationRepo.AddTask(relocation);
 			}
 		}
 	}

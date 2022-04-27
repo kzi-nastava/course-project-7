@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using HospitalIS.Backend;
 using System.Linq;
+using System.Diagnostics;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
@@ -25,9 +26,9 @@ namespace HospitalIS.Frontend.CLI.Model
 			};
 
 			Console.WriteLine(hintSelect);
-			string selectedAction = EasyInput<string>.Select(commandMap.Keys.ToList(), inputCancelString);
+			string selectedCommand = EasyInput<string>.Select(commandMap.Keys.ToList(), inputCancelString);
 
-			commandMap[selectedAction].Invoke();
+			commandMap[selectedCommand].Invoke();
 		}
 
 		private enum EquipmentRelocationProperty
@@ -56,8 +57,8 @@ namespace HospitalIS.Frontend.CLI.Model
 					inputCancelString
 				).ToList();
 
-				var inputResult = InputRelocation(inputCancelString, selectedProperties, selectedRelocation);
-				Copy(selectedRelocation, inputResult, selectedProperties);
+				var inputRelocation = InputRelocation(inputCancelString, selectedProperties, selectedRelocation);
+				Copy(selectedRelocation, inputRelocation, selectedProperties);
 			}
 			catch (InputCancelledException)
 			{
@@ -66,10 +67,10 @@ namespace HospitalIS.Frontend.CLI.Model
 
 		private static void NewRelocation(string inputCancelString)
 		{
-			var allRoomProperties = Enum.GetValues(typeof(EquipmentRelocationProperty)).Cast<EquipmentRelocationProperty>().ToList();
+			var roomPropertiesAll = Enum.GetValues(typeof(EquipmentRelocationProperty)).Cast<EquipmentRelocationProperty>().ToList();
 			try
 			{
-				var relocation = InputRelocation(inputCancelString, allRoomProperties, null);
+				var relocation = InputRelocation(inputCancelString, roomPropertiesAll);
 				IS.Instance.EquipmentRelocationRepo.Add(relocation);
 			}
 			catch (InputCancelledException)
@@ -95,15 +96,17 @@ namespace HospitalIS.Frontend.CLI.Model
 			}
 		}
 
-		private static EquipmentRelocation InputRelocation(string inputCancelString, List<EquipmentRelocationProperty> properties, EquipmentRelocation editingRelocation)
+		private static EquipmentRelocation InputRelocation(string inputCancelString, List<EquipmentRelocationProperty> properties, EquipmentRelocation editingRelocation = null)
 		{
 			EquipmentRelocation temp = new EquipmentRelocation(); // We don't want to overwrite the relocation until the operation finishes
 			EquipmentRelocation reference = editingRelocation ?? temp; // Read-only
 
+			Debug.Assert(reference != null);
+
 			if (properties.Contains(EquipmentRelocationProperty.OLD_ROOM))
 			{
 				Console.WriteLine(hintInputOldRoom);
-				temp.RoomOld = InputRelocationOldRoom(inputCancelString);
+				temp.RoomOld = InputRelocationOldRoom(inputCancelString, reference);
 			}
 
 			if (properties.Contains(EquipmentRelocationProperty.EQUIPMENT))
@@ -136,29 +139,30 @@ namespace HospitalIS.Frontend.CLI.Model
 
 		private static Equipment InputRelocationEquipment(string inputCancelString, EquipmentRelocation editingRelocation)
 		{
-			// TODO @magley: Specify which ones are taken and overwrite
+			Debug.Assert(editingRelocation.RoomOld != null);
 
 			return EasyInput<Equipment>.Select(
 				IS.Instance.Hospital.Equipment.Where(eq => editingRelocation.RoomOld.Equipment.ContainsKey(eq)).ToList(),
-				new List<Func<Equipment, bool>>()
-				{
-					eq => IS.Instance.Hospital.EquipmentRelocations.Where(
-						eqRel => eqRel.Equipment == eq && (editingRelocation == null || editingRelocation != eqRel)
-					).ToList().Count == 0,
-				},
-				new[]
-				{
-					"This equipment is already set for relocation"
-				},
+				new List<Func<Equipment, bool>>(),
+				new string[] { },
 				eq => eq.ToString(),
 				inputCancelString
 			);
 		}
 
-		private static Room InputRelocationOldRoom(string inputCancelString)
+		private static Room InputRelocationOldRoom(string inputCancelString, EquipmentRelocation relocation)
 		{
+			static bool canHaveEquipmentRemovedFrom(Room room, EquipmentRelocation reference)
+			{
+				return reference.RoomOld == null // Inputing RoomOld for the first time
+				|| reference.Equipment == null // Haven't inputed Equipment yet (we don't know whether room has it)
+				|| room.Equipment.ContainsKey(reference.Equipment); // Room can be RoomOld for this equipment
+			}
+
 			return EasyInput<Room>.Select(
-				IS.Instance.Hospital.Rooms.ToList(),
+				IS.Instance.Hospital.Rooms.Where(
+					room => canHaveEquipmentRemovedFrom(room, relocation)
+				).ToList(),
 				new List<Func<Room, bool>>(),
 				new string[] { },
 				eq => eq.ToString(),
@@ -170,14 +174,8 @@ namespace HospitalIS.Frontend.CLI.Model
 		{
 			return EasyInput<Room>.Select(
 				IS.Instance.Hospital.Rooms.ToList(),
-				new List<Func<Room, bool>>()
-				{
-					room => equipmentRelocation == null || (equipmentRelocation.RoomOld != room)
-				},
-				new string[]
-				{
-					"This equipment already exists in that room",
-				},
+				new List<Func<Room, bool>>(),
+				new string[] { },
 				room => room.ToString(),
 				inputCancelString
 			);

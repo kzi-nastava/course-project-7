@@ -21,33 +21,16 @@ namespace HospitalIS.Backend
 
 	internal class Hospital : Entity
 	{
-		public List<Room> Rooms = new List<Room>();
-		public List<Equipment> Equipment = new List<Equipment>();
-		public List<EquipmentRelocation> EquipmentRelocations = new List<EquipmentRelocation>();
-		public List<Thread> EquipmentRelocationTasks = new List<Thread>();
-		public List<Person> Persons = new List<Person>();
-		public List<Patient> Patients = new List<Patient>();
-		public List<Doctor> Doctors = new List<Doctor>();
-		public List<Appointment> Appointments = new List<Appointment>();
-		public List<UserAccount> UserAccounts = new List<UserAccount>();
-		public List<UpdateRequest> UpdateRequests = new List<UpdateRequest>();
-		public List<DeleteRequest> DeleteRequests = new List<DeleteRequest>();
-
-		public Room GetWarehouse()
-		{
-			foreach (var r in Rooms)
-			{
-				if (r.Type == Room.RoomType.WAREHOUSE)
-					return r;
-			}
-			throw new WarehouseNotFoundException();
-		}
-
-		public void AddEquipmentRelocationTask(EquipmentRelocation equipmentRelocation)
-		{
-			Thread t = new Thread(new ThreadStart(() => IS.Instance.EquipmentRelocationRepo.Execute(equipmentRelocation)));
-			EquipmentRelocationTasks.Add(t);
-			t.Start();
-		}
+		internal List<Room> Rooms = new List<Room>();
+		internal List<Equipment> Equipment = new List<Equipment>();
+		internal List<EquipmentRelocation> EquipmentRelocations = new List<EquipmentRelocation>();
+		internal List<Thread> EquipmentRelocationTasks = new List<Thread>();
+		internal List<Person> Persons = new List<Person>();
+		internal List<Patient> Patients = new List<Patient>();
+		internal List<Doctor> Doctors = new List<Doctor>();
+		internal List<Appointment> Appointments = new List<Appointment>();
+		internal List<UserAccount> UserAccounts = new List<UserAccount>();
+		internal List<UpdateRequest> UpdateRequests = new List<UpdateRequest>();
+		internal List<DeleteRequest> DeleteRequests = new List<DeleteRequest>();
 	}
 }

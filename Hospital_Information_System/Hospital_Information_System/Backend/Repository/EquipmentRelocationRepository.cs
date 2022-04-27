@@ -52,11 +52,18 @@ namespace HospitalIS.Backend.Repository
 			if (!IS.Instance.Hospital.EquipmentRelocations.Contains(relocation))
 				throw new EntityNotFoundException();
 
-			Console.WriteLine("[REMOVE ME] Performed relocation");
+			Console.WriteLine($"Performed relocation {relocation}.");
 
 			IS.Instance.RoomRepo.Add(relocation.RoomNew, relocation.Equipment);
 			IS.Instance.RoomRepo.Remove(relocation.RoomOld, relocation.Equipment);
 			IS.Instance.EquipmentRelocationRepo.Remove(relocation);
+		}
+
+		public void AddTask(EquipmentRelocation equipmentRelocation)
+		{
+			Thread t = new Thread(new ThreadStart(() => Execute(equipmentRelocation)));
+			IS.Instance.Hospital.EquipmentRelocationTasks.Add(t);
+			t.Start();
 		}
 	}
 }
