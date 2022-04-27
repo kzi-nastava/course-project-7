@@ -16,9 +16,6 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintPatientNotAvailable = "Patient is not available at the selected date and time";
         private const string hintDoctorNotAvailable = "Doctor is not available at the selected date and time";
         private const string hintDateTimeNotInFuture = "Date and time must be in the future";
-        private const string hintAppointmentsNotAvailable = "No appointments available.";
-        private const string hintDoctorsNotAvailable = "No valid doctor available";
-        private const string hintPatientsNotAvailable = "No valid patient available";
 
         private const int lengthOfAppointmentInMinutes = 15;
         private const int daysBeforeAppointmentUnmodifiable = 1;
@@ -44,11 +41,11 @@ namespace HospitalIS.Frontend.CLI.Model
 
         internal static void UpdateAppointment(string inputCancelString, UserAccount user)
         {
+            List<Appointment> modifiableAppointments = GetModifiableAppointments(user);
+
+            Console.WriteLine(hintSelectAppointment);
             try
             {
-                List<Appointment> modifiableAppointments = GetModifiableAppointments(user);
-
-                Console.WriteLine(hintSelectAppointment);
                 Appointment appointment = EasyInput<Appointment>.Select(modifiableAppointments, inputCancelString);
 
                 Console.WriteLine(appointment.ToString());
@@ -81,11 +78,6 @@ namespace HospitalIS.Frontend.CLI.Model
             catch (InputCancelledException)
             {
             }
-            // Potentially thrown by the attempted selection of appointment early in this function
-            catch (NothingToSelectException)
-            {
-                throw new InputFailedException(hintAppointmentsNotAvailable);
-            }
             catch (InputFailedException e)
             {
                 Console.WriteLine(e.Message);
@@ -95,7 +87,6 @@ namespace HospitalIS.Frontend.CLI.Model
         internal static void DeleteAppointment(string inputCancelString, UserAccount user)
         {
             Console.WriteLine(hintSelectAppointments);
-
             try
             {
                 List<Appointment> modifiableAppointments = GetModifiableAppointments(user);
@@ -150,7 +141,6 @@ namespace HospitalIS.Frontend.CLI.Model
             if (whichProperties.Contains(AppointmentProperty.SCHEDULED_FOR))
             {
                 Console.WriteLine(hintInputScheduledFor);
-
                 appointment.ScheduledFor = InputScheduledFor(inputCancelString, appointment, refAppointment);
             }
 
@@ -159,26 +149,12 @@ namespace HospitalIS.Frontend.CLI.Model
 
         private static Doctor InputDoctor(string inputCancelString, Appointment referenceAppointment)
         {
-            try
-            {
-                return EasyInput<Doctor>.Select(GetAvailableDoctors(referenceAppointment), inputCancelString);
-            }
-            catch (NothingToSelectException)
-            {
-                throw new InputFailedException(hintDoctorsNotAvailable);
-            }
+            return EasyInput<Doctor>.Select(GetAvailableDoctors(referenceAppointment), inputCancelString);
         }
 
         private static Patient InputPatient(string inputCancelString, Appointment referenceAppointment)
         {
-            try
-            {
-                return EasyInput<Patient>.Select(GetAvailablePatients(referenceAppointment), inputCancelString);
-            }
-            catch (NothingToSelectException)
-            {
-                throw new InputFailedException(hintPatientsNotAvailable);
-            }
+            return EasyInput<Patient>.Select(GetAvailablePatients(referenceAppointment), inputCancelString);
         }
 
         private static DateTime InputScheduledFor(string inputCancelString, Appointment proposedAppointment, Appointment referenceAppointment)

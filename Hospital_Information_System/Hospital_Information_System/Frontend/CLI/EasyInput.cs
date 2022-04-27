@@ -15,21 +15,21 @@ namespace HospitalIS.Frontend.CLI
 		}
 	}
 
-	public class NothingToSelectException : Exception
+	public class InputFailedException : Exception
 	{
-		public NothingToSelectException() : base("Could not select from empty list.")
+		public InputFailedException(string errorMessage) : base(errorMessage)
 		{
 
 		}
 	}
 
-	public class InputFailedException : Exception
-    {
-		public InputFailedException(string errMsg) : base(errMsg)
-        {
+	public class NothingToSelectException : InputFailedException
+	{
+		public NothingToSelectException() : base("Nothing to select!")
+		{
 
-        }
-    }
+		}
+	}
 
 	/// <summary>
 	/// EasyInput is a helper class for querying user input.
