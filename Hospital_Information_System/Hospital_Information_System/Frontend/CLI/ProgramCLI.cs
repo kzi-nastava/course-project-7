@@ -28,7 +28,7 @@ namespace HospitalIS.Frontend.CLI
         static void Main()
         {
             //InitHospital();
-            //IS.Instance.Save(dataDirectory);
+            IS.Instance.Save(dataDirectory);
 
             try
             {
