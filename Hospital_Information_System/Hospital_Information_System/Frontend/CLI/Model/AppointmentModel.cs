@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static HospitalIS.Backend.Controller.AppointmentController;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
@@ -18,10 +19,6 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintDoctorNotAvailable = "Doctor is not available at the selected date and time";
         private const string hintExaminationRoomNotAvailable = "Examination room is not available at the selected date and time";
         private const string hintDateTimeNotInFuture = "Date and time must be in the future";
-
-        private const int lengthOfAppointmentInMinutes = 15;
-        private const int daysBeforeAppointmentUnmodifiable = 1;
-        private const int daysBeforeModificationNeedsRequest = 2;
 
         internal static void CreateAppointment(string inputCancelString, UserAccount user)
         {
@@ -57,7 +54,7 @@ namespace HospitalIS.Frontend.CLI.Model
 
                 var propertiesToUpdate = EasyInput<AppointmentProperty>.SelectMultiple(
                     modifiableProperties,
-                    a => Enum.GetName(typeof(AppointmentProperty), a),
+                    ap => GetAppointmentPropertyName(ap),
                     inputCancelString
                 ).ToList();
 
@@ -65,7 +62,7 @@ namespace HospitalIS.Frontend.CLI.Model
 
                 IS.Instance.UserAccountRepo.AddModifiedAppointmentTimestamp(user, DateTime.Now);
 
-                if (MustRequest(appointment.ScheduledFor, user))
+                if (MustRequestAppointmentModification(appointment.ScheduledFor, user))
                 {
                     var proposedAppointment = new Appointment();
                     CopyAppointment(proposedAppointment, appointment, GetAllAppointmentProperties());
@@ -98,7 +95,7 @@ namespace HospitalIS.Frontend.CLI.Model
                 {
                     IS.Instance.UserAccountRepo.AddModifiedAppointmentTimestamp(user, DateTime.Now);
 
-                    if (MustRequest(appointment.ScheduledFor, user))
+                    if (MustRequestAppointmentModification(appointment.ScheduledFor, user))
                     {
                         IS.Instance.DeleteRequestRepo.Add(new DeleteRequest(user, appointment));
                     }
@@ -193,7 +190,7 @@ namespace HospitalIS.Frontend.CLI.Model
             {
                 doctorReferenceAppointment = null;
             }
-            
+
             Patient patient = proposedAppointment.Patient ?? referenceAppointment.Patient;
             Appointment patientReferenceAppointment = referenceAppointment;
             if ((proposedAppointment.Patient != null) && (proposedAppointment.Patient != referenceAppointment?.Patient))
@@ -224,185 +221,6 @@ namespace HospitalIS.Frontend.CLI.Model
                     hintExaminationRoomNotAvailable,
                 },
                 inputCancelString);
-        }
-
-        private enum AppointmentProperty
-        {
-            DOCTOR,
-            PATIENT,
-            ROOM,
-            SCHEDULED_FOR,
-        }
-
-        private static List<AppointmentProperty> GetModifiableProperties(UserAccount user)
-        {
-            List<AppointmentProperty> modifiableProperties = GetAllAppointmentProperties();
-
-            if (user.Type == UserAccount.AccountType.PATIENT)
-            {
-                modifiableProperties.Remove(AppointmentProperty.PATIENT);
-                modifiableProperties.Remove(AppointmentProperty.ROOM);
-            }
-
-            return modifiableProperties;
-        }
-
-        private static List<AppointmentProperty> GetAllAppointmentProperties()
-        {
-            return Enum.GetValues(typeof(AppointmentProperty)).Cast<AppointmentProperty>().ToList();
-        }
-
-        private static List<Appointment> GetModifiableAppointments(UserAccount user)
-        {
-            if (user.Type == UserAccount.AccountType.PATIENT)
-            {
-                return IS.Instance.Hospital.Appointments.Where(
-                    a => !a.Deleted && user.Person.Id == a.Patient.Person.Id && CanModifyAppointment(a.ScheduledFor, user)).ToList();
-            }
-            else
-            {
-                return IS.Instance.Hospital.Appointments.Where(
-                    a => !a.Deleted && CanModifyAppointment(a.ScheduledFor, user)).ToList();
-            }
-        }
-
-        private static List<Appointment> GetModifiableAppointments()
-        {
-            return IS.Instance.Hospital.Appointments.Where(a => !a.Deleted).ToList();
-        }
-
-        private static bool CanModifyAppointment(DateTime scheduledFor, UserAccount user)
-        {
-            if (user.Type == UserAccount.AccountType.PATIENT)
-            {
-                TimeSpan difference = scheduledFor - DateTime.Now;
-                return difference.TotalDays >= daysBeforeAppointmentUnmodifiable;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        private static bool MustRequest(DateTime scheduledFor, UserAccount user)
-        {
-            if (user.Type == UserAccount.AccountType.PATIENT)
-            {
-                TimeSpan difference = scheduledFor - DateTime.Now;
-                return difference.TotalDays < daysBeforeModificationNeedsRequest;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        private static List<Doctor> GetModifiableDoctors()
-        {
-            return IS.Instance.Hospital.Doctors.Where(d => !d.Deleted).ToList();
-        }
-
-        private static List<Patient> GetModifiablePatients()
-        {
-            return IS.Instance.Hospital.Patients.Where(p => !p.Deleted).ToList();
-        }
-
-        private static List<Room> GetModifiableExaminationRooms()
-        {
-            return IS.Instance.Hospital.Rooms.Where(r => !r.Deleted && r.Type == Room.RoomType.EXAMINATION).ToList();
-        }
-
-        private static List<Doctor> GetAvailableDoctors(Appointment refAppointment)
-        {
-            if (refAppointment == null)
-            {
-                return GetModifiableDoctors();
-            }
-
-            return IS.Instance.Hospital.Doctors.Where(
-                d => !d.Deleted && IsAvailable(d, refAppointment, refAppointment.ScheduledFor)).ToList();
-        }
-
-        private static List<Patient> GetAvailablePatients(Appointment refAppointment)
-        {
-            if (refAppointment == null)
-            {
-                return GetModifiablePatients();
-            }
-
-            return IS.Instance.Hospital.Patients.Where(
-                p => !p.Deleted && IsAvailable(p, refAppointment, refAppointment.ScheduledFor)).ToList();
-        }
-
-        private static List<Room> GetAvailableExaminationRooms(Appointment refAppointment)
-        {
-            if (refAppointment == null)
-            {
-                return GetModifiableExaminationRooms();
-            }
-
-            return IS.Instance.Hospital.Rooms.Where(
-                r => !r.Deleted && r.Type == Room.RoomType.EXAMINATION && IsAvailable(r, refAppointment, refAppointment.ScheduledFor)).ToList();
-        }
-
-        private static bool IsAvailable(Patient patient, Appointment refAppointment, DateTime newSchedule)
-        {
-            foreach (Appointment appointment in GetModifiableAppointments())
-            {
-                if ((patient == appointment.Patient) && (appointment != refAppointment))
-                {
-                    if (AreColliding(appointment.ScheduledFor, newSchedule))
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
-        private static bool IsAvailable(Doctor doctor, Appointment refAppointment, DateTime newSchedule)
-        {
-            foreach (Appointment appointment in GetModifiableAppointments())
-            {
-                if ((doctor == appointment.Doctor) && (appointment != refAppointment))
-                {
-                    if (AreColliding(appointment.ScheduledFor, newSchedule))
-                    {
-                        return false;
-                    }
-
-                }
-            }
-            return true;
-        }
-
-        private static bool IsAvailable(Room room, Appointment refAppointment, DateTime newSchedule)
-        {
-            foreach (Appointment appointment in GetModifiableAppointments())
-            {
-                if ((room == appointment.Room) && (appointment != refAppointment))
-                {
-                    if (AreColliding(appointment.ScheduledFor, newSchedule))
-                    {
-                        return false;
-                    }
-
-                }
-            }
-            return true;
-        }
-
-        private static bool AreColliding(DateTime schedule1, DateTime schedule2)
-        {
-            TimeSpan difference = schedule1 - schedule2;
-            return Math.Abs(difference.TotalMinutes) < lengthOfAppointmentInMinutes;
-        }
-
-        private static void CopyAppointment(Appointment target, Appointment source, List<AppointmentProperty> whichProperties)
-        {
-            if (whichProperties.Contains(AppointmentProperty.DOCTOR)) target.Doctor = source.Doctor;
-            if (whichProperties.Contains(AppointmentProperty.PATIENT)) target.Patient = source.Patient;
-            if (whichProperties.Contains(AppointmentProperty.SCHEDULED_FOR)) target.ScheduledFor = source.ScheduledFor;
         }
     }
 }
