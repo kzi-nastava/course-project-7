@@ -127,6 +127,8 @@ namespace HospitalIS.Frontend.CLI.Model
 				temp.ScheduledFor = InputRelocationTimestamp(inputCancelString);
 			}
 
+			Debug.Assert(reference.ScheduledFor != DateTime.MinValue);
+
 			return temp;
 		}
 

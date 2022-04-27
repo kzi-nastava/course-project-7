@@ -14,7 +14,7 @@ namespace HospitalIS.Backend
 		[JsonConverter(typeof(Repository.RoomRepository.RoomReferenceConverter))]
 		public Room RoomOld { get; set; } = null;
 
-		public DateTime ScheduledFor { get; set; } = null;
+		public DateTime ScheduledFor { get; set; } = DateTime.MinValue;
 
 		public EquipmentRelocation(Equipment equipment, Room roomOld, Room roomNew, DateTime scheduledFor)
 		{
