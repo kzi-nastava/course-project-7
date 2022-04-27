@@ -16,42 +16,24 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintPatientNotAvailable = "Patient is not available at the selected date and time";
         private const string hintDoctorNotAvailable = "Doctor is not available at the selected date and time";
         private const string hintDateTimeNotInFuture = "Date and time must be in the future";
-        private const string hintAppointmentsNotAvailable = "No appointments available.";
-        private const string errMsgNoDoctorAvailable = "No valid doctor available";
-        private const string errMsgNoPatientAvailable = "No valid patient available";
 
         private const int lengthOfAppointmentInMinutes = 15;
         private const int daysBeforeAppointmentUnmodifiable = 1;
         private const int daysBeforeModificationNeedsRequest = 2;
 
-        private class FailedInputAppointmentException : Exception
-        {
-            internal FailedInputAppointmentException(string errorMessage) : base($"Appointment input failed: {errorMessage}.")
-            {
-
-            }
-        }
-
-        private enum AppointmentProperty
-        {
-            DOCTOR,
-            PATIENT,
-            SCHEDULED_FOR,
-        }
-
         internal static void CreateAppointment(string inputCancelString, UserAccount user)
         {
-            var allAppointmentProperties = Enum.GetValues(typeof(AppointmentProperty)).Cast<AppointmentProperty>().ToList();
+            List<AppointmentProperty> allAppointmentProperties = GetAllAppointmentProperties();
             try
             {
-                Appointment appointment = InputAppointment(inputCancelString, allAppointmentProperties, user);
+                Appointment appointment = InputAppointment(inputCancelString, allAppointmentProperties, user, null);
                 IS.Instance.UserAccountRepo.AddCreatedAppointmentTimestamp(user, DateTime.Now);
                 IS.Instance.AppointmentRepo.Add(appointment);
             }
             catch (InputCancelledException)
             {
             }
-            catch (FailedInputAppointmentException e)
+            catch (InputFailedException e)
             {
                 Console.WriteLine(e.Message);
             }
@@ -59,29 +41,20 @@ namespace HospitalIS.Frontend.CLI.Model
 
         internal static void UpdateAppointment(string inputCancelString, UserAccount user)
         {
+            List<Appointment> modifiableAppointments = GetModifiableAppointments(user);
+
+            Console.WriteLine(hintSelectAppointment);
             try
             {
-                List<Appointment> selectableAppointments = GetModifiableAppointments();
-                if (user.Type == UserAccount.AccountType.PATIENT)
-                {
-                    selectableAppointments = selectableAppointments.Where(a => a.Patient.Person.Id == user.Person.Id).ToList();
-                }
-
-                Console.WriteLine(hintSelectAppointment);
-                Appointment appointment = EasyInput<Appointment>.Select(selectableAppointments, inputCancelString);
+                Appointment appointment = EasyInput<Appointment>.Select(modifiableAppointments, inputCancelString);
 
                 Console.WriteLine(appointment.ToString());
                 Console.WriteLine(hintSelectProperties);
 
-
-                List<AppointmentProperty> selectableProperties = Enum.GetValues(typeof(AppointmentProperty)).Cast<AppointmentProperty>().ToList();
-                if (user.Type == UserAccount.AccountType.PATIENT)
-                {
-                    selectableProperties.Remove(AppointmentProperty.PATIENT);
-                }
+                List<AppointmentProperty> modifiableProperties = GetModifiableProperties(user);
 
                 var propertiesToUpdate = EasyInput<AppointmentProperty>.SelectMultiple(
-                    selectableProperties,
+                    modifiableProperties,
                     a => Enum.GetName(typeof(AppointmentProperty), a),
                     inputCancelString
                 ).ToList();
@@ -90,12 +63,10 @@ namespace HospitalIS.Frontend.CLI.Model
 
                 IS.Instance.UserAccountRepo.AddModifiedAppointmentTimestamp(user, DateTime.Now);
 
-                if (MustRequestModification(appointment.ScheduledFor, user))
+                if (MustRequest(appointment.ScheduledFor, user))
                 {
-                    // This will represent the final state of the appointment, so that when the request gets approved we don't need to know which
-                    // properties to copy over, and instead can just copy all of them.
                     var proposedAppointment = new Appointment();
-                    CopyAppointment(proposedAppointment, appointment, Enum.GetValues(typeof(AppointmentProperty)).Cast<AppointmentProperty>().ToList());
+                    CopyAppointment(proposedAppointment, appointment, GetAllAppointmentProperties());
                     CopyAppointment(proposedAppointment, updatedAppointment, propertiesToUpdate);
                     IS.Instance.UpdateRequestRepo.Add(new UpdateRequest(user, appointment, proposedAppointment));
                 }
@@ -107,11 +78,7 @@ namespace HospitalIS.Frontend.CLI.Model
             catch (InputCancelledException)
             {
             }
-            catch (NothingToSelectException)
-            {
-                Console.WriteLine(hintAppointmentsNotAvailable);
-            }
-            catch (FailedInputAppointmentException e)
+            catch (InputFailedException e)
             {
                 Console.WriteLine(e.Message);
             }
@@ -120,20 +87,16 @@ namespace HospitalIS.Frontend.CLI.Model
         internal static void DeleteAppointment(string inputCancelString, UserAccount user)
         {
             Console.WriteLine(hintSelectAppointments);
-
             try
             {
-                List<Appointment> selectableAppointments = GetModifiableAppointments();
-                if (user.Type == UserAccount.AccountType.PATIENT)
-                {
-                    selectableAppointments = selectableAppointments.Where(a => a.Patient.Person.Id == user.Person.Id).ToList();
-                }
+                List<Appointment> modifiableAppointments = GetModifiableAppointments(user);
 
-                var appointmentsToDelete = EasyInput<Appointment>.SelectMultiple(selectableAppointments, inputCancelString);
+                var appointmentsToDelete = EasyInput<Appointment>.SelectMultiple(modifiableAppointments, inputCancelString);
                 foreach (Appointment appointment in appointmentsToDelete)
                 {
                     IS.Instance.UserAccountRepo.AddModifiedAppointmentTimestamp(user, DateTime.Now);
-                    if (MustRequestModification(appointment.ScheduledFor, user))
+
+                    if (MustRequest(appointment.ScheduledFor, user))
                     {
                         IS.Instance.DeleteRequestRepo.Add(new DeleteRequest(user, appointment));
                     }
@@ -143,31 +106,23 @@ namespace HospitalIS.Frontend.CLI.Model
                     }
                 }
             }
-            catch (NothingToSelectException)
-            {
-                Console.WriteLine(hintAppointmentsNotAvailable);
-            }
             catch (InputCancelledException)
             {
             }
+            catch (InputFailedException e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
-        private static Appointment InputAppointment(string inputCancelString, List<AppointmentProperty> whichProperties, UserAccount user, Appointment referenceAppointment = null)
+        private static Appointment InputAppointment(string inputCancelString, List<AppointmentProperty> whichProperties, UserAccount user, Appointment refAppointment)
         {
             var appointment = new Appointment();
 
             if (whichProperties.Contains(AppointmentProperty.DOCTOR))
             {
-                try
-                {
-                    Console.WriteLine(hintInputDoctor);
-                    appointment.Doctor = InputDoctor(inputCancelString, referenceAppointment);
-                }
-                catch (NothingToSelectException)
-                {
-                    appointment.Doctor = referenceAppointment?.Doctor ?? throw new FailedInputAppointmentException(errMsgNoDoctorAvailable);
-                    Console.WriteLine($"No doctors are available for the appointment. Defaulted to old doctor: {appointment.Doctor.ToString()}.");
-                }
+                Console.WriteLine(hintInputDoctor);
+                appointment.Doctor = InputDoctor(inputCancelString, refAppointment);
             }
 
             if (whichProperties.Contains(AppointmentProperty.PATIENT))
@@ -178,28 +133,15 @@ namespace HospitalIS.Frontend.CLI.Model
                 }
                 else
                 {
-                    try
-                    {
-                        Console.WriteLine(hintInputPatient);
-                        appointment.Patient = InputPatient(inputCancelString, referenceAppointment);
-                    }
-                    catch (NothingToSelectException)
-                    {
-                        appointment.Patient = referenceAppointment?.Patient ?? throw new FailedInputAppointmentException(errMsgNoPatientAvailable);
-                        Console.WriteLine($"No patients are available for the appointment. Defaulted to old patient: {appointment.Patient.ToString()}.");
-                    }
+                    Console.WriteLine(hintInputPatient);
+                    appointment.Patient = InputPatient(inputCancelString, refAppointment);
                 }
             }
 
             if (whichProperties.Contains(AppointmentProperty.SCHEDULED_FOR))
             {
                 Console.WriteLine(hintInputScheduledFor);
-
-                // These should not throw, but we cover the case anyway.
-                appointment.Patient = appointment?.Patient ?? referenceAppointment?.Patient ?? throw new FailedInputAppointmentException(errMsgNoPatientAvailable);
-                appointment.Doctor = appointment?.Doctor ?? referenceAppointment?.Doctor ?? throw new FailedInputAppointmentException(errMsgNoDoctorAvailable);
-
-                appointment.ScheduledFor = InputScheduledFor(inputCancelString, appointment);
+                appointment.ScheduledFor = InputScheduledFor(inputCancelString, appointment, refAppointment);
             }
 
             return appointment;
@@ -215,14 +157,32 @@ namespace HospitalIS.Frontend.CLI.Model
             return EasyInput<Patient>.Select(GetAvailablePatients(referenceAppointment), inputCancelString);
         }
 
-        private static DateTime InputScheduledFor(string inputCancelString, Appointment referenceAppointment)
+        private static DateTime InputScheduledFor(string inputCancelString, Appointment proposedAppointment, Appointment referenceAppointment)
         {
+            // If referenceAppointment is null -> we're doing a Create, proposedAppointment has non-null Patient and Doctor
+            // If proposedAppointment's Patient and/or Doctor are null -> we're doing an Update, referenceAppointment has non-null Patient and Doctor
+            // If the Patient/Doctor have been changed from the non-null referenceAppointment (we're Updating), then the referenceAppointment is no longer valid
+
+            Doctor doctor = proposedAppointment.Doctor ?? referenceAppointment.Doctor;
+            Appointment doctorReferenceAppointment = referenceAppointment;
+            if ((proposedAppointment.Doctor != null) && (proposedAppointment.Doctor != referenceAppointment?.Doctor))
+            {
+                doctorReferenceAppointment = null;
+            }
+            
+            Patient patient = proposedAppointment.Patient ?? referenceAppointment.Patient;
+            Appointment patientReferenceAppointment = referenceAppointment;
+            if ((proposedAppointment.Patient != null) && (proposedAppointment.Patient != referenceAppointment?.Patient))
+            {
+                patientReferenceAppointment = null;
+            }
+
             return EasyInput<DateTime>.Get(
                 new List<Func<DateTime, bool>>()
                 {
                     newSchedule => newSchedule.CompareTo(DateTime.Now) > 0,
-                    newSchedule => IsAvailable(referenceAppointment.Patient, referenceAppointment, newSchedule),
-                    newSchedule => IsAvailable(referenceAppointment.Doctor, referenceAppointment, newSchedule)
+                    newSchedule => IsAvailable(patient, patientReferenceAppointment, newSchedule),
+                    newSchedule => IsAvailable(doctor, doctorReferenceAppointment, newSchedule)
                 },
                 new string[]
                 {
@@ -232,69 +192,113 @@ namespace HospitalIS.Frontend.CLI.Model
                 },
                 inputCancelString);
         }
+
+        private enum AppointmentProperty
+        {
+            DOCTOR,
+            PATIENT,
+            SCHEDULED_FOR,
+        }
+
+        private static List<AppointmentProperty> GetModifiableProperties(UserAccount user)
+        {
+            if (user.Type == UserAccount.AccountType.PATIENT)
+            {
+                List<AppointmentProperty> modifiableProperties = GetAllAppointmentProperties();
+                modifiableProperties.Remove(AppointmentProperty.PATIENT);
+                return modifiableProperties;
+            }
+            else
+            {
+                return GetAllAppointmentProperties();
+            }
+        }
+
+        private static List<AppointmentProperty> GetAllAppointmentProperties()
+        {
+            return Enum.GetValues(typeof(AppointmentProperty)).Cast<AppointmentProperty>().ToList();
+        }
+
+        private static List<Appointment> GetModifiableAppointments(UserAccount user)
+        {
+            if (user.Type == UserAccount.AccountType.PATIENT)
+            {
+                return IS.Instance.Hospital.Appointments.Where(
+                    a => !a.Deleted && user.Person.Id == a.Patient.Person.Id && CanModifyAppointment(a.ScheduledFor, user)).ToList();
+            }
+            else
+            {
+                return IS.Instance.Hospital.Appointments.Where(
+                    a => !a.Deleted && CanModifyAppointment(a.ScheduledFor, user)).ToList();
+            }
+        }
+
         private static List<Appointment> GetModifiableAppointments()
         {
-            return IS.Instance.Hospital.Appointments.Where(a => !a.Deleted && CanModifyAppointment(a.ScheduledFor)).ToList();
+            return IS.Instance.Hospital.Appointments.Where(a => !a.Deleted).ToList();
         }
 
-        private static bool CanModifyAppointment(DateTime scheduledFor)
+        private static bool CanModifyAppointment(DateTime scheduledFor, UserAccount user)
         {
-            TimeSpan difference = scheduledFor - DateTime.Now;
-            return difference.TotalDays >= daysBeforeAppointmentUnmodifiable;
+            if (user.Type == UserAccount.AccountType.PATIENT)
+            {
+                TimeSpan difference = scheduledFor - DateTime.Now;
+                return difference.TotalDays >= daysBeforeAppointmentUnmodifiable;
+            }
+            else
+            {
+                return true;
+            }
         }
 
-        private static bool MustRequestModification(DateTime scheduledFor, UserAccount user)
+        private static bool MustRequest(DateTime scheduledFor, UserAccount user)
         {
-            if (user.Type != UserAccount.AccountType.PATIENT)
+            if (user.Type == UserAccount.AccountType.PATIENT)
+            {
+                TimeSpan difference = scheduledFor - DateTime.Now;
+                return difference.TotalDays < daysBeforeModificationNeedsRequest;
+            }
+            else
             {
                 return false;
             }
-
-            TimeSpan difference = scheduledFor - DateTime.Now;
-            return difference.TotalDays < daysBeforeModificationNeedsRequest;
         }
 
-        private static List<Doctor> GetNonDeletedDoctors()
+        private static List<Doctor> GetModifiableDoctors()
         {
             return IS.Instance.Hospital.Doctors.Where(d => !d.Deleted).ToList();
         }
 
-        private static List<Patient> GetNonDeletedPatients()
+        private static List<Patient> GetModifiablePatients()
         {
             return IS.Instance.Hospital.Patients.Where(p => !p.Deleted).ToList();
         }
 
-        private static List<Doctor> GetAvailableDoctors(Appointment referenceAppointment)
+        private static List<Doctor> GetAvailableDoctors(Appointment refAppointment)
         {
-            if (referenceAppointment == null)
+            if (refAppointment == null)
             {
-                return GetNonDeletedDoctors();
+                return GetModifiableDoctors();
             }
 
-            return GetNonDeletedDoctors().Where(d => IsAvailable(d, referenceAppointment)).ToList();
+            return GetModifiableDoctors().Where(d => IsAvailable(d, refAppointment, refAppointment.ScheduledFor)).ToList();
         }
 
-        private static List<Patient> GetAvailablePatients(Appointment referenceAppointment)
+        private static List<Patient> GetAvailablePatients(Appointment refAppointment)
         {
-            if (referenceAppointment == null)
+            if (refAppointment == null)
             {
-                return GetNonDeletedPatients();
+                return GetModifiablePatients();
             }
 
-            return GetNonDeletedPatients().Where(p => IsAvailable(p, referenceAppointment)).ToList();
+            return GetModifiablePatients().Where(p => IsAvailable(p, refAppointment, refAppointment.ScheduledFor)).ToList();
         }
 
-
-        private static bool IsAvailable(Patient patient, Appointment referenceAppointment)
-        {
-            return IsAvailable(patient, referenceAppointment, referenceAppointment.ScheduledFor);
-        }
-
-        private static bool IsAvailable(Patient patient, Appointment referenceAppointment, DateTime newSchedule)
+        private static bool IsAvailable(Patient patient, Appointment refAppointment, DateTime newSchedule)
         {
             foreach (Appointment appointment in GetModifiableAppointments())
             {
-                if ((patient == appointment.Patient) && (appointment != referenceAppointment))
+                if ((patient == appointment.Patient) && (appointment != refAppointment))
                 {
                     if (AreColliding(appointment.ScheduledFor, newSchedule))
                     {
@@ -305,16 +309,11 @@ namespace HospitalIS.Frontend.CLI.Model
             return true;
         }
 
-        private static bool IsAvailable(Doctor doctor, Appointment referenceAppointment)
-        {
-            return IsAvailable(doctor, referenceAppointment, referenceAppointment.ScheduledFor);
-        }
-
-        private static bool IsAvailable(Doctor doctor, Appointment referenceAppointment, DateTime newSchedule)
+        private static bool IsAvailable(Doctor doctor, Appointment refAppointment, DateTime newSchedule)
         {
             foreach (Appointment appointment in GetModifiableAppointments())
             {
-                if ((doctor == appointment.Doctor) && (appointment != referenceAppointment))
+                if ((doctor == appointment.Doctor) && (appointment != refAppointment))
                 {
                     if (AreColliding(appointment.ScheduledFor, newSchedule))
                     {

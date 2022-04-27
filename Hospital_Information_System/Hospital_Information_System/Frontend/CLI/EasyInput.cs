@@ -15,9 +15,17 @@ namespace HospitalIS.Frontend.CLI
 		}
 	}
 
-	public class NothingToSelectException : Exception
+	public class InputFailedException : Exception
 	{
-		public NothingToSelectException() : base("Could not select from empty list.")
+		public InputFailedException(string errorMessage) : base(errorMessage)
+		{
+
+		}
+	}
+
+	public class NothingToSelectException : InputFailedException
+	{
+		public NothingToSelectException() : base("Nothing to select!")
 		{
 
 		}
