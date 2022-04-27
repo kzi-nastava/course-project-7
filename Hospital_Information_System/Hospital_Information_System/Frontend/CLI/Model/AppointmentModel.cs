@@ -12,9 +12,11 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintSelectProperties = "Select properties by their number, separated by whitespace.\nEnter a newline to finish";
         private const string hintInputDoctor = "Select doctor for the appointment";
         private const string hintInputPatient = "Select patient for the appointment";
+        private const string hintInputExaminationRoom = "Select examination room for the appointment";
         private const string hintInputScheduledFor = "Enter date and time for the appointment";
         private const string hintPatientNotAvailable = "Patient is not available at the selected date and time";
         private const string hintDoctorNotAvailable = "Doctor is not available at the selected date and time";
+        private const string hintExaminationRoomNotAvailable = "Examination room is not available at the selected date and time";
         private const string hintDateTimeNotInFuture = "Date and time must be in the future";
 
         private const int lengthOfAppointmentInMinutes = 15;
@@ -138,6 +140,23 @@ namespace HospitalIS.Frontend.CLI.Model
                 }
             }
 
+            if (whichProperties.Contains(AppointmentProperty.ROOM))
+            {
+                // Patient cannot modify the Room property, however when creating an Appointment we can reach here.
+                if (user.Type == UserAccount.AccountType.PATIENT)
+                {
+                    // Assign a random available Room with type Examination to the Appointment.
+                    var rnd = new Random();
+                    List<Room> rooms = GetAvailableExaminationRooms(refAppointment);
+                    appointment.Room = rooms[rnd.Next(rooms.Capacity)];
+                }
+                else
+                {
+                    Console.WriteLine(hintInputExaminationRoom);
+                    appointment.Room = InputExaminationRoom(inputCancelString, refAppointment);
+                }
+            }
+
             if (whichProperties.Contains(AppointmentProperty.SCHEDULED_FOR))
             {
                 Console.WriteLine(hintInputScheduledFor);
@@ -155,6 +174,11 @@ namespace HospitalIS.Frontend.CLI.Model
         private static Patient InputPatient(string inputCancelString, Appointment referenceAppointment)
         {
             return EasyInput<Patient>.Select(GetAvailablePatients(referenceAppointment), inputCancelString);
+        }
+
+        private static Room InputExaminationRoom(string inputCancelString, Appointment referenceAppointment)
+        {
+            return EasyInput<Room>.Select(GetAvailableExaminationRooms(referenceAppointment), inputCancelString);
         }
 
         private static DateTime InputScheduledFor(string inputCancelString, Appointment proposedAppointment, Appointment referenceAppointment)
@@ -177,18 +201,27 @@ namespace HospitalIS.Frontend.CLI.Model
                 patientReferenceAppointment = null;
             }
 
+            Room room = proposedAppointment.Room ?? referenceAppointment.Room;
+            Appointment roomReferenceAppointment = referenceAppointment;
+            if ((proposedAppointment.Room != null) && (proposedAppointment.Room != referenceAppointment?.Room))
+            {
+                roomReferenceAppointment = null;
+            }
+
             return EasyInput<DateTime>.Get(
                 new List<Func<DateTime, bool>>()
                 {
                     newSchedule => newSchedule.CompareTo(DateTime.Now) > 0,
                     newSchedule => IsAvailable(patient, patientReferenceAppointment, newSchedule),
-                    newSchedule => IsAvailable(doctor, doctorReferenceAppointment, newSchedule)
+                    newSchedule => IsAvailable(doctor, doctorReferenceAppointment, newSchedule),
+                    newSchedule => IsAvailable(room, roomReferenceAppointment, newSchedule),
                 },
                 new string[]
                 {
                     hintDateTimeNotInFuture,
                     hintPatientNotAvailable,
-                    hintDoctorNotAvailable
+                    hintDoctorNotAvailable,
+                    hintExaminationRoomNotAvailable,
                 },
                 inputCancelString);
         }
@@ -197,21 +230,21 @@ namespace HospitalIS.Frontend.CLI.Model
         {
             DOCTOR,
             PATIENT,
+            ROOM,
             SCHEDULED_FOR,
         }
 
         private static List<AppointmentProperty> GetModifiableProperties(UserAccount user)
         {
+            List<AppointmentProperty> modifiableProperties = GetAllAppointmentProperties();
+
             if (user.Type == UserAccount.AccountType.PATIENT)
             {
-                List<AppointmentProperty> modifiableProperties = GetAllAppointmentProperties();
                 modifiableProperties.Remove(AppointmentProperty.PATIENT);
-                return modifiableProperties;
+                modifiableProperties.Remove(AppointmentProperty.ROOM);
             }
-            else
-            {
-                return GetAllAppointmentProperties();
-            }
+
+            return modifiableProperties;
         }
 
         private static List<AppointmentProperty> GetAllAppointmentProperties()
@@ -274,6 +307,11 @@ namespace HospitalIS.Frontend.CLI.Model
             return IS.Instance.Hospital.Patients.Where(p => !p.Deleted).ToList();
         }
 
+        private static List<Room> GetModifiableExaminationRooms()
+        {
+            return IS.Instance.Hospital.Rooms.Where(r => !r.Deleted && r.Type == Room.RoomType.EXAMINATION).ToList();
+        }
+
         private static List<Doctor> GetAvailableDoctors(Appointment refAppointment)
         {
             if (refAppointment == null)
@@ -281,7 +319,8 @@ namespace HospitalIS.Frontend.CLI.Model
                 return GetModifiableDoctors();
             }
 
-            return GetModifiableDoctors().Where(d => IsAvailable(d, refAppointment, refAppointment.ScheduledFor)).ToList();
+            return IS.Instance.Hospital.Doctors.Where(
+                d => !d.Deleted && IsAvailable(d, refAppointment, refAppointment.ScheduledFor)).ToList();
         }
 
         private static List<Patient> GetAvailablePatients(Appointment refAppointment)
@@ -291,7 +330,19 @@ namespace HospitalIS.Frontend.CLI.Model
                 return GetModifiablePatients();
             }
 
-            return GetModifiablePatients().Where(p => IsAvailable(p, refAppointment, refAppointment.ScheduledFor)).ToList();
+            return IS.Instance.Hospital.Patients.Where(
+                p => !p.Deleted && IsAvailable(p, refAppointment, refAppointment.ScheduledFor)).ToList();
+        }
+
+        private static List<Room> GetAvailableExaminationRooms(Appointment refAppointment)
+        {
+            if (refAppointment == null)
+            {
+                return GetModifiableExaminationRooms();
+            }
+
+            return IS.Instance.Hospital.Rooms.Where(
+                r => !r.Deleted && r.Type == Room.RoomType.EXAMINATION && IsAvailable(r, refAppointment, refAppointment.ScheduledFor)).ToList();
         }
 
         private static bool IsAvailable(Patient patient, Appointment refAppointment, DateTime newSchedule)
@@ -314,6 +365,22 @@ namespace HospitalIS.Frontend.CLI.Model
             foreach (Appointment appointment in GetModifiableAppointments())
             {
                 if ((doctor == appointment.Doctor) && (appointment != refAppointment))
+                {
+                    if (AreColliding(appointment.ScheduledFor, newSchedule))
+                    {
+                        return false;
+                    }
+
+                }
+            }
+            return true;
+        }
+
+        private static bool IsAvailable(Room room, Appointment refAppointment, DateTime newSchedule)
+        {
+            foreach (Appointment appointment in GetModifiableAppointments())
+            {
+                if ((room == appointment.Room) && (appointment != refAppointment))
                 {
                     if (AreColliding(appointment.ScheduledFor, newSchedule))
                     {
