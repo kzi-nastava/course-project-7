@@ -13,21 +13,26 @@ namespace HospitalIS.Backend
         [JsonConverter(typeof(Repository.PatientRepository.PatientReferenceConverter))]
         public Patient Patient { get; set; }
 
+        [JsonConverter(typeof(Repository.RoomRepository.RoomReferenceConverter))]
+        public Room Room { get; set; }
+
         public DateTime ScheduledFor { get; set; }
 
-        public Appointment(Doctor doctor, Patient patient, DateTime scheduledFor)
+        public Appointment(Doctor doctor, Patient patient, Room room, DateTime scheduledFor)
         {
             Doctor = doctor;
             Patient = patient;
+            Room = room;
             ScheduledFor = scheduledFor;
         }
 
         public Appointment()
         {
         }
+
         public override string ToString()
         {
-            return $"Appointment{{Id = {Id}, Doctor = {Doctor.Id}, Patient = {Patient.Id}, ScheduledFor = {ScheduledFor}}}";
+            return $"Appointment{{Id = {Id}, Doctor = {Doctor.Id}, Patient = {Patient.Id}, Room = {Room.Id}, ScheduledFor = {ScheduledFor}}}";
         }
     }
 }

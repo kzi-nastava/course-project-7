@@ -6,6 +6,7 @@
       "$id": "2",
       "Doctor": 0,
       "Patient": 2,
+      "Room": 11,
       "ScheduledFor": "2022-04-27T10:15:00",
       "Id": -1,
       "Deleted": false
@@ -21,6 +22,7 @@
       "$id": "4",
       "Doctor": 0,
       "Patient": 2,
+      "Room": 11,
       "ScheduledFor": "2022-04-27T10:00:00",
       "Id": -1,
       "Deleted": false
