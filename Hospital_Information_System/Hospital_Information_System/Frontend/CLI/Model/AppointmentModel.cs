@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using static HospitalIS.Backend.Controller.AppointmentController;
+using static HospitalIS.Backend.Controller.UserAccountController;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
@@ -15,6 +16,7 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintInputPatient = "Select patient for the appointment";
         private const string hintInputExaminationRoom = "Select examination room for the appointment";
         private const string hintInputScheduledFor = "Enter date and time for the appointment";
+        private const string hintRequestSent = "Request for modification has been sent";
         private const string hintPatientNotAvailable = "Patient is not available at the selected date and time";
         private const string hintDoctorNotAvailable = "Doctor is not available at the selected date and time";
         private const string hintExaminationRoomNotAvailable = "Examination room is not available at the selected date and time";
@@ -26,7 +28,7 @@ namespace HospitalIS.Frontend.CLI.Model
             try
             {
                 Appointment appointment = InputAppointment(inputCancelString, allAppointmentProperties, user, null);
-                IS.Instance.UserAccountRepo.AddCreatedAppointmentTimestamp(user, DateTime.Now);
+                AddCreatedAppointmentTimestamp(user, DateTime.Now);
                 IS.Instance.AppointmentRepo.Add(appointment);
             }
             catch (InputCancelledException)
@@ -60,7 +62,7 @@ namespace HospitalIS.Frontend.CLI.Model
 
                 var updatedAppointment = InputAppointment(inputCancelString, propertiesToUpdate, user, appointment);
 
-                IS.Instance.UserAccountRepo.AddModifiedAppointmentTimestamp(user, DateTime.Now);
+                AddModifiedAppointmentTimestamp(user, DateTime.Now);
 
                 if (MustRequestAppointmentModification(appointment.ScheduledFor, user))
                 {
@@ -68,6 +70,7 @@ namespace HospitalIS.Frontend.CLI.Model
                     CopyAppointment(proposedAppointment, appointment, GetAllAppointmentProperties());
                     CopyAppointment(proposedAppointment, updatedAppointment, propertiesToUpdate);
                     IS.Instance.UpdateRequestRepo.Add(new UpdateRequest(user, appointment, proposedAppointment));
+                    Console.WriteLine(hintRequestSent);
                 }
                 else
                 {
@@ -93,11 +96,12 @@ namespace HospitalIS.Frontend.CLI.Model
                 var appointmentsToDelete = EasyInput<Appointment>.SelectMultiple(modifiableAppointments, inputCancelString);
                 foreach (Appointment appointment in appointmentsToDelete)
                 {
-                    IS.Instance.UserAccountRepo.AddModifiedAppointmentTimestamp(user, DateTime.Now);
+                    AddModifiedAppointmentTimestamp(user, DateTime.Now);
 
                     if (MustRequestAppointmentModification(appointment.ScheduledFor, user))
                     {
                         IS.Instance.DeleteRequestRepo.Add(new DeleteRequest(user, appointment));
+                        Console.WriteLine(hintRequestSent);
                     }
                     else
                     {

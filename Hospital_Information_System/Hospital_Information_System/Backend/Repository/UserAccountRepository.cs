@@ -8,9 +8,6 @@ namespace HospitalIS.Backend.Repository
 {
     internal class UserAccountRepository : IRepository<UserAccount>
     {
-        private static int pruningGracePeriodInDays = 30;
-        private static int appointmentModificationsInGracePeriod = 5;
-        private static int appointmentCreationsInGracePeriod = 8;
         public void Add(UserAccount entity)
         {
             List<UserAccount> UserAccounts = IS.Instance.Hospital.UserAccounts;
@@ -27,7 +24,6 @@ namespace HospitalIS.Backend.Repository
         public void Load(string fullFilename, JsonSerializerSettings settings)
         {
             IS.Instance.Hospital.UserAccounts = JsonConvert.DeserializeObject<List<UserAccount>>(File.ReadAllText(fullFilename), settings);
-            IS.Instance.Hospital.UserAccounts.ForEach(ua => PruneTimestamps(ua));
         }
 
         public void Remove(UserAccount entity)
@@ -62,54 +58,6 @@ namespace HospitalIS.Backend.Repository
             {
                 serializer.Serialize(writer, ((UserAccount)value).Id);
             }
-        }
-
-        public void AddModifiedAppointmentTimestamp(UserAccount user, DateTime timestamp)
-        {
-            user.AppointmentModifiedTimestamps.Add(timestamp);
-            DetectTrolling(user);
-        }
-        public void AddCreatedAppointmentTimestamp(UserAccount user, DateTime timestamp)
-        {
-            user.AppointmentCreatedTimestamps.Add(timestamp);
-            DetectTrolling(user);
-        }
-
-        public void DetectTrolling(UserAccount user)
-        {
-            PruneTimestamps(user);
-
-            if (user.Type != UserAccount.AccountType.PATIENT)
-            {
-                return;
-            }
-
-            if (user.AppointmentCreatedTimestamps.Count > appointmentCreationsInGracePeriod)
-            {
-                user.Blocked = true;
-                throw new UserAccountForcefullyBlockedException(
-                    $"Exceeded possible number of appointment creations ({appointmentCreationsInGracePeriod}) for the last {pruningGracePeriodInDays} days");
-            }
-
-            if (user.AppointmentModifiedTimestamps.Count > appointmentModificationsInGracePeriod)
-            {
-                user.Blocked = true;
-                throw new UserAccountForcefullyBlockedException(
-                    $"Exceeded possible number of appointment modifications ({appointmentModificationsInGracePeriod}) for the last {pruningGracePeriodInDays} days");
-            }
-        }
-
-        public void PruneTimestamps(UserAccount user)
-        {
-            void prune(List<DateTime> timestamps)
-            {
-                List<DateTime> prunableTimestamps = new List<DateTime>();
-                timestamps.ForEach(t => { if ((DateTime.Now - t).TotalDays > pruningGracePeriodInDays) prunableTimestamps.Add(t); });
-                prunableTimestamps.ForEach(t => timestamps.Remove(t));
-            }
-
-            prune(user.AppointmentCreatedTimestamps);
-            prune(user.AppointmentModifiedTimestamps);
         }
     }
 }
