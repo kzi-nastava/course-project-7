@@ -191,6 +191,7 @@ namespace HospitalIS.Backend.Controller
         {
             if (whichProperties.Contains(AppointmentProperty.DOCTOR)) target.Doctor = source.Doctor;
             if (whichProperties.Contains(AppointmentProperty.PATIENT)) target.Patient = source.Patient;
+            if (whichProperties.Contains(AppointmentProperty.ROOM)) target.Room = source.Room;
             if (whichProperties.Contains(AppointmentProperty.SCHEDULED_FOR)) target.ScheduledFor = source.ScheduledFor;
         }
     }
