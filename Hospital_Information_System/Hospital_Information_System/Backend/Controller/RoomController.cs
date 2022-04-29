@@ -30,11 +30,27 @@ namespace HospitalIS.Backend.Controller
 			return IS.Instance.Hospital.Rooms.Where(r => !r.Deleted && r.Type != Room.RoomType.WAREHOUSE).ToList();
 		}
 
+		public static List<Room> GetRooms()
+		{
+			return IS.Instance.Hospital.Rooms.Where(r => !r.Deleted).ToList();
+		}
+
 		public static List<Room.RoomType> GetModifiableRoomTypes()
 		{
 			return Enum.GetValues(typeof(Room.RoomType)).Cast<Room.RoomType>()
 				.Where(e => e != Room.RoomType.WAREHOUSE)
 				.ToList();
 		}
+
+		public static bool HasEquipment(Room room, Equipment equipment)
+		{
+			return room.Equipment.ContainsKey(equipment) && room.Equipment[equipment] > 0;
+		}
+
+		public static List<Equipment> GetEquipment(Room room)
+		{
+			return IS.Instance.Hospital.Equipment.Where(eq => HasEquipment(room, eq)).ToList();
+		}
+
 	}
 }

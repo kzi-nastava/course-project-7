@@ -16,6 +16,11 @@ namespace HospitalIS.Backend.Controller
 				return s2.Contains(s1);
 		}
 
+		public static List<Equipment> GetEquipment()
+		{
+			return IS.Instance.Hospital.Equipment.Where(e => !e.Deleted).ToList();
+		}
+
 		private static List<Equipment> MatchByString(string searchQuery, Func<Equipment, string> equipmentStrConv)
 		{
 			return IS.Instance.Hospital.Equipment.Where(eq => StringMatch(equipmentStrConv(eq), searchQuery)).ToList();
