@@ -11,10 +11,10 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintSelectAppointments = "Select appointments by their number, separated by whitespace.\nEnter a newline to finish";
         private const string hintSelectAppointment = "Select appointment";
         private const string hintSelectProperties = "Select properties by their number, separated by whitespace.\nEnter a newline to finish";
-        private const string hintInputDoctor = "Select doctor for the appointment";
-        private const string hintInputPatient = "Select patient for the appointment";
-        private const string hintInputExaminationRoom = "Select examination room for the appointment";
-        private const string hintInputScheduledFor = "Enter date and time for the appointment";
+        private const string hintSelectDoctor = "Select doctor for the appointment";
+        private const string hintSelectPatient = "Select patient for the appointment";
+        private const string hintSelectExaminationRoom = "Select examination room for the appointment";
+        private const string hintGetScheduledFor = "Enter date and time for the appointment";
         private const string hintRequestSent = "Request for modification has been sent";
         private const string hintPatientNotAvailable = "Patient is not available at the selected date and time";
         private const string hintDoctorNotAvailable = "Doctor is not available at the selected date and time";
@@ -23,10 +23,9 @@ namespace HospitalIS.Frontend.CLI.Model
 
         internal static void CreateAppointment(string inputCancelString, UserAccount user)
         {
-            var allAppointmentProperties = AppointmentController.GetAllAppointmentProperties();
             try
             {
-                Appointment appointment = InputAppointment(inputCancelString, allAppointmentProperties, user);
+                Appointment appointment = InputAppointment(inputCancelString, AppointmentController.GetAllAppointmentProperties(), user);
                 UserAccountController.AddCreatedAppointmentTimestamp(user, DateTime.Now);
                 IS.Instance.AppointmentRepo.Add(appointment);
             }
@@ -38,16 +37,10 @@ namespace HospitalIS.Frontend.CLI.Model
 
         internal static void UpdateAppointment(string inputCancelString, UserAccount user)
         {
-            Console.WriteLine(hintSelectAppointment);
             try
             {
                 Appointment appointment = SelectModifiableAppointment(inputCancelString, user);
-
-                Console.WriteLine(appointment.ToString());
-                Console.WriteLine(hintSelectProperties);
-
                 var propertiesToUpdate = SelectModifiableProperties(inputCancelString, user);
-
                 Appointment updatedAppointment = InputAppointment(inputCancelString, propertiesToUpdate, user, appointment);
 
                 UserAccountController.AddModifiedAppointmentTimestamp(user, DateTime.Now);
@@ -73,7 +66,6 @@ namespace HospitalIS.Frontend.CLI.Model
 
         internal static void DeleteAppointment(string inputCancelString, UserAccount user)
         {
-            Console.WriteLine(hintSelectAppointments);
             try
             {
                 var appointmentsToDelete = SelectModifiableAppointments(inputCancelString, user);
@@ -100,6 +92,7 @@ namespace HospitalIS.Frontend.CLI.Model
 
         private static List<AppointmentController.AppointmentProperty> SelectModifiableProperties(string inputCancelString, UserAccount user)
         {
+            Console.WriteLine(hintSelectProperties);
             return EasyInput<AppointmentController.AppointmentProperty>.SelectMultiple(
                 AppointmentController.GetModifiableProperties(user),
                 ap => AppointmentController.GetAppointmentPropertyName(ap),
@@ -109,12 +102,14 @@ namespace HospitalIS.Frontend.CLI.Model
 
         private static Appointment SelectModifiableAppointment(string inputCancelString, UserAccount user)
         {
+            Console.WriteLine(hintSelectAppointment);
             return EasyInput<Appointment>.Select(
                 AppointmentController.GetModifiableAppointments(user), inputCancelString);
         }
 
         private static List<Appointment> SelectModifiableAppointments(string inputCancelString, UserAccount user)
         {
+            Console.WriteLine(hintSelectAppointments);
             return EasyInput<Appointment>.SelectMultiple(
                 AppointmentController.GetModifiableAppointments(user), inputCancelString).ToList();
         }
@@ -125,43 +120,21 @@ namespace HospitalIS.Frontend.CLI.Model
 
             if (whichProperties.Contains(AppointmentController.AppointmentProperty.DOCTOR))
             {
-                Console.WriteLine(hintInputDoctor);
                 appointment.Doctor = InputDoctor(inputCancelString, refAppointment);
             }
 
             if (whichProperties.Contains(AppointmentController.AppointmentProperty.PATIENT))
             {
-                if (user.Type == UserAccount.AccountType.PATIENT)
-                {
-                    appointment.Patient = IS.Instance.Hospital.Patients.Find(p => p.Person.Id == user.Person.Id);
-                }
-                else
-                {
-                    Console.WriteLine(hintInputPatient);
-                    appointment.Patient = InputPatient(inputCancelString, refAppointment);
-                }
+                appointment.Patient = InputPatient(inputCancelString, refAppointment, user);
             }
 
             if (whichProperties.Contains(AppointmentController.AppointmentProperty.ROOM))
             {
-                // Patient cannot modify the Room property, however when creating an Appointment we can reach here.
-                if (user.Type == UserAccount.AccountType.PATIENT)
-                {
-                    // Assign a random available Room with type Examination to the Appointment.
-                    var rnd = new Random();
-                    var rooms = AppointmentController.GetAvailableExaminationRooms(refAppointment);
-                    appointment.Room = rooms[rnd.Next(rooms.Capacity)];
-                }
-                else
-                {
-                    Console.WriteLine(hintInputExaminationRoom);
-                    appointment.Room = InputExaminationRoom(inputCancelString, refAppointment);
-                }
+                appointment.Room = InputExaminationRoom(inputCancelString, refAppointment, user);
             }
 
             if (whichProperties.Contains(AppointmentController.AppointmentProperty.SCHEDULED_FOR))
             {
-                Console.WriteLine(hintInputScheduledFor);
                 appointment.ScheduledFor = InputScheduledFor(inputCancelString, appointment, refAppointment);
             }
 
@@ -170,17 +143,38 @@ namespace HospitalIS.Frontend.CLI.Model
 
         private static Doctor InputDoctor(string inputCancelString, Appointment referenceAppointment)
         {
+            Console.WriteLine(hintSelectDoctor);
             return EasyInput<Doctor>.Select(AppointmentController.GetAvailableDoctors(referenceAppointment), inputCancelString);
         }
 
-        private static Patient InputPatient(string inputCancelString, Appointment referenceAppointment)
+        private static Patient InputPatient(string inputCancelString, Appointment referenceAppointment, UserAccount user)
         {
-            return EasyInput<Patient>.Select(AppointmentController.GetAvailablePatients(referenceAppointment), inputCancelString);
+            if (user.Type == UserAccount.AccountType.PATIENT)
+            {
+                return IS.Instance.Hospital.Patients.First(p => p.Person.Id == user.Person.Id);
+            }
+            else
+            {
+                Console.WriteLine(hintSelectPatient);
+                return EasyInput<Patient>.Select(AppointmentController.GetAvailablePatients(referenceAppointment), inputCancelString);
+            }
         }
 
-        private static Room InputExaminationRoom(string inputCancelString, Appointment referenceAppointment)
+        private static Room InputExaminationRoom(string inputCancelString, Appointment referenceAppointment, UserAccount user)
         {
-            return EasyInput<Room>.Select(AppointmentController.GetAvailableExaminationRooms(referenceAppointment), inputCancelString);
+            // Patient cannot modify the Room property, however when creating an Appointment we can reach here.
+            if (user.Type == UserAccount.AccountType.PATIENT)
+            {
+                // Assign a random available Room with type Examination to the Appointment.
+                var rnd = new Random();
+                var rooms = AppointmentController.GetAvailableExaminationRooms(referenceAppointment);
+                return rooms[rnd.Next(rooms.Capacity)];
+            }
+            else
+            {
+                Console.WriteLine(hintSelectExaminationRoom);
+                return EasyInput<Room>.Select(AppointmentController.GetAvailableExaminationRooms(referenceAppointment), inputCancelString);
+            }
         }
 
         private static DateTime InputScheduledFor(string inputCancelString, Appointment proposedAppointment, Appointment referenceAppointment)
@@ -210,6 +204,7 @@ namespace HospitalIS.Frontend.CLI.Model
                 roomReferenceAppointment = null;
             }
 
+            Console.WriteLine(hintGetScheduledFor);
             return EasyInput<DateTime>.Get(
                 new List<Func<DateTime, bool>>()
                 {
