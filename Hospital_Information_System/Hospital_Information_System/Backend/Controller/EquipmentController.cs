@@ -64,14 +64,14 @@ namespace HospitalIS.Backend.Controller
 		public static int GetTotalSupplyCount(Equipment equipment)
 		{
 			int numberOfContainingRooms = 0;
-			IS.Instance.Hospital.Rooms.ForEach(r => { if (r.Equipment.ContainsKey(equipment)) numberOfContainingRooms += r.Equipment[equipment]; });
+			RoomController.GetRooms().ForEach(r => { if (r.Equipment.ContainsKey(equipment)) numberOfContainingRooms += r.Equipment[equipment]; });
 			return numberOfContainingRooms;
 		}
 
 		public static int GetContainingRoomCount(Equipment equipment)
 		{
 			int numberOfContainingRooms = 0;
-			IS.Instance.Hospital.Rooms.ForEach(r => { if (r.Equipment.ContainsKey(equipment)) numberOfContainingRooms++; });
+			RoomController.GetRooms().ForEach(r => { if (r.Equipment.ContainsKey(equipment)) numberOfContainingRooms++; });
 			return numberOfContainingRooms;
 		}
 	}

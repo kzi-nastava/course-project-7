@@ -27,7 +27,7 @@ namespace HospitalIS.Backend.Controller
 
 		public static List<Room> GetModifiableRooms()
 		{
-			return IS.Instance.Hospital.Rooms.Where(r => !r.Deleted && r.Type != Room.RoomType.WAREHOUSE).ToList();
+			return GetRooms().Where(r => r.Type != Room.RoomType.WAREHOUSE).ToList();
 		}
 
 		public static List<Room> GetRooms()
@@ -49,7 +49,7 @@ namespace HospitalIS.Backend.Controller
 
 		public static List<Equipment> GetEquipment(Room room)
 		{
-			return IS.Instance.Hospital.Equipment.Where(eq => HasEquipment(room, eq)).ToList();
+			return EquipmentController.GetEquipment().Where(eq => HasEquipment(room, eq)).ToList();
 		}
 
 	}
