@@ -30,7 +30,7 @@ namespace HospitalIS.Frontend.CLI.Model
 			var filterChoice = EasyInput<string>.Select(filterBy.Keys.ToList(), inputCancelString);
 
 			var filterResults = filterBy[filterChoice]();
-			PrintResults(filterResults, eq => $"{eq} [total items: {EquipmentController.GetTotalCount(eq)}]");
+			PrintResults(filterResults, eq => $"{eq} [total items: {EquipmentController.GetTotalSupplyCount(eq)}]");
 		}
 
 		internal static void Search(string inputCancelString)
@@ -78,7 +78,7 @@ namespace HospitalIS.Frontend.CLI.Model
 
 		private static string PrintSingleEquipment(Equipment equipment)
 		{
-			int containingRoomCount = EquipmentController.GetRoomCount(equipment);
+			int containingRoomCount = EquipmentController.GetContainingRoomCount(equipment);
 			return $"{equipment} in {containingRoomCount} room{(containingRoomCount != 1 ? "s" : "")}";
 		}
 

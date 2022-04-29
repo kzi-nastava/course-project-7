@@ -23,7 +23,7 @@ namespace HospitalIS.Backend.Controller
 
 		private static List<Equipment> MatchByString(string searchQuery, Func<Equipment, string> equipmentStrConv)
 		{
-			return IS.Instance.Hospital.Equipment.Where(eq => StringMatch(equipmentStrConv(eq), searchQuery)).ToList();
+			return GetEquipment().Where(eq => StringMatch(equipmentStrConv(eq), searchQuery)).ToList();
 		}
 
 		public static List<Equipment> MatchByType(string searchQuery)
@@ -48,27 +48,27 @@ namespace HospitalIS.Backend.Controller
 
 		public static List<Equipment> FilterByAmount(Func<int, bool> amountPredicate)
 		{
-			return IS.Instance.Hospital.Equipment.Where(eq => amountPredicate(GetTotalCount(eq))).ToList();
+			return GetEquipment().Where(eq => amountPredicate(GetTotalSupplyCount(eq))).ToList();
 		}
 
 		public static List<Equipment> FilterByUse(Equipment.EquipmentUse use)
 		{
-			return IS.Instance.Hospital.Equipment.Where(eq => eq.Use == use).ToList();
+			return GetEquipment().Where(eq => eq.Use == use).ToList();
 		}
 
 		public static List<Equipment> FilterByType(Equipment.EquipmentType type)
 		{
-			return IS.Instance.Hospital.Equipment.Where(eq => eq.Type == type).ToList();
+			return GetEquipment().Where(eq => eq.Type == type).ToList();
 		}
 
-		public static int GetTotalCount(Equipment equipment)
+		public static int GetTotalSupplyCount(Equipment equipment)
 		{
 			int numberOfContainingRooms = 0;
 			IS.Instance.Hospital.Rooms.ForEach(r => { if (r.Equipment.ContainsKey(equipment)) numberOfContainingRooms += r.Equipment[equipment]; });
 			return numberOfContainingRooms;
 		}
 
-		public static int GetRoomCount(Equipment equipment)
+		public static int GetContainingRoomCount(Equipment equipment)
 		{
 			int numberOfContainingRooms = 0;
 			IS.Instance.Hospital.Rooms.ForEach(r => { if (r.Equipment.ContainsKey(equipment)) numberOfContainingRooms++; });
