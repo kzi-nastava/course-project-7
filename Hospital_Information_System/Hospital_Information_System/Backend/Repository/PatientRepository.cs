@@ -21,7 +21,12 @@ namespace HospitalIS.Backend.Repository
         {
             return IS.Instance.Hospital.Patients.First(e => e.Id == id);
         }
-
+        
+        public Patient GetByPersonId(int id)
+        {
+            return IS.Instance.Hospital.Patients.First(e => e.Person.Id == id);
+        }
+        
         public void Load(string fullFilename, JsonSerializerSettings settings)
         {
             IS.Instance.Hospital.Patients = JsonConvert.DeserializeObject<List<Patient>>(File.ReadAllText(fullFilename), settings);

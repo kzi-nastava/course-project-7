@@ -16,5 +16,11 @@
     "Person": 5,
     "Id": 2,
     "Deleted": false
+  },
+  {
+    "$id": "4",
+    "Person": 6,
+    "Id": 3,
+    "Deleted": true
   }
 ]
