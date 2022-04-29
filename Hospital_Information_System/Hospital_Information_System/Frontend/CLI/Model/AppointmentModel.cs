@@ -139,10 +139,7 @@ namespace HospitalIS.Frontend.CLI.Model
             // Patient cannot modify the Room property, however when creating an Appointment we can reach here.
             if (user.Type == UserAccount.AccountType.PATIENT)
             {
-                // Assign a random available Room with type Examination to the Appointment.
-                var rnd = new Random();
-                var rooms = AppointmentController.GetAvailableExaminationRooms(referenceAppointment);
-                return rooms[rnd.Next(rooms.Capacity)];
+                return AppointmentController.GetRandomAvailableExaminationRoom(referenceAppointment);
             }
             else
             {

@@ -172,6 +172,13 @@ namespace HospitalIS.Backend.Controller
                 r => !r.Deleted && r.Type == Room.RoomType.EXAMINATION && IsAvailable(r, refAppointment, refAppointment.ScheduledFor)).ToList();
         }
 
+        public static Room GetRandomAvailableExaminationRoom(Appointment refAppointment)
+        {
+            var rnd = new Random();
+            var rooms = GetAvailableExaminationRooms(refAppointment);
+            return rooms[rnd.Next(rooms.Capacity)];
+        }
+
         public static bool IsAvailable(Patient patient, Appointment refAppointment, DateTime newSchedule)
         {
             foreach (Appointment appointment in GetModifiableAppointments())
