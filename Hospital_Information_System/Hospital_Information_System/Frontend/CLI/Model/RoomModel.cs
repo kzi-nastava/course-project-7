@@ -17,11 +17,17 @@ namespace HospitalIS.Frontend.CLI.Model
 		private const string errRoomNameNonEmpty = "Room name must not be empty!";
 		private const string errRoomFloorNonNegative = "Room floor must be a non-negative integer!";
 
-
 		internal static void CreateRoom(string inputCancelString)
 		{
 			Room room = InputRoom(inputCancelString, RoomController.GetRoomProperties());
 			IS.Instance.RoomRepo.Add(room);
+		}
+
+		internal static void ViewRoom(string inputCancelString)
+		{
+			Console.WriteLine(hintSelectRoom);
+			var room = EasyInput<Room>.Select(RoomController.GetModifiableRooms(), r => r.Name, inputCancelString);
+			Console.WriteLine(room.ToString());
 		}
 
 		internal static void UpdateRoom(string inputCancelString)
