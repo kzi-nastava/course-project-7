@@ -9,6 +9,7 @@ namespace HospitalIS.Backend.Controller
         public const int lengthOfAppointmentInMinutes = 15;
         public const int daysBeforeAppointmentUnmodifiable = 1;
         public const int daysBeforeModificationNeedsRequest = 2;
+        private const string hintRequestSent = "Request for modification sent.";
 
         public enum AppointmentProperty
         {
@@ -16,6 +17,43 @@ namespace HospitalIS.Backend.Controller
             PATIENT,
             ROOM,
             SCHEDULED_FOR,
+        }
+
+        public static void Create(Appointment appointment, UserAccount user)
+        {
+            UserAccountController.AddCreatedAppointmentTimestamp(user, DateTime.Now);
+            IS.Instance.AppointmentRepo.Add(appointment);
+        }
+
+        public static void Update(Appointment appointment, Appointment updatedAppointment, List<AppointmentProperty> propertiesToUpdate, UserAccount user)
+        {
+            UserAccountController.AddModifiedAppointmentTimestamp(user, DateTime.Now);
+            if (MustRequestModification(appointment.ScheduledFor, user))
+            {
+                var proposedAppointment = new Appointment();
+                CopyAppointment(proposedAppointment, appointment, GetAllAppointmentProperties());
+                CopyAppointment(proposedAppointment, updatedAppointment, propertiesToUpdate);
+                IS.Instance.UpdateRequestRepo.Add(new UpdateRequest(user, appointment, proposedAppointment));
+                Console.WriteLine(hintRequestSent);
+            }
+            else
+            {
+                CopyAppointment(appointment, updatedAppointment, propertiesToUpdate);
+            }
+        }
+
+        public static void Delete(Appointment appointment, UserAccount user)
+        {
+            UserAccountController.AddModifiedAppointmentTimestamp(user, DateTime.Now);
+            if (MustRequestModification(appointment.ScheduledFor, user))
+            {
+                IS.Instance.DeleteRequestRepo.Add(new DeleteRequest(user, appointment));
+                Console.WriteLine(hintRequestSent);
+            }
+            else
+            {
+                IS.Instance.AppointmentRepo.Remove(appointment);
+            }
         }
 
         public static string GetAppointmentPropertyName(AppointmentProperty ap)
@@ -73,7 +111,7 @@ namespace HospitalIS.Backend.Controller
             }
         }
 
-        public static bool MustRequestAppointmentModification(DateTime scheduledFor, UserAccount user)
+        public static bool MustRequestModification(DateTime scheduledFor, UserAccount user)
         {
             if (user.Type == UserAccount.AccountType.PATIENT)
             {

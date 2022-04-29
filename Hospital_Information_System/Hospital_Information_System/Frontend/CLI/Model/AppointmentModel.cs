@@ -15,7 +15,6 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintSelectPatient = "Select patient for the appointment";
         private const string hintSelectExaminationRoom = "Select examination room for the appointment";
         private const string hintGetScheduledFor = "Enter date and time for the appointment";
-        private const string hintRequestSent = "Request for modification has been sent";
         private const string hintPatientNotAvailable = "Patient is not available at the selected date and time";
         private const string hintDoctorNotAvailable = "Doctor is not available at the selected date and time";
         private const string hintExaminationRoomNotAvailable = "Examination room is not available at the selected date and time";
@@ -26,8 +25,7 @@ namespace HospitalIS.Frontend.CLI.Model
             try
             {
                 Appointment appointment = InputAppointment(inputCancelString, AppointmentController.GetAllAppointmentProperties(), user);
-                UserAccountController.AddCreatedAppointmentTimestamp(user, DateTime.Now);
-                IS.Instance.AppointmentRepo.Add(appointment);
+                AppointmentController.Create(appointment, user);
             }
             catch (InputFailedException e)
             {
@@ -42,21 +40,7 @@ namespace HospitalIS.Frontend.CLI.Model
                 Appointment appointment = SelectModifiableAppointment(inputCancelString, user);
                 var propertiesToUpdate = SelectModifiableProperties(inputCancelString, user);
                 Appointment updatedAppointment = InputAppointment(inputCancelString, propertiesToUpdate, user, appointment);
-
-                UserAccountController.AddModifiedAppointmentTimestamp(user, DateTime.Now);
-
-                if (AppointmentController.MustRequestAppointmentModification(appointment.ScheduledFor, user))
-                {
-                    var proposedAppointment = new Appointment();
-                    AppointmentController.CopyAppointment(proposedAppointment, appointment, AppointmentController.GetAllAppointmentProperties());
-                    AppointmentController.CopyAppointment(proposedAppointment, updatedAppointment, propertiesToUpdate);
-                    IS.Instance.UpdateRequestRepo.Add(new UpdateRequest(user, appointment, proposedAppointment));
-                    Console.WriteLine(hintRequestSent);
-                }
-                else
-                {
-                    AppointmentController.CopyAppointment(appointment, updatedAppointment, propertiesToUpdate);
-                }
+                AppointmentController.Update(appointment, updatedAppointment, propertiesToUpdate, user);
             }
             catch (InputFailedException e)
             {
@@ -71,17 +55,7 @@ namespace HospitalIS.Frontend.CLI.Model
                 var appointmentsToDelete = SelectModifiableAppointments(inputCancelString, user);
                 foreach (Appointment appointment in appointmentsToDelete)
                 {
-                    UserAccountController.AddModifiedAppointmentTimestamp(user, DateTime.Now);
-
-                    if (AppointmentController.MustRequestAppointmentModification(appointment.ScheduledFor, user))
-                    {
-                        IS.Instance.DeleteRequestRepo.Add(new DeleteRequest(user, appointment));
-                        Console.WriteLine(hintRequestSent);
-                    }
-                    else
-                    {
-                        IS.Instance.AppointmentRepo.Remove(appointment);
-                    }
+                    AppointmentController.Delete(appointment, user);
                 }
             }
             catch (InputFailedException e)
