@@ -6,9 +6,9 @@ namespace HospitalIS.Backend.Controller
 {
     internal class UserAccountController
     {
-        public const int pruningGracePeriodInDays = 30;
-        public const int appointmentModificationsInGracePeriod = 5;
-        public const int appointmentCreationsInGracePeriod = 8;
+        public const int PruningGracePeriodInDays = 30;
+        public const int AppointmentModificationsInGracePeriod = 5;
+        public const int AppointmentCreationsInGracePeriod = 8;
 
         public class InvalidLoginAttemptException : Exception
         {
@@ -57,18 +57,18 @@ namespace HospitalIS.Backend.Controller
                 return;
             }
 
-            if (user.AppointmentCreatedTimestamps.Count > appointmentCreationsInGracePeriod)
+            if (user.AppointmentCreatedTimestamps.Count > AppointmentCreationsInGracePeriod)
             {
                 user.Blocked = true;
                 throw new UserAccountForcefullyBlockedException(
-                    $"Exceeded possible number of appointment creations ({appointmentCreationsInGracePeriod}) for the last {pruningGracePeriodInDays} days");
+                    $"Exceeded possible number of appointment creations ({AppointmentCreationsInGracePeriod}) for the last {PruningGracePeriodInDays} days");
             }
 
-            if (user.AppointmentModifiedTimestamps.Count > appointmentModificationsInGracePeriod)
+            if (user.AppointmentModifiedTimestamps.Count > AppointmentModificationsInGracePeriod)
             {
                 user.Blocked = true;
                 throw new UserAccountForcefullyBlockedException(
-                    $"Exceeded possible number of appointment modifications ({appointmentModificationsInGracePeriod}) for the last {pruningGracePeriodInDays} days");
+                    $"Exceeded possible number of appointment modifications ({AppointmentModificationsInGracePeriod}) for the last {PruningGracePeriodInDays} days");
             }
         }
 
@@ -77,7 +77,7 @@ namespace HospitalIS.Backend.Controller
             void prune(List<DateTime> timestamps)
             {
                 List<DateTime> prunableTimestamps = new List<DateTime>();
-                timestamps.ForEach(t => { if ((DateTime.Now - t).TotalDays > pruningGracePeriodInDays) prunableTimestamps.Add(t); });
+                timestamps.ForEach(t => { if ((DateTime.Now - t).TotalDays > PruningGracePeriodInDays) prunableTimestamps.Add(t); });
                 prunableTimestamps.ForEach(t => timestamps.Remove(t));
             }
 
