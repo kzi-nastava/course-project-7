@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace HospitalIS.Backend.Controller
 {
-    public class UserAccountController
+    internal class UserAccountController
     {
         public const int pruningGracePeriodInDays = 30;
         public const int appointmentModificationsInGracePeriod = 5;

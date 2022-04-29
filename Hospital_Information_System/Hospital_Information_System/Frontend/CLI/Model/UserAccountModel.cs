@@ -1,6 +1,6 @@
 ﻿using HospitalIS.Backend;
 using System;
-using static HospitalIS.Backend.Controller.UserAccountController;
+using HospitalIS.Backend.Controller;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
@@ -21,10 +21,10 @@ namespace HospitalIS.Frontend.CLI.Model
 
                 try
                 {
-                    UserAccount account = AttemptLogin(username, password);
+                    UserAccount account = UserAccountController.AttemptLogin(username, password);
                     return account;
                 }
-                catch (InvalidLoginAttemptException e)
+                catch (UserAccountController.InvalidLoginAttemptException e)
                 {
                     Console.WriteLine(e.Message);
                 }

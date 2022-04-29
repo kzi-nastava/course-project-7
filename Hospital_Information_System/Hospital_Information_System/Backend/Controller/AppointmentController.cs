@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace HospitalIS.Backend.Controller
 {
-    public class AppointmentController
+    internal class AppointmentController
     {
         public const int lengthOfAppointmentInMinutes = 15;
         public const int daysBeforeAppointmentUnmodifiable = 1;
