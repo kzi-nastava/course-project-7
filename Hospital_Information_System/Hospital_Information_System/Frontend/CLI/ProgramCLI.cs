@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using HospitalIS.Backend;
 using HospitalIS.Frontend.CLI.Model;
+using HospitalIS.Backend.Controller;
 
 namespace HospitalIS.Frontend.CLI
 {
@@ -33,7 +34,7 @@ namespace HospitalIS.Frontend.CLI
             try
             {
                 IS.Instance.Load(dataDirectory);
-                user = UserAccountModel.AttemptLogin("bowen", "123");
+                user = UserAccountController.AttemptLogin("bowen", "123");
                 commandMapping["-appointment-update"]();
                 //commandMapping["-appointment-create"]();
             }
