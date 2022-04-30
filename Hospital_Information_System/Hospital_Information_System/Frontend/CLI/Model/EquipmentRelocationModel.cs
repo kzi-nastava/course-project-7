@@ -56,7 +56,6 @@ namespace HospitalIS.Frontend.CLI.Model
 			var selectedProperties = SelectEquipmentRelocationProperties(inputCancelString);
 			var inputRelocation = InputRelocation(inputCancelString, selectedProperties, selectedRelocation);
 			EquipmentRelocationController.Copy(selectedRelocation, inputRelocation, selectedProperties);
-
 		}
 
 		private static void NewRelocation(string inputCancelString)

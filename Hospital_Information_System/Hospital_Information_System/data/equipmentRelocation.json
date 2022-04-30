@@ -24,6 +24,15 @@
     "RoomOld": 22,
     "ScheduledFor": "2022-04-30T15:49:00",
     "Id": 2,
+    "Deleted": true
+  },
+  {
+    "$id": "4",
+    "Equipment": 22,
+    "RoomNew": 22,
+    "RoomOld": 20,
+    "ScheduledFor": "2022-05-01T17:52:00",
+    "Id": 3,
     "Deleted": false
   }
 ]

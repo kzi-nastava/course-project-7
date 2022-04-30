@@ -23,6 +23,7 @@ namespace HospitalIS.Backend.Controller
 		public static void Copy(EquipmentRelocation dest, EquipmentRelocation src, List<Property> properties)
 		{
 			if (properties.Contains(Property.EQUIPMENT)) dest.Equipment = src.Equipment;
+			if (properties.Contains(Property.OLD_ROOM)) dest.RoomOld = src.RoomOld;
 			if (properties.Contains(Property.NEW_ROOM)) dest.RoomNew = src.RoomNew;
 			if (properties.Contains(Property.WHEN_TO_RELOCATE)) dest.ScheduledFor = src.ScheduledFor;
 		}
@@ -54,7 +55,7 @@ namespace HospitalIS.Backend.Controller
 				return true;
 			}
 
-			return RoomController.HasEquipmentRightAfterRelocations(room, reference.Equipment);
+			return RoomController.HasEquipmentAfterRelocations(room, reference.Equipment);
 		}
 	}
 }

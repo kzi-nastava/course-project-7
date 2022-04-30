@@ -48,6 +48,10 @@ namespace HospitalIS.Frontend.CLI
                 Console.WriteLine(e.Message);
                 user = null;
             }
+            catch (InputCancelledException)
+			{
+                Console.WriteLine("^C");
+			}
             finally
             {
                 IS.Instance.Save(dataDirectory);

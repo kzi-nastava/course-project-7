@@ -47,15 +47,15 @@ namespace HospitalIS.Backend.Controller
 			return room.Equipment.ContainsKey(equipment) && room.Equipment[equipment] > 0;
 		}
 
-		public static bool HasEquipmentRightAfterRelocations(Room room, Equipment equipment)
+		public static bool HasEquipmentAfterRelocations(Room room, Equipment equipment)
 		{
 			var relevantRelocations = EquipmentRelocationController.GetRelocationsFrom(room, equipment);
-			return room.Equipment.ContainsKey(equipment) && room.Equipment[equipment] - relevantRelocations.Count > 0;
+			return room.Equipment.ContainsKey(equipment) && ((room.Equipment[equipment] - relevantRelocations.Count) > 0);
 		}
 
 		public static List<Equipment> GetEquipment(Room room)
 		{
-			return EquipmentController.GetEquipment().Where(eq => HasEquipmentRightAfterRelocations(room, eq)).ToList();
+			return EquipmentController.GetEquipment().Where(eq => HasEquipmentAfterRelocations(room, eq)).ToList();
 		}
 	}
 }
