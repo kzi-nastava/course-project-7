@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HospitalIS.Backend;
+using HospitalIS.Frontend.CLI;
 
 namespace HospitalIS.Backend.Controller
 {
@@ -10,7 +12,8 @@ namespace HospitalIS.Backend.Controller
         public const int DaysBeforeAppointmentUnmodifiable = 1;
         public const int DaysBeforeModificationNeedsRequest = 2;
         private const string hintRequestSent = "Request for modification sent.";
-
+        private const string hintDateTimeNotInFuture = "Date and time must be in the future, try something else";
+        private const string hintInputDate = "Input the date for which you want to be given scheduled appointments";
 
         public enum AppointmentProperty
         {
@@ -100,6 +103,35 @@ namespace HospitalIS.Backend.Controller
         {
             return IS.Instance.Hospital.Appointments.Where(
                 a => !a.Deleted && user.Person.Id == a.Doctor.Person.Id ).ToList();
+        }
+        
+        public static List<Appointment> GetNextDoctorsAppointments(UserAccount user, string inputCancelString)
+        {
+            Console.WriteLine(hintInputDate);
+            
+            DateTime firstRelevantDay = EasyInput<DateTime>.Get(
+                new List<Func<DateTime, bool>>()
+                {
+                    newSchedule => newSchedule.CompareTo(DateTime.Now) > 0,
+                },
+                new string[]
+                {
+                    hintDateTimeNotInFuture,
+                },
+                inputCancelString);
+            var lastRelevantDay = firstRelevantDay.AddDays(3);
+            List<Appointment> allAppointments = GetAllDoctorsAppointments(user);
+            List<Appointment> nextAppointments = new List<Appointment>();
+            foreach (var appointment in allAppointments)
+            {
+                if (DateTime.Compare(firstRelevantDay, appointment.ScheduledFor) <= 0 && //if date of the appointment is later than the first relevant day
+                    DateTime.Compare(appointment.ScheduledFor, lastRelevantDay) <= 0) // if date of the appointment is earlier than the last relevant day
+                {
+                    nextAppointments.Add(appointment);
+                }
+            }
+
+            return nextAppointments;
         }
 
         public static List<Appointment> GetModifiableAppointments(UserAccount user)

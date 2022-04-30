@@ -26,6 +26,7 @@ namespace HospitalIS.Frontend.CLI
             { "-appointment-read", () => AppointmentModel.ReadAppointments(user)},
             { "-appointment-update", () => AppointmentModel.UpdateAppointment(inputCancelString, user) },
             { "-appointment-delete", () => AppointmentModel.DeleteAppointment(inputCancelString, user) },
+            { "-appointment-read-and-start", () => AppointmentModel.ShowNextAppointments(user, inputCancelString) },
         };
 
         static void Main()
@@ -38,15 +39,15 @@ namespace HospitalIS.Frontend.CLI
                 IS.Instance.Load(dataDirectory);
 
                 //user = UserAccountModel.AttemptLogin("bowen", "123");
-                commandMapping["-equipment-relocate"]();
+                //commandMapping["-equipment-relocate"]();
 
                 //test user patient
                 //user = UserAccountController.AttemptLogin("bowen", "123");
                 
                 //test user doctor
-                //user = UserAccountController.AttemptLogin("grahame", "123");
+                user = UserAccountController.AttemptLogin("grahame", "123");
                 
-                
+                commandMapping["-appointment-read-and-start"]();
                 //commandMapping["-appointment-read"]();
                 //commandMapping["-appointment-update"]();
                 //commandMapping["-appointment-create"]();

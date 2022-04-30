@@ -22,6 +22,13 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintAppointmentScheduled = "You've successfully scheduled an appointment!";
         private const string hintAppointmentUpdated = "You've successfully updated an appointment!";
         private const string hintAppointmentDeleted = "You've successfully deleted an appointment!";
+        private const string hintNoScheduledAppoinments =
+            "You don't have any scheduled appointments for the time given.";
+
+        private const string hintCheckStartingAppointment =
+            "If you want to start any appointment - press 1, if not press anything else";
+
+        private const string hintAppointmentIsOver = "Appointment is over.";
         
         internal static void CreateAppointment(string inputCancelString, UserAccount user)
         {
@@ -230,5 +237,44 @@ namespace HospitalIS.Frontend.CLI.Model
                 },
                 inputCancelString);
         }
+        public static void ShowNextAppointments(UserAccount user, string inputCancelString)
+        {
+            List <Appointment> nextAppointments = AppointmentController.GetNextDoctorsAppointments(user, inputCancelString);
+            if (nextAppointments.Count == 0)
+            {
+                Console.WriteLine(hintNoScheduledAppoinments);
+            }
+            else
+            {
+                for (int i = 0; i < nextAppointments.Count; i++)
+                {
+                    var appointment = nextAppointments[i];
+
+                    Console.WriteLine(appointment.ToString());
+                    MedicalRecordModel.ReadMedicalRecord(appointment, inputCancelString);
+                    Console.WriteLine("=====================================");
+                }
+            }
+            CheckIfDoctorWantsToStartAppointment(user, inputCancelString, nextAppointments);
+        }
+        
+        public static void CheckIfDoctorWantsToStartAppointment(UserAccount user, string inputCancelString, List<Appointment> startableAppointments)
+        {
+            Console.WriteLine(hintCheckStartingAppointment);
+            string doctorsWill = Console.ReadLine();
+            if (doctorsWill == "1")
+            {
+                StartAppointment(user, inputCancelString, startableAppointments);
+            }
+        }
+
+        private static void StartAppointment(UserAccount user, string inputCancelString, List<Appointment> startableAppointments)
+        {
+            Console.WriteLine(hintSelectAppointment);
+            var appointmentsToStart = EasyInput<Appointment>.Select(startableAppointments, inputCancelString);
+            MedicalRecordModel.UpdateMedicalRecordAndAnamnesis(appointmentsToStart, inputCancelString);
+            Console.WriteLine(hintAppointmentIsOver);
+        }
+        
     }
 }
