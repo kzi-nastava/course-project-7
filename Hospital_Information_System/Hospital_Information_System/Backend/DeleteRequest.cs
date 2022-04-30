@@ -11,5 +11,9 @@ namespace HospitalIS.Backend
         {
             Appointment = appointment;
         }
+        public override string ToString()
+        {
+            return $"DeleteRequest{{Id = {Id}, AppointmentId = {Appointment.Id}, PatientId = {Requestee.Id}}}";
+        }
     }
 }

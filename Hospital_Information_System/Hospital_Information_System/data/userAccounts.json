@@ -116,5 +116,17 @@
     "Blocked": 0,
     "Id": 6,
     "Deleted": false
+  },
+  {
+    "$id": "8",
+    "Username": "secretary",
+    "Password": "123",
+    "Type": 3,
+    "Person": 7,
+    "AppointmentModifiedTimestamps": [],
+    "AppointmentCreatedTimestamps": [],
+    "Blocked": 0,
+    "Id": 7,
+    "Deleted": false
   }
 ]

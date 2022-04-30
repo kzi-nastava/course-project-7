@@ -15,5 +15,10 @@ namespace HospitalIS.Backend
             OldAppointment = oldAppointment;
             NewAppointment = newAppointment;
         }
+
+        public override string ToString()
+        {
+            return $"UpdateRequest{{Id = {Id}, OldAppointmentId = {OldAppointment.Id}, NewAppointmentId = {NewAppointment.Id}, PatientId = {Requestee.Id}}}";
+        }
     }
 }
