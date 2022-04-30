@@ -18,7 +18,23 @@ namespace HospitalIS.Backend
             PATIENT,
             DOCTOR,
         }
+        
+        public UserAccount(AccountType type)
+        {
+            Type = type;
+            Person = new Person();
+            Blocked = BlockedBy.NONE;
+            AppointmentCreatedTimestamps = new List<DateTime>();
+            AppointmentModifiedTimestamps = new List<DateTime>();
+        }
 
+        public enum BlockedBy
+        {
+            NONE,
+            SYSTEM,
+            SECRETARY
+        }
+        
         public string Username { get; set; }
 
         public string Password { get; set; }
@@ -32,7 +48,7 @@ namespace HospitalIS.Backend
 
         public List<DateTime> AppointmentCreatedTimestamps { get; set; }
 
-        public bool Blocked { get; set; }
+        public BlockedBy Blocked { get; set; }
 
         public override string ToString()
         {
