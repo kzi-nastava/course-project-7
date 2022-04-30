@@ -12,6 +12,7 @@
       "Deleted": false
     },
     "Requestee": 5,
+    "State": 0,
     "Id": 0,
     "Deleted": false
   },
@@ -24,10 +25,11 @@
       "Patient": 2,
       "Room": 11,
       "ScheduledFor": "2022-04-27T10:00:00",
-      "Id": -1,
+      "Id": 7,
       "Deleted": false
     },
     "Requestee": 5,
+    "State": 0,
     "Id": 1,
     "Deleted": false
   }
