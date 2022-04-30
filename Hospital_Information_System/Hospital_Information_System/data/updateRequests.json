@@ -8,6 +8,7 @@
       "Patient": 2,
       "Room": 11,
       "ScheduledFor": "2022-04-27T10:15:00",
+      "Anamnesis": null,
       "Id": -1,
       "Deleted": false
     },
@@ -24,6 +25,7 @@
       "Patient": 2,
       "Room": 11,
       "ScheduledFor": "2022-04-27T10:00:00",
+      "Anamnesis": null,
       "Id": -1,
       "Deleted": false
     },

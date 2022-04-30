@@ -23,6 +23,7 @@ namespace HospitalIS.Frontend.CLI
             { "-equipment-filter", () => EquipmentModel.Filter(inputCancelString) },
             { "-equipment-relocate", () => EquipmentRelocationModel.Relocate(inputCancelString) },
             { "-appointment-create", () => AppointmentModel.CreateAppointment(inputCancelString, user) },
+            { "-appointment-read", () => AppointmentModel.ReadAppointments(user)},
             { "-appointment-update", () => AppointmentModel.UpdateAppointment(inputCancelString, user) },
             { "-appointment-delete", () => AppointmentModel.DeleteAppointment(inputCancelString, user) },
         };
@@ -39,9 +40,17 @@ namespace HospitalIS.Frontend.CLI
                 //user = UserAccountModel.AttemptLogin("bowen", "123");
                 //commandMapping["-equipment-search"]();
 
+                //test user patient
                 //user = UserAccountController.AttemptLogin("bowen", "123");
+                
+                //test user doctor
+                //user = UserAccountController.AttemptLogin("grahame", "123");
+                
+                
+                //commandMapping["-appointment-read"]();
                 //commandMapping["-appointment-update"]();
                 //commandMapping["-appointment-create"]();
+                //commandMapping["-appointment-delete"]();
             }
             catch (UserAccountForcefullyBlockedException e)
             {
