@@ -17,6 +17,8 @@ namespace HospitalIS.Backend
         {
             PATIENT,
             DOCTOR,
+            MANAGER,
+            SECRETARY
         }
         
         public UserAccount(AccountType type)
