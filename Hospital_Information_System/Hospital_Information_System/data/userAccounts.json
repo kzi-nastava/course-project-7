@@ -7,7 +7,7 @@
     "Person": 0,
     "AppointmentModifiedTimestamps": [],
     "AppointmentCreatedTimestamps": [],
-    "Blocked": 0,
+    "Blocked": false,
     "Id": 0,
     "Deleted": false
   },
@@ -19,7 +19,7 @@
     "Person": 1,
     "AppointmentModifiedTimestamps": [],
     "AppointmentCreatedTimestamps": [],
-    "Blocked": 0,
+    "Blocked": false,
     "Id": 1,
     "Deleted": false
   },
@@ -31,7 +31,7 @@
     "Person": 2,
     "AppointmentModifiedTimestamps": [],
     "AppointmentCreatedTimestamps": [],
-    "Blocked": 0,
+    "Blocked": false,
     "Id": 2,
     "Deleted": false
   },
@@ -58,7 +58,7 @@
       "2022-04-24T14:30:52.2643429+02:00",
       "2022-04-24T14:31:52.2643429+02:00"
     ],
-    "Blocked": 0,
+    "Blocked": false,
     "Id": 3,
     "Deleted": false
   },
@@ -74,7 +74,7 @@
     "AppointmentCreatedTimestamps": [
       "2022-04-24T14:46:55.3535703+02:00"
     ],
-    "Blocked": 0,
+    "Blocked": false,
     "Id": 4,
     "Deleted": false
   },
@@ -88,20 +88,8 @@
       "2022-04-25T11:18:34.5814238+02:00"
     ],
     "AppointmentCreatedTimestamps": [],
-    "Blocked": 0,
+    "Blocked": false,
     "Id": 5,
     "Deleted": false
-  },
-  {
-    "$id": "7",
-    "Username": "jacob",
-    "Password": "123",
-    "Type": 0,
-    "Person": 6,
-    "AppointmentModifiedTimestamps": [],
-    "AppointmentCreatedTimestamps": [],
-    "Blocked": 0,
-    "Id": 6,
-    "Deleted": true
   }
 ]
