@@ -4,6 +4,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace HospitalIS.Backend.Repository
 {
@@ -61,7 +62,7 @@ namespace HospitalIS.Backend.Repository
 
 		public void AddTask(EquipmentRelocation equipmentRelocation)
 		{
-			Thread t = new Thread(new ThreadStart(() => Execute(equipmentRelocation)));
+			Task t = new Task(() => Execute(equipmentRelocation));
 			IS.Instance.Hospital.EquipmentRelocationTasks.Add(t);
 			t.Start();
 		}

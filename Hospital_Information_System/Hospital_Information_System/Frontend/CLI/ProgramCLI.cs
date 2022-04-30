@@ -37,7 +37,7 @@ namespace HospitalIS.Frontend.CLI
                 IS.Instance.Load(dataDirectory);
 
                 //user = UserAccountModel.AttemptLogin("bowen", "123");
-                //commandMapping["-equipment-search"]();
+                commandMapping["-equipment-relocate"]();
 
                 //user = UserAccountController.AttemptLogin("bowen", "123");
                 //commandMapping["-appointment-update"]();
@@ -51,6 +51,8 @@ namespace HospitalIS.Frontend.CLI
             finally
             {
                 IS.Instance.Save(dataDirectory);
+                Console.WriteLine("Press any key to exit.");
+                Console.ReadLine();
             }
         }
 
