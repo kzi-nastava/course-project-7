@@ -54,9 +54,6 @@ namespace HospitalIS.Frontend.CLI.Model
 
                 IS.Instance.MedicalRecordRepo.Add(medicalRecord);
             }
-            catch (InputCancelledException)
-            {
-            }
             catch (InputFailedException e)
             {
                 Console.WriteLine(e.Message);
@@ -100,10 +97,7 @@ namespace HospitalIS.Frontend.CLI.Model
                     CopyMedicalRecord(medicalRecord, updatedMedialRecord, propertiesToUpdate);
                     Console.WriteLine(hintMedicalRecordUpdated);
                 }
-
-                catch (InputCancelledException)
-                {
-                }
+                
                 catch (InputFailedException e)
                 {
                     Console.WriteLine(e.Message);
