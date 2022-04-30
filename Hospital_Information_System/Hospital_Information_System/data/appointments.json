@@ -77,7 +77,7 @@
     "ScheduledFor": "2023-01-02T00:00:00",
     "Anamnesis": "",
     "Id": 7,
-    "Deleted": false
+    "Deleted": true
   },
   {
     "$id": "9",
@@ -88,5 +88,15 @@
     "Anamnesis": "",
     "Id": 8,
     "Deleted": true
+  },
+  {
+    "$id": "10",
+    "Doctor": 1,
+    "Patient": 1,
+    "Room": 11,
+    "ScheduledFor": "2022-05-02T18:00:00",
+    "Anamnesis": "Patient's health has worsen.",
+    "Id": 9,
+    "Deleted": false
   }
 ]
