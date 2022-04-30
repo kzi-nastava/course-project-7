@@ -59,5 +59,15 @@ namespace HospitalIS.Backend.Repository
                 serializer.Serialize(writer, ((UserAccount)value).Id);
             }
         }
+        
+        public void BlockBySecretary(UserAccount account)
+        {
+            account.Blocked = UserAccount.BlockedBy.SECRETARY;
+        }
+        
+        public void Unblock(UserAccount account)
+        {
+            account.Blocked = UserAccount.BlockedBy.NONE;
+        }
     }
 }

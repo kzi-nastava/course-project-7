@@ -10,6 +10,11 @@ namespace HospitalIS.Backend
         [JsonConverter(typeof(Repository.PersonRepository.PersonReferenceConverter))]
         public Person Person { get; set; }
 
+        public Patient(Person person)
+        {
+            Person = person;
+        }
+        
         public override string ToString()
         {
             return $"Patient{{Id = {Id}, Person = {Person.Id}}}";
