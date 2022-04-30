@@ -72,7 +72,7 @@ namespace HospitalIS.Frontend.CLI.Model
         {
             UserAccount user = InputAccount(inputCancelString, UserAccountController.GetAccountProperties());
             Patient patient = new Patient(user.Person);
-            
+            IS.Instance.MedicalRecordRepo.Add(new MedicalRecord(patient));
             IS.Instance.UserAccountRepo.Add(user);
             IS.Instance.PersonRepo.Add(user.Person);
             IS.Instance.PatientRepo.Add(patient);

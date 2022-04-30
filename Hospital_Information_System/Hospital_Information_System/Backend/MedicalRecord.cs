@@ -30,6 +30,15 @@ namespace HospitalIS.Backend
             Illnesses = illnesses;
             Allergies = allergies;
         }
+
+        public MedicalRecord(Patient patient)
+        {
+            Patient = patient;
+            Height = 0;
+            Weight = 0;
+            Illnesses = new List<string>();
+            Allergies = new List<string>();
+        }
         
         public override string ToString()
         {
