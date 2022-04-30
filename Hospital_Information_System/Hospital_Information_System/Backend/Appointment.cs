@@ -17,13 +17,16 @@ namespace HospitalIS.Backend
         public Room Room { get; set; }
 
         public DateTime ScheduledFor { get; set; }
+        
+        public String Anamnesis { get; set; }
 
-        public Appointment(Doctor doctor, Patient patient, Room room, DateTime scheduledFor)
+        public Appointment(Doctor doctor, Patient patient, Room room, DateTime scheduledFor, String anamnesis = "")
         {
             Doctor = doctor;
             Patient = patient;
             Room = room;
             ScheduledFor = scheduledFor;
+            Anamnesis = anamnesis;
         }
 
         public Appointment()
@@ -32,7 +35,7 @@ namespace HospitalIS.Backend
 
         public override string ToString()
         {
-            return $"Appointment{{Id = {Id}, Doctor = {Doctor.Id}, Patient = {Patient.Id}, Room = {Room.Id}, ScheduledFor = {ScheduledFor}}}";
+            return $"Appointment{{Id = {Id}, Doctor = {Doctor.Id}, Patient = {Patient.Id}, Room = {Room.Id}, ScheduledFor = {ScheduledFor}, Anamnesis = {Anamnesis}}}";
         }
     }
 }
