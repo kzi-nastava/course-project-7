@@ -38,7 +38,7 @@ namespace HospitalIS.Frontend.CLI
                 IS.Instance.Load(dataDirectory);
 
                 //user = UserAccountModel.AttemptLogin("bowen", "123");
-                //commandMapping["-equipment-search"]();
+                commandMapping["-equipment-relocate"]();
 
                 //test user patient
                 //user = UserAccountController.AttemptLogin("bowen", "123");
@@ -57,9 +57,15 @@ namespace HospitalIS.Frontend.CLI
                 Console.WriteLine(e.Message);
                 user = null;
             }
+            catch (InputCancelledException)
+			{
+                Console.WriteLine("^C");
+			}
             finally
             {
                 IS.Instance.Save(dataDirectory);
+                Console.WriteLine("Press any key to exit.");
+                Console.ReadLine();
             }
         }
 

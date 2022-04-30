@@ -23,6 +23,7 @@ namespace HospitalIS.Backend.Controller
 		public static void Copy(EquipmentRelocation dest, EquipmentRelocation src, List<Property> properties)
 		{
 			if (properties.Contains(Property.EQUIPMENT)) dest.Equipment = src.Equipment;
+			if (properties.Contains(Property.OLD_ROOM)) dest.RoomOld = src.RoomOld;
 			if (properties.Contains(Property.NEW_ROOM)) dest.RoomNew = src.RoomNew;
 			if (properties.Contains(Property.WHEN_TO_RELOCATE)) dest.ScheduledFor = src.ScheduledFor;
 		}
@@ -32,15 +33,29 @@ namespace HospitalIS.Backend.Controller
 			return IS.Instance.Hospital.EquipmentRelocations.Where(r => !r.Deleted).ToList();
 		}
 
-		public static bool CanBeOldRoomFor(Room room, EquipmentRelocation reference)
-		{ 
-			return reference.RoomOld == null // RoomOld isn't input yet which means that nothing is input yet
-			|| reference.Equipment == null // Equipment isn't input yet so it's fair game
-			|| RoomController.HasEquipment(room, reference.Equipment); // 'room' has enough equipment to remove
+		public static List<EquipmentRelocation> GetRelocationsFrom(Room room, Equipment equipment)
+		{
+			return IS.Instance.Hospital.EquipmentRelocations.Where(r => r.RoomOld == room && r.Equipment == equipment).ToList();
+		}
 
-			// TODO @magley: The last check isn't enough. What if there are pending relocations for 'room' which,
-			// together with the new relocation, exceed the equipment count in that room? This also applies to
-			// regular relocation create operation.
+		public static List<EquipmentRelocation> GetRelocationsTo(Room room, Equipment equipment)
+		{
+			return IS.Instance.Hospital.EquipmentRelocations.Where(r => r.RoomNew == room && r.Equipment == equipment).ToList();
+		}
+
+		public static bool CanBeOldRoom(Room room, EquipmentRelocation reference)
+		{
+			if (reference.RoomOld == null)
+			{
+				return room.Equipment.Count > 0;
+			}
+
+			if (reference.Equipment == null)
+			{
+				return true;
+			}
+
+			return RoomController.HasEquipmentAfterRelocations(room, reference.Equipment);
 		}
 	}
 }
