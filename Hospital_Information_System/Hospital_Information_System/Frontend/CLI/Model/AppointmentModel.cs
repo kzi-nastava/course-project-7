@@ -69,7 +69,7 @@ namespace HospitalIS.Frontend.CLI.Model
             Console.WriteLine(hintSelectProperties);
             return EasyInput<AppointmentController.AppointmentProperty>.SelectMultiple(
                 AppointmentController.GetModifiableProperties(user),
-                ap => AppointmentController.GetAppointmentPropertyName(ap),
+                ap => AppointmentController.GetName(ap),
                 inputCancelString
             ).ToList();
         }

@@ -6,9 +6,9 @@ namespace HospitalIS.Backend.Controller
 {
     internal class AppointmentController
     {
-        public const int lengthOfAppointmentInMinutes = 15;
-        public const int daysBeforeAppointmentUnmodifiable = 1;
-        public const int daysBeforeModificationNeedsRequest = 2;
+        public const int LengthOfAppointmentInMinutes = 15;
+        public const int DaysBeforeAppointmentUnmodifiable = 1;
+        public const int DaysBeforeModificationNeedsRequest = 2;
         private const string hintRequestSent = "Request for modification sent.";
 
         public enum AppointmentProperty
@@ -28,7 +28,7 @@ namespace HospitalIS.Backend.Controller
         public static void Update(Appointment appointment, Appointment updatedAppointment, List<AppointmentProperty> propertiesToUpdate, UserAccount user)
         {
             UserAccountController.AddModifiedAppointmentTimestamp(user, DateTime.Now);
-            if (MustRequestModification(appointment.ScheduledFor, user))
+            if (MustRequestModification(appointment, user))
             {
                 var proposedAppointment = new Appointment();
                 CopyAppointment(proposedAppointment, appointment, GetAllAppointmentProperties());
@@ -45,7 +45,7 @@ namespace HospitalIS.Backend.Controller
         public static void Delete(Appointment appointment, UserAccount user)
         {
             UserAccountController.AddModifiedAppointmentTimestamp(user, DateTime.Now);
-            if (MustRequestModification(appointment.ScheduledFor, user))
+            if (MustRequestModification(appointment, user))
             {
                 IS.Instance.DeleteRequestRepo.Add(new DeleteRequest(user, appointment));
                 Console.WriteLine(hintRequestSent);
@@ -56,7 +56,7 @@ namespace HospitalIS.Backend.Controller
             }
         }
 
-        public static string GetAppointmentPropertyName(AppointmentProperty ap)
+        public static string GetName(AppointmentProperty ap)
         {
             return Enum.GetName(typeof(AppointmentProperty), ap);
         }
@@ -84,12 +84,12 @@ namespace HospitalIS.Backend.Controller
             if (user.Type == UserAccount.AccountType.PATIENT)
             {
                 return IS.Instance.Hospital.Appointments.Where(
-                    a => !a.Deleted && user.Person.Id == a.Patient.Person.Id && CanModifyAppointment(a.ScheduledFor, user)).ToList();
+                    a => !a.Deleted && user.Person.Id == a.Patient.Person.Id && CanModify(a, user)).ToList();
             }
             else
             {
                 return IS.Instance.Hospital.Appointments.Where(
-                    a => !a.Deleted && CanModifyAppointment(a.ScheduledFor, user)).ToList();
+                    a => !a.Deleted && CanModify(a, user)).ToList();
             }
         }
 
@@ -98,12 +98,12 @@ namespace HospitalIS.Backend.Controller
             return IS.Instance.Hospital.Appointments.Where(a => !a.Deleted).ToList();
         }
 
-        public static bool CanModifyAppointment(DateTime scheduledFor, UserAccount user)
+        public static bool CanModify(Appointment appointment, UserAccount user)
         {
             if (user.Type == UserAccount.AccountType.PATIENT)
             {
-                TimeSpan difference = scheduledFor - DateTime.Now;
-                return difference.TotalDays >= daysBeforeAppointmentUnmodifiable;
+                TimeSpan difference = appointment.ScheduledFor - DateTime.Now;
+                return difference.TotalDays >= DaysBeforeAppointmentUnmodifiable;
             }
             else
             {
@@ -111,12 +111,12 @@ namespace HospitalIS.Backend.Controller
             }
         }
 
-        public static bool MustRequestModification(DateTime scheduledFor, UserAccount user)
+        public static bool MustRequestModification(Appointment appointment, UserAccount user)
         {
             if (user.Type == UserAccount.AccountType.PATIENT)
             {
-                TimeSpan difference = scheduledFor - DateTime.Now;
-                return difference.TotalDays < daysBeforeModificationNeedsRequest;
+                TimeSpan difference = appointment.ScheduledFor - DateTime.Now;
+                return difference.TotalDays < DaysBeforeModificationNeedsRequest;
             }
             else
             {
@@ -229,7 +229,7 @@ namespace HospitalIS.Backend.Controller
         public static bool AreColliding(DateTime schedule1, DateTime schedule2)
         {
             TimeSpan difference = schedule1 - schedule2;
-            return Math.Abs(difference.TotalMinutes) < lengthOfAppointmentInMinutes;
+            return Math.Abs(difference.TotalMinutes) < LengthOfAppointmentInMinutes;
         }
 
         public static void CopyAppointment(Appointment target, Appointment source, List<AppointmentProperty> whichProperties)
