@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using HospitalIS.Backend;
 using System.Linq;
+using HospitalIS.Backend.Controller;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
@@ -16,101 +17,79 @@ namespace HospitalIS.Frontend.CLI.Model
 		private const string errRoomNameNonEmpty = "Room name must not be empty!";
 		private const string errRoomFloorNonNegative = "Room floor must be a non-negative integer!";
 
-		internal static void DeleteRoom(string inputCancelString)
-		{
-			Console.WriteLine(hintSelectRooms);
-
-			try
-			{
-				var roomsToDelete = EasyInput<Room>.SelectMultiple(GetModifiableRooms(), r => r.Name, inputCancelString);
-				foreach (var room in roomsToDelete)
-				{
-					IS.Instance.RoomRepo.Remove(room);
-				}
-			}
-			catch (InputCancelledException)
-			{
-			}
-		}
-
 		internal static void CreateRoom(string inputCancelString)
 		{
-			var roomPropertiesAll = Enum.GetValues(typeof(RoomProperty)).Cast<RoomProperty>().ToList();
-			try
-			{
-				Room room = InputRoom(inputCancelString, roomPropertiesAll);
-				IS.Instance.RoomRepo.Add(room);
-			}
-			catch (InputCancelledException)
-			{
-			}
+			Room room = InputRoom(inputCancelString, RoomController.GetRoomProperties());
+			IS.Instance.RoomRepo.Add(room);
+		}
+
+		internal static void ViewRoom(string inputCancelString)
+		{
+			Console.WriteLine(hintSelectRoom);
+			var room = EasyInput<Room>.Select(RoomController.GetModifiableRooms(), r => r.Name, inputCancelString);
+			Console.WriteLine(room.ToString());
 		}
 
 		internal static void UpdateRoom(string inputCancelString)
 		{
-			try
-			{
-				Console.WriteLine(hintSelectRoom);
-				Room room = EasyInput<Room>.Select(GetModifiableRooms(), r => r.Name, inputCancelString);
-				Console.WriteLine(room.ToString());
+			Console.WriteLine(hintSelectRoom);
+			var room = EasyInput<Room>.Select(RoomController.GetModifiableRooms(), r => r.Name, inputCancelString);
+			Console.WriteLine(room.ToString());
 
-				Console.WriteLine(hintSelectProperties);
-				var propertiesToUpdate = EasyInput<RoomProperty>.SelectMultiple(
-					Enum.GetValues(typeof(RoomProperty)).Cast<RoomProperty>().ToList(),
-					e => Enum.GetName(typeof(RoomProperty), e),
-					inputCancelString
-				).ToList();
-
-				var updatedRoom = InputRoom(inputCancelString, propertiesToUpdate);
-				CopyRoom(room, updatedRoom, propertiesToUpdate);
-			}
-			catch (InputCancelledException)
-			{
-			}
+			Console.WriteLine(hintSelectProperties);
+			var propertiesToUpdate = SelectRoomProperties(inputCancelString);
+			var updatedRoom = InputRoom(inputCancelString, propertiesToUpdate);
+			RoomController.CopyRoom(room, updatedRoom, propertiesToUpdate);
 		}
 
-		internal enum RoomProperty
+		internal static void DeleteRoom(string inputCancelString)
 		{
-			NAME,
-			FLOOR,
-			TYPE,
+			Console.WriteLine(hintSelectRooms);
+
+			var selectedRoomsForDeletion = SelectModifiableRooms(inputCancelString);
+			foreach (var room in selectedRoomsForDeletion)
+			{
+				IS.Instance.RoomRepo.Remove(room);
+			}		
 		}
 
-		internal static Room InputRoom(string inputCancelString, List<RoomProperty> whichProperties)
+		private static List<Room> SelectModifiableRooms(string inputCancelString)
+		{
+			return EasyInput<Room>.SelectMultiple(RoomController.GetModifiableRooms(), r => r.Name, inputCancelString).ToList();
+		}
+
+		private static List<RoomController.RoomProperty> SelectRoomProperties(string inputCancelString)
+		{
+			return EasyInput<RoomController.RoomProperty>.SelectMultiple(
+				RoomController.GetRoomProperties(),
+				e => Enum.GetName(typeof(RoomController.RoomProperty), e),
+				inputCancelString
+			).ToList();
+		}
+
+		private static Room InputRoom(string inputCancelString, List<RoomController.RoomProperty> whichProperties)
 		{
 			Room room = new Room();
 
-			if (whichProperties.Contains(RoomProperty.NAME))
+			if (whichProperties.Contains(RoomController.RoomProperty.NAME))
 			{
 				Console.WriteLine(hintRoomName);
 				room.Name = InputRoomName(inputCancelString);
 			}
 
-			if (whichProperties.Contains(RoomProperty.FLOOR))
+			if (whichProperties.Contains(RoomController.RoomProperty.FLOOR))
 			{
 				Console.WriteLine(hintRoomFloor);
 				room.Floor = InputRoomFloor(inputCancelString);
 			}
 
-			if (whichProperties.Contains(RoomProperty.TYPE))
+			if (whichProperties.Contains(RoomController.RoomProperty.TYPE))
 			{
 				Console.WriteLine(hintRoomType);
 				room.Type = InputRoomType(inputCancelString);
 			}
 
 			return room;
-		}
-
-		private static List<Room> GetModifiableRooms()
-		{
-			return IS.Instance.Hospital.Rooms.Where(r => !r.Deleted && r.Type != Room.RoomType.WAREHOUSE).ToList();
-		}
-
-		private static void CopyRoom(Room target, Room source, List<RoomProperty> whichProperties)
-		{
-			if (whichProperties.Contains(RoomProperty.NAME)) target.Name = source.Name;
-			if (whichProperties.Contains(RoomProperty.FLOOR)) target.Floor = source.Floor;
-			if (whichProperties.Contains(RoomProperty.TYPE)) target.Type = source.Type;
 		}
 
 		private static string InputRoomName(string inputCancelString)
@@ -133,9 +112,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		private static Room.RoomType InputRoomType(string inputCancelString)
 		{
 			return EasyInput<Room.RoomType>.Select(
-				Enum.GetValues(typeof(Room.RoomType)).Cast<Room.RoomType>()
-					.Where(e => e != Room.RoomType.WAREHOUSE)
-					.ToList(),
+				RoomController.GetModifiableRoomTypes(),
 				inputCancelString
 			);
 		}

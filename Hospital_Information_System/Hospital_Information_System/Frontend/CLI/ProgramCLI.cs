@@ -16,6 +16,7 @@ namespace HospitalIS.Frontend.CLI
         private static readonly Dictionary<string, Action> commandMapping = new Dictionary<string, Action>
         {
             { "-room-create", () => RoomModel.CreateRoom(inputCancelString) },
+            { "-room-view", () => RoomModel.ViewRoom(inputCancelString) },
             { "-room-update", () => RoomModel.UpdateRoom(inputCancelString) },
             { "-room-delete", () => RoomModel.DeleteRoom(inputCancelString) },
             { "-equipment-search", () => EquipmentModel.Search(inputCancelString) },
@@ -34,8 +35,12 @@ namespace HospitalIS.Frontend.CLI
             try
             {
                 IS.Instance.Load(dataDirectory);
-                user = UserAccountController.AttemptLogin("bowen", "123");
-                commandMapping["-appointment-update"]();
+
+                //user = UserAccountModel.AttemptLogin("bowen", "123");
+                //commandMapping["-equipment-search"]();
+
+                //user = UserAccountController.AttemptLogin("bowen", "123");
+                //commandMapping["-appointment-update"]();
                 //commandMapping["-appointment-create"]();
             }
             catch (UserAccountForcefullyBlockedException e)

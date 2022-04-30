@@ -285,5 +285,16 @@
     "Floor": 2,
     "Id": 21,
     "Deleted": false
+  },
+  {
+    "$id": "45",
+    "Equipment": {
+      "$id": "46"
+    },
+    "Type": 4,
+    "Name": "SobaTestTest",
+    "Floor": 1,
+    "Id": 22,
+    "Deleted": false
   }
 ]
