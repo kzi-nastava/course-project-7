@@ -54,7 +54,7 @@ namespace HospitalIS.Backend
 
         public override string ToString()
         {
-            return $"UserAccount{{Id = {Id}, Username = {Username}, Password = {Password}, Type = {(int)Type}, Person = {Person.Id}, Blocked = {Blocked}}}";
+            return $"UserAccount{{Id = {Id}, Username = {Username}, Password = {Password}, Type = {(int)Type}, Person = {Person.Id}, Blocked = {Blocked.ToString()}}}";
         }
     }
 }

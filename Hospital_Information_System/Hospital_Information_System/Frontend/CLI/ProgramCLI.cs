@@ -55,15 +55,21 @@ namespace HospitalIS.Frontend.CLI
             new Command("-appointment-update", () => AppointmentModel.UpdateAppointment(inputCancelString, user), new[] {UserAccount.AccountType.DOCTOR, UserAccount.AccountType.PATIENT}),
             new Command("-appointment-delete", () => AppointmentModel.DeleteAppointment(inputCancelString, user), new[] {UserAccount.AccountType.DOCTOR, UserAccount.AccountType.PATIENT}),
             new Command("-appointment-view-start", () => AppointmentModel.ShowNextAppointments(user, inputCancelString), new[] {UserAccount.AccountType.DOCTOR}),
-        
-            new Command("-patient-create", () => UserAccountModel.CreatePatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-patient-update", () => UserAccountModel.UpdatePatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-patient-delete", () => UserAccountModel.DeleteAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}), // Patient-only?
-            new Command("-patient-block", () => UserAccountModel.BlockPatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-delete-request-approve", () => RequestModel.ApproveDeleteRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-delete-request-deny", () => RequestModel.DenyDeleteRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-update-request-approve", () => RequestModel.ApproveUpdateRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-update-request-deny", () => RequestModel.DenyUpdateRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
+
+            
+            new Command("-patient-account-create", () => UserAccountModel.CreatePatientAccount(inputCancelString), new []{UserAccount.AccountType.SECRETARY}),
+            new Command("-patient-account-view", () => UserAccountModel.ViewPatientAccounts(), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("-patient-account-update", () => UserAccountModel.UpdatePatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("-patient-account-delete", () => UserAccountModel.DeleteAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("-block-patient-account-delete", () => UserAccountModel.BlockPatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("-unblock-patient-account-delete", () => UserAccountModel.UnblockPatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
+            
+            new Command("-view-patient-requests", () => RequestModel.ViewRequests(), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("-approve-delete-request", () => RequestModel.ApproveDeleteRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("-deny-delete-request", () => RequestModel.DenyDeleteRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("-approve-update-request", () => RequestModel.ApproveUpdateRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("-deny-update-request", () => RequestModel.DenyUpdateRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY})
+
         };
 
         static List<Command> GetCommands(UserAccount user)
