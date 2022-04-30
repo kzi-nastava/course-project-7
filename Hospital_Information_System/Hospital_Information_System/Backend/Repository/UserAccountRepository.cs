@@ -86,14 +86,14 @@ namespace HospitalIS.Backend.Repository
 
             if (user.AppointmentCreatedTimestamps.Count > appointmentCreationsInGracePeriod)
             {
-                user.Blocked = UserAccount.BlockedBy.SYSTEM;
+                user.Blocked = true;
                 throw new UserAccountForcefullyBlockedException(
                     $"Exceeded possible number of appointment creations ({appointmentCreationsInGracePeriod}) for the last {pruningGracePeriodInDays} days");
             }
 
             if (user.AppointmentModifiedTimestamps.Count > appointmentModificationsInGracePeriod)
             {
-                user.Blocked = UserAccount.BlockedBy.SYSTEM;
+                user.Blocked = true;
                 throw new UserAccountForcefullyBlockedException(
                     $"Exceeded possible number of appointment modifications ({appointmentModificationsInGracePeriod}) for the last {pruningGracePeriodInDays} days");
             }
