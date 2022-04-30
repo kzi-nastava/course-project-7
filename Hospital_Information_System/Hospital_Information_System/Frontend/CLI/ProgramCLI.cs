@@ -85,11 +85,6 @@ namespace HospitalIS.Frontend.CLI
 			{
                 return;
 			}
-            catch (UserAccountForcefullyBlockedException e)
-            {
-                Console.WriteLine(e.Message);
-                return;
-            }
 
             // === Use program ===
 
@@ -125,6 +120,11 @@ namespace HospitalIS.Frontend.CLI
                     catch (InputCancelledException)
                     {
                         Console.WriteLine("\n^C\n");
+                    }
+                    catch (UserAccountForcefullyBlockedException e)
+                    {
+                        Console.WriteLine(e.Message);
+                        return;
                     }
                 }
             }
