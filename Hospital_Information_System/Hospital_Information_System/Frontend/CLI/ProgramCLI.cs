@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using HospitalIS.Backend;
 using HospitalIS.Frontend.CLI.Model;
 using HospitalIS.Backend.Controller;
+using System.Linq;
 
 namespace HospitalIS.Frontend.CLI
 {
@@ -12,55 +13,121 @@ namespace HospitalIS.Frontend.CLI
         private static readonly string dataDirectory = Path.Combine("..", "..", "..", "data");
         private const string inputCancelString = "-q";
         private static UserAccount user;
+        private static bool isRunning = true;
 
-        private static readonly Dictionary<string, Action> commandMapping = new Dictionary<string, Action>
+        private struct Command
         {
-            { "-room-create", () => RoomModel.CreateRoom(inputCancelString) },
-            { "-room-view", () => RoomModel.ViewRoom(inputCancelString) },
-            { "-room-update", () => RoomModel.UpdateRoom(inputCancelString) },
-            { "-room-delete", () => RoomModel.DeleteRoom(inputCancelString) },
-            { "-equipment-search", () => EquipmentModel.Search(inputCancelString) },
-            { "-equipment-filter", () => EquipmentModel.Filter(inputCancelString) },
-            { "-equipment-relocate", () => EquipmentRelocationModel.Relocate(inputCancelString) },
-            { "-appointment-create", () => AppointmentModel.CreateAppointment(inputCancelString, user) },
-            { "-appointment-read", () => AppointmentModel.ReadAppointments(user)},
-            { "-appointment-update", () => AppointmentModel.UpdateAppointment(inputCancelString, user) },
-            { "-appointment-delete", () => AppointmentModel.DeleteAppointment(inputCancelString, user) },
+            public string CommandName;
+            public Action CommandMethod;
+            public List<UserAccount.AccountType> AvailableTo;
+
+            public Command(string name, Action methodCall, UserAccount.AccountType[] availableTo)
+            {
+                CommandName = name;
+                CommandMethod = methodCall;
+                AvailableTo = availableTo.ToList();
+            }
+
+            public Command(string name, Action methodCall, IEnumerable<UserAccount.AccountType> availableTo)
+            {
+                CommandName = name;
+                CommandMethod = methodCall;
+                AvailableTo = availableTo.ToList();
+            }
+        }
+
+        private static List<Command> Commands =
+        new List<Command>{
+            new Command("-quit", () => isRunning = false, Enum.GetValues(typeof(UserAccount.AccountType)).Cast<UserAccount.AccountType>()),
+            new Command("-help", () => ListCommands(user), Enum.GetValues(typeof(UserAccount.AccountType)).Cast<UserAccount.AccountType>()),
+
+            new Command("-room-create", () => RoomModel.CreateRoom(inputCancelString), new[] {UserAccount.AccountType.MANAGER}),
+            new Command("-room-view", () => RoomModel.ViewRoom(inputCancelString), new[] {UserAccount.AccountType.MANAGER}),
+            new Command("-room-update", () => RoomModel.UpdateRoom(inputCancelString), new[] {UserAccount.AccountType.MANAGER}),
+            new Command("-room-delete", () => RoomModel.DeleteRoom(inputCancelString), new[] {UserAccount.AccountType.MANAGER}),
+
+            new Command("-equipment-search", () => EquipmentModel.Search(inputCancelString), new[] {UserAccount.AccountType.MANAGER}),
+            new Command("-equipment-filter", () => EquipmentModel.Filter(inputCancelString), new[] {UserAccount.AccountType.MANAGER}),
+            new Command("-equipment-relocate", () => EquipmentRelocationModel.Relocate(inputCancelString), new[] {UserAccount.AccountType.MANAGER}),
+
+            new Command("-appointment-create", () => AppointmentModel.CreateAppointment(inputCancelString, user), new[] {UserAccount.AccountType.DOCTOR, UserAccount.AccountType.PATIENT}),
+            new Command("-appointment-read", () => AppointmentModel.ReadAppointments(user), new[] {UserAccount.AccountType.DOCTOR, UserAccount.AccountType.PATIENT}),
+            new Command("-appointment-update", () => AppointmentModel.UpdateAppointment(inputCancelString, user), new[] {UserAccount.AccountType.DOCTOR, UserAccount.AccountType.PATIENT}),
+            new Command("-appointment-delete", () => AppointmentModel.DeleteAppointment(inputCancelString, user), new[] {UserAccount.AccountType.DOCTOR, UserAccount.AccountType.PATIENT}),
         };
+
+        static List<Command> GetCommands(UserAccount user)
+		{
+            return Commands.Where(cmd => cmd.AvailableTo.Contains(user.Type)).ToList();
+		}
+
+        static void ListCommands(UserAccount user)
+		{
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            foreach (var cmd in GetCommands(user))
+			{
+                Console.WriteLine(cmd.CommandName);
+			}
+            Console.ForegroundColor = ConsoleColor.Gray;
+        }
 
         static void Main()
         {
-            //InitHospital();
-            //IS.Instance.Save(dataDirectory);
+            // === Login ===
+
+            IS.Instance.Load(dataDirectory);
 
             try
             {
-                IS.Instance.Load(dataDirectory);
-
-                //user = UserAccountModel.AttemptLogin("bowen", "123");
-                commandMapping["-equipment-relocate"]();
-
-                //test user patient
-                //user = UserAccountController.AttemptLogin("bowen", "123");
-                
-                //test user doctor
-                //user = UserAccountController.AttemptLogin("grahame", "123");
-                
-                
-                //commandMapping["-appointment-read"]();
-                //commandMapping["-appointment-update"]();
-                //commandMapping["-appointment-create"]();
-                //commandMapping["-appointment-delete"]();
-            }
-            catch (UserAccountForcefullyBlockedException e)
-            {
-                Console.WriteLine(e.Message);
-                user = null;
+                user = UserAccountModel.Login(inputCancelString);
             }
             catch (InputCancelledException)
 			{
-                Console.WriteLine("^C");
+                return;
 			}
+
+            // === Use program ===
+
+            var userCommands = GetCommands(user);
+            Console.WriteLine("Type -help for a list of commands\n\n");
+      
+            try
+            {
+                while (isRunning)
+                {
+                    Console.Write($"{user.Username}>");
+                    try
+                    {
+                        string cmdInput = EasyInput<string>.Get(
+                            new List<Func<string, bool>>
+                            {
+                            s => userCommands.Count(command => command.CommandName == s) == 1 || s?.Length == 0
+							},
+                            new[]
+                            {
+                            "Command not found!\nType -help for a list of commands\n"
+                            },
+                            inputCancelString
+                        );
+
+                        if (cmdInput.Length == 0)
+						{
+                            continue;
+						}
+
+                        userCommands.First(cmd => cmd.CommandName == cmdInput).CommandMethod();
+                    }
+                    catch (InputCancelledException)
+                    {
+                        Console.WriteLine("\n^C\n");
+                    }
+                    catch (UserAccountForcefullyBlockedException e)
+                    {
+                        Console.WriteLine(e.Message);
+                        return;
+                    }
+                }
+            }
             finally
             {
                 IS.Instance.Save(dataDirectory);
