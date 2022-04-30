@@ -13,6 +13,7 @@
       "Deleted": false
     },
     "Requestee": 5,
+    "State": 0,
     "Id": 0,
     "Deleted": false
   },
@@ -30,6 +31,7 @@
       "Deleted": false
     },
     "Requestee": 5,
+    "State": 0,
     "Id": 1,
     "Deleted": false
   }
