@@ -176,7 +176,7 @@ namespace HospitalIS.Backend.Controller
         {
             var rnd = new Random();
             var rooms = GetAvailableExaminationRooms(refAppointment);
-            return rooms[rnd.Next(rooms.Capacity)];
+            return rooms[rnd.Next(rooms.Count)];
         }
 
         public static bool IsAvailable(Patient patient, Appointment refAppointment, DateTime newSchedule)
