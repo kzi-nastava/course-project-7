@@ -56,7 +56,6 @@ namespace HospitalIS.Frontend.CLI.Model
 			var selectedProperties = SelectEquipmentRelocationProperties(inputCancelString);
 			var inputRelocation = InputRelocation(inputCancelString, selectedProperties, selectedRelocation);
 			EquipmentRelocationController.Copy(selectedRelocation, inputRelocation, selectedProperties);
-			
 		}
 
 		private static void NewRelocation(string inputCancelString)
@@ -64,6 +63,7 @@ namespace HospitalIS.Frontend.CLI.Model
 			var allProperties = EquipmentRelocationController.GetRelocationProperties();
 			var relocation = InputRelocation(inputCancelString, allProperties);
 			IS.Instance.EquipmentRelocationRepo.Add(relocation);
+			IS.Instance.EquipmentRelocationRepo.AddTask(relocation);
 		}
 
 		private static void DeleteRelocation(string inputCancelString)
@@ -74,7 +74,7 @@ namespace HospitalIS.Frontend.CLI.Model
 			foreach (var relocation in relocationsToDelete)
 			{
 				IS.Instance.EquipmentRelocationRepo.Remove(relocation);
-			}		
+			}
 		}
 
 		private static EquipmentRelocation InputRelocation(string inputCancelString, List<EquipmentRelocationController.Property> properties, EquipmentRelocation editingRelocation = null)
@@ -130,7 +130,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		private static Room InputChangeRoomOld(string inputCancelString, EquipmentRelocation relocation)
 		{
 			return EasyInput<Room>.Select(
-				RoomController.GetRooms().Where(room => EquipmentRelocationController.CanBeOldRoomFor(room, relocation)).ToList(),
+				RoomController.GetRooms().Where(room => EquipmentRelocationController.CanBeOldRoom(room, relocation)).ToList(),
 				new List<Func<Room, bool>>(),
 				new string[] { },
 				eq => eq.ToString(),

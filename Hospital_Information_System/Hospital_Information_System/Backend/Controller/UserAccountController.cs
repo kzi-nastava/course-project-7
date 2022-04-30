@@ -9,7 +9,16 @@ namespace HospitalIS.Backend.Controller
         public const int PruningGracePeriodInDays = 30;
         public const int AppointmentModificationsInGracePeriod = 5;
         public const int AppointmentCreationsInGracePeriod = 8;
-
+        
+        public enum AccountProperty
+        {
+            USERNAME,
+            PASSWORD,
+            FIRSTNAME,
+            LASTNAME,
+            GENDER
+        }
+        
         public class InvalidLoginAttemptException : Exception
         {
             public InvalidLoginAttemptException(string errorMessage) : base($"Login failed: {errorMessage}.")
@@ -29,7 +38,7 @@ namespace HospitalIS.Backend.Controller
             {
                 if (ua.Username == username && ua.Password == password)
                 {
-                    if (ua.Blocked) throw new InvalidLoginAttemptException("Account is blocked");
+                    if (ua.Blocked != UserAccount.BlockedBy.NONE) throw new InvalidLoginAttemptException("Account is blocked");
                     return ua;
                 }
             }
@@ -59,14 +68,14 @@ namespace HospitalIS.Backend.Controller
 
             if (user.AppointmentCreatedTimestamps.Count > AppointmentCreationsInGracePeriod)
             {
-                user.Blocked = true;
+                user.Blocked = UserAccount.BlockedBy.SYSTEM;
                 throw new UserAccountForcefullyBlockedException(
                     $"Exceeded possible number of appointment creations ({AppointmentCreationsInGracePeriod}) for the last {PruningGracePeriodInDays} days");
             }
 
             if (user.AppointmentModifiedTimestamps.Count > AppointmentModificationsInGracePeriod)
             {
-                user.Blocked = true;
+                user.Blocked = UserAccount.BlockedBy.SYSTEM;
                 throw new UserAccountForcefullyBlockedException(
                     $"Exceeded possible number of appointment modifications ({AppointmentModificationsInGracePeriod}) for the last {PruningGracePeriodInDays} days");
             }
@@ -83,6 +92,40 @@ namespace HospitalIS.Backend.Controller
 
             prune(user.AppointmentCreatedTimestamps);
             prune(user.AppointmentModifiedTimestamps);
+        }
+        
+        public static List<AccountProperty> GetAccountProperties()
+        {
+            return Enum.GetValues(typeof(AccountProperty)).Cast<AccountProperty>().ToList();
+        }
+        
+        public static void CopyAccount(UserAccount target, UserAccount source, List<AccountProperty> whichProperties)
+        {
+            if (whichProperties.Contains(AccountProperty.USERNAME)) target.Username = source.Username;
+            if (whichProperties.Contains(AccountProperty.PASSWORD)) target.Password = source.Password;
+            if (whichProperties.Contains(AccountProperty.FIRSTNAME)) target.Person.FirstName = source.Person.FirstName;
+            if (whichProperties.Contains(AccountProperty.LASTNAME)) target.Person.LastName = source.Person.LastName;
+            if (whichProperties.Contains(AccountProperty.GENDER)) target.Person.Gender = source.Person.Gender;
+        }
+        
+        public static List<UserAccount> GetModifiablePatientAccounts()
+        {
+            return IS.Instance.Hospital.UserAccounts.Where(account => !account.Deleted && account.Type == UserAccount.AccountType.PATIENT).ToList();
+        }
+        
+        public static List<UserAccount> GetBlockedAccounts()
+        {
+            return IS.Instance.Hospital.UserAccounts.Where(account => !account.Deleted && IsBlocked(account)).ToList();
+        }
+        
+        public static List<UserAccount> GetNotBlockedAccounts()
+        {
+            return IS.Instance.Hospital.UserAccounts.Where(account => !account.Deleted && !IsBlocked(account)).ToList();
+        }
+
+        internal static bool IsBlocked(UserAccount account)
+        {
+            return account.Blocked != UserAccount.BlockedBy.NONE;
         }
     }
 }

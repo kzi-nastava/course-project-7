@@ -11,12 +11,14 @@ namespace HospitalIS.Backend.Controller
         public const int DaysBeforeModificationNeedsRequest = 2;
         private const string hintRequestSent = "Request for modification sent.";
 
+
         public enum AppointmentProperty
         {
             DOCTOR,
             PATIENT,
             ROOM,
             SCHEDULED_FOR,
+            ANAMNESIS
         }
 
         public static void Create(Appointment appointment, UserAccount user)
@@ -69,6 +71,14 @@ namespace HospitalIS.Backend.Controller
             {
                 modifiableProperties.Remove(AppointmentProperty.PATIENT);
                 modifiableProperties.Remove(AppointmentProperty.ROOM);
+                modifiableProperties.Remove(AppointmentProperty.ANAMNESIS);
+            }
+            
+            if (user.Type == UserAccount.AccountType.DOCTOR)
+            {
+                modifiableProperties.Remove(AppointmentProperty.DOCTOR);
+                modifiableProperties.Remove(AppointmentProperty.ROOM);
+                modifiableProperties.Remove(AppointmentProperty.ANAMNESIS); //only allowed during an appointment
             }
 
             return modifiableProperties;
@@ -78,6 +88,19 @@ namespace HospitalIS.Backend.Controller
         {
             return Enum.GetValues(typeof(AppointmentProperty)).Cast<AppointmentProperty>().ToList();
         }
+        
+        public static List<Appointment> GetAllPatientsAppointments(UserAccount user)
+        {
+            return IS.Instance.Hospital.Appointments.Where(
+                a => !a.Deleted && user.Person.Id == a.Patient.Person.Id).ToList();
+
+        }
+
+        public static List<Appointment> GetAllDoctorsAppointments(UserAccount user)
+        {
+            return IS.Instance.Hospital.Appointments.Where(
+                a => !a.Deleted && user.Person.Id == a.Doctor.Person.Id ).ToList();
+        }
 
         public static List<Appointment> GetModifiableAppointments(UserAccount user)
         {
@@ -86,6 +109,12 @@ namespace HospitalIS.Backend.Controller
                 return IS.Instance.Hospital.Appointments.Where(
                     a => !a.Deleted && user.Person.Id == a.Patient.Person.Id && CanModify(a, user)).ToList();
             }
+            
+            if (user.Type == UserAccount.AccountType.DOCTOR)
+            {
+                return IS.Instance.Hospital.Appointments.Where(
+                    a => !a.Deleted && user.Person.Id == a.Doctor.Person.Id && CanModify(a, user)).ToList();
+            }
             else
             {
                 return IS.Instance.Hospital.Appointments.Where(
@@ -93,6 +122,7 @@ namespace HospitalIS.Backend.Controller
             }
         }
 
+        
         public static List<Appointment> GetModifiableAppointments()
         {
             return IS.Instance.Hospital.Appointments.Where(a => !a.Deleted).ToList();
@@ -176,7 +206,7 @@ namespace HospitalIS.Backend.Controller
         {
             var rnd = new Random();
             var rooms = GetAvailableExaminationRooms(refAppointment);
-            return rooms[rnd.Next(rooms.Capacity)];
+            return rooms[rnd.Next(rooms.Count)];
         }
 
         public static bool IsAvailable(Patient patient, Appointment refAppointment, DateTime newSchedule)
@@ -238,6 +268,7 @@ namespace HospitalIS.Backend.Controller
             if (whichProperties.Contains(AppointmentProperty.PATIENT)) target.Patient = source.Patient;
             if (whichProperties.Contains(AppointmentProperty.ROOM)) target.Room = source.Room;
             if (whichProperties.Contains(AppointmentProperty.SCHEDULED_FOR)) target.ScheduledFor = source.ScheduledFor;
+            if (whichProperties.Contains(AppointmentProperty.ANAMNESIS)) target.Anamnesis = source.Anamnesis;
         }
     }
 }

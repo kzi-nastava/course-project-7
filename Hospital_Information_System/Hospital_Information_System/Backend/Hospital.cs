@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace HospitalIS.Backend
 {
@@ -24,7 +24,7 @@ namespace HospitalIS.Backend
 		internal List<Room> Rooms = new List<Room>();
 		internal List<Equipment> Equipment = new List<Equipment>();
 		internal List<EquipmentRelocation> EquipmentRelocations = new List<EquipmentRelocation>();
-		internal List<Thread> EquipmentRelocationTasks = new List<Thread>();
+		internal List<Task> EquipmentRelocationTasks = new List<Task>();
 		internal List<Person> Persons = new List<Person>();
 		internal List<Patient> Patients = new List<Patient>();
 		internal List<Doctor> Doctors = new List<Doctor>();
