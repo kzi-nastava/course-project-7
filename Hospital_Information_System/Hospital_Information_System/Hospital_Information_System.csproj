@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>HospitalIS</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Backend\Repository\MedicalRecord.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="data\medicalRecord.json" />
+  </ItemGroup>
+
+</Project>
