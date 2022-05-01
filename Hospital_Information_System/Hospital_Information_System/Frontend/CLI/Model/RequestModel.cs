@@ -9,7 +9,22 @@ namespace HospitalIS.Frontend.CLI.Model
     public class RequestModel
     {
         private const string hintSelectRequests = "Select requests by their number, separated by whitespace.\nEnter a newline to finish";
+        
+        internal static void ViewRequests()
+        {
+            Console.WriteLine("Update Requests");
+            foreach (var request in IS.Instance.Hospital.UpdateRequests)
+            {
+                Console.WriteLine(request.ToString());
+            }
+            Console.WriteLine("Delete Requests");
+            foreach (var request in IS.Instance.Hospital.DeleteRequests)
+            {
+                Console.WriteLine(request.ToString());
+            }
+        }
 
+        
         internal static void ApproveDeleteRequest(string inputCancelString)
         {
             Console.WriteLine(hintSelectRequests);

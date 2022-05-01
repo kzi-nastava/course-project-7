@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using HospitalIS.Backend.Controller;
+using HospitalIS.Backend.Repository;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
@@ -11,6 +12,7 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintInputUsername = "Enter username: ";
         private const string hintInputPassword = "Enter password: ";
         
+        private const string hintSelectAccount = "Select account by its number.\nEnter a newline to finish";
         private const string hintSelectAccounts = "Select accounts by their number, separated by whitespace.\nEnter a newline to finish";
         private const string hintSelectProperties = "Select properties by their number, separated by whitespace.\nEnter a newline to finish";
         private const string hintSelectPatientAccount = "Select account, by its number.\nEnter a newline to finish";
@@ -76,6 +78,16 @@ namespace HospitalIS.Frontend.CLI.Model
             IS.Instance.UserAccountRepo.Add(user);
             IS.Instance.PersonRepo.Add(user.Person);
             IS.Instance.PatientRepo.Add(patient);
+        }
+        
+        internal static void ViewPatientAccounts()
+        {
+            foreach (var account in IS.Instance.Hospital.UserAccounts)
+            {
+                if (account.Type == UserAccount.AccountType.PATIENT)
+                    Console.WriteLine(account.ToString());
+            }
+            
         }
         
         internal static void UpdatePatientAccount(string inputCancelString)
