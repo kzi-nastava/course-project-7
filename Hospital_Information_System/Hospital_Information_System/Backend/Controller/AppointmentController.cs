@@ -230,8 +230,9 @@ namespace HospitalIS.Backend.Controller
                 return GetModifiableExaminationRooms();
             }
 
-            return IS.Instance.Hospital.Rooms.Where(
-                r => !r.Deleted && r.Type == Room.RoomType.EXAMINATION && IsAvailable(r, refAppointment, refAppointment.ScheduledFor)).ToList();
+            return RoomController.GetUsableRoomsForAppointments(refAppointment.ScheduledFor).Intersect(
+                GetModifiableExaminationRooms().Where(r => IsAvailable(r, refAppointment, refAppointment.ScheduledFor))
+            ).ToList();
         }
 
         public static Room GetRandomAvailableExaminationRoom(Appointment refAppointment)
@@ -266,7 +267,6 @@ namespace HospitalIS.Backend.Controller
                     {
                         return false;
                     }
-
                 }
             }
             return true;
@@ -274,17 +274,20 @@ namespace HospitalIS.Backend.Controller
 
         public static bool IsAvailable(Room room, Appointment refAppointment, DateTime newSchedule)
         {
-            foreach (Appointment appointment in GetModifiableAppointments())
-            {
-                if ((room == appointment.Room) && (appointment != refAppointment))
-                {
-                    if (AreColliding(appointment.ScheduledFor, newSchedule))
-                    {
-                        return false;
-                    }
+            var relevantAppointments = GetModifiableAppointments().Where(ap => ap != refAppointment && ap.Room == room);
+            foreach (var Appointment in relevantAppointments)
+			{
+                if (AreColliding(Appointment.ScheduledFor, newSchedule))
+				{
+                    return false;
+				}
 
-                }
-            }
+                if (RenovationController.IsRenovating(room, newSchedule)) 
+                {
+                    return false;
+				}
+			}
+
             return true;
         }
 
