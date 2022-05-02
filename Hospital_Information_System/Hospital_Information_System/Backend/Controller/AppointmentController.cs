@@ -66,6 +66,11 @@ namespace HospitalIS.Backend.Controller
             return Enum.GetName(typeof(AppointmentProperty), ap);
         }
 
+        public static List<Appointment> GetAppointments()
+		{
+            return IS.Instance.Hospital.Appointments.Where(ap => !ap.Deleted).ToList();
+		}
+
         public static List<AppointmentProperty> GetModifiableProperties(UserAccount user)
         {
             List<AppointmentProperty> modifiableProperties = GetAllAppointmentProperties();
@@ -138,26 +143,19 @@ namespace HospitalIS.Backend.Controller
         {
             if (user.Type == UserAccount.AccountType.PATIENT)
             {
-                return IS.Instance.Hospital.Appointments.Where(
-                    a => !a.Deleted && user.Person.Id == a.Patient.Person.Id && CanModify(a, user)).ToList();
+                return GetAppointments().Where(
+                    a => user.Person.Id == a.Patient.Person.Id && CanModify(a, user)).ToList();
             }
             
             if (user.Type == UserAccount.AccountType.DOCTOR)
             {
-                return IS.Instance.Hospital.Appointments.Where(
-                    a => !a.Deleted && user.Person.Id == a.Doctor.Person.Id && CanModify(a, user)).ToList();
+                return GetAppointments().Where(
+                    a => user.Person.Id == a.Doctor.Person.Id && CanModify(a, user)).ToList();
             }
             else
             {
-                return IS.Instance.Hospital.Appointments.Where(
-                    a => !a.Deleted && CanModify(a, user)).ToList();
+                return GetAppointments().Where(a => CanModify(a, user)).ToList();
             }
-        }
-
-        
-        public static List<Appointment> GetModifiableAppointments()
-        {
-            return IS.Instance.Hospital.Appointments.Where(a => !a.Deleted).ToList();
         }
 
         public static bool CanModify(Appointment appointment, UserAccount user)
@@ -244,7 +242,7 @@ namespace HospitalIS.Backend.Controller
 
         public static bool IsAvailable(Patient patient, Appointment refAppointment, DateTime newSchedule)
         {
-            foreach (Appointment appointment in GetModifiableAppointments())
+            foreach (Appointment appointment in GetAppointments())
             {
                 if ((patient == appointment.Patient) && (appointment != refAppointment))
                 {
@@ -259,7 +257,7 @@ namespace HospitalIS.Backend.Controller
 
         public static bool IsAvailable(Doctor doctor, Appointment refAppointment, DateTime newSchedule)
         {
-            foreach (Appointment appointment in GetModifiableAppointments())
+            foreach (Appointment appointment in GetAppointments())
             {
                 if ((doctor == appointment.Doctor) && (appointment != refAppointment))
                 {
@@ -274,7 +272,7 @@ namespace HospitalIS.Backend.Controller
 
         public static bool IsAvailable(Room room, Appointment refAppointment, DateTime newSchedule)
         {
-            var relevantAppointments = GetModifiableAppointments().Where(ap => ap != refAppointment && ap.Room == room);
+            var relevantAppointments = GetAppointments().Where(ap => ap != refAppointment && ap.Room == room);
             foreach (var Appointment in relevantAppointments)
 			{
                 if (AreColliding(Appointment.ScheduledFor, newSchedule))

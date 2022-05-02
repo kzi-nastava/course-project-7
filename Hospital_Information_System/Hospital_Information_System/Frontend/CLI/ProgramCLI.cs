@@ -10,7 +10,7 @@ namespace HospitalIS.Frontend.CLI
 {
     internal static class CLIProgram
     {
-        private static readonly string dataDirectory = Path.Combine("..", "..", "..", "data");
+        private static readonly string dataDirectory = Path.Combine("data");
         private const string inputCancelString = "-q";
         private static UserAccount user;
         private static bool isRunning = true;
@@ -67,7 +67,9 @@ namespace HospitalIS.Frontend.CLI
             new Command("-approve-delete-request", () => RequestModel.ApproveDeleteRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
             new Command("-deny-delete-request", () => RequestModel.DenyDeleteRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
             new Command("-approve-update-request", () => RequestModel.ApproveUpdateRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-deny-update-request", () => RequestModel.DenyUpdateRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY})
+            new Command("-deny-update-request", () => RequestModel.DenyUpdateRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
+        
+            new Command("-renovation-schedule", () => RenovationModel.NewRenovation(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
         };
 
         static List<Command> GetCommands(UserAccount user)
