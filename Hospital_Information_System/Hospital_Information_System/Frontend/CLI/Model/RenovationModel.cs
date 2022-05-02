@@ -35,8 +35,6 @@ namespace HospitalIS.Frontend.CLI.Model
             }
         }
 
-        // TODO @magley: Prevent appointments that would get into renovations
-
         private const string hintSelectRoom = "Select room for renovation";
         private const string hintSelectStart = "Select renovation starting time";
         private const string hintSelectEnd = "Select renovation ending time";
@@ -105,8 +103,12 @@ namespace HospitalIS.Frontend.CLI.Model
 
         private static void PrintUnavailableTimeslotsForRenovation(Room r)
         {
+
+            var unavailableSlotsSorted = GetUnavailableTimeslotsForRenovation(r);
+            unavailableSlotsSorted.Sort((a, b) => (a.Start.CompareTo(b.Start)));
+
             Console.WriteLine(infoUnavailable);
-            foreach (var interval in GetUnavailableTimeslotsForRenovation(r))
+            foreach (var interval in unavailableSlotsSorted)
             {
                 Console.WriteLine(interval);
             }

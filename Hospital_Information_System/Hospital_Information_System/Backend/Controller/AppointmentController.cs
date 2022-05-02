@@ -280,7 +280,9 @@ namespace HospitalIS.Backend.Controller
                     return false;
 				}
 
-                if (RenovationController.IsRenovating(room, newSchedule)) 
+                // TODO @magley: This will have to change once appointments have a variable duration.
+
+                if (RenovationController.IsRenovating(room, newSchedule, newSchedule.AddMinutes(LengthOfAppointmentInMinutes))) 
                 {
                     return false;
 				}
