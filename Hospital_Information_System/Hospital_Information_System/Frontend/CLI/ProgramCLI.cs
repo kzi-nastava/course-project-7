@@ -10,7 +10,7 @@ namespace HospitalIS.Frontend.CLI
 {
     internal static class CLIProgram
     {
-        private static readonly string dataDirectory = Path.Combine("data");
+        private static string dataDirectory = Path.Combine("..", "..", "..", "data");
         private const string inputCancelString = "-q";
         private static UserAccount user;
         private static bool isRunning = true;
@@ -87,7 +87,18 @@ namespace HospitalIS.Frontend.CLI
             Console.ForegroundColor = ConsoleColor.Gray;
         }
 
-        static void Main()
+		static void HandleCmdArgs(string[] args) {
+			if (args.Count() >= 1) {
+				int k = Convert.ToInt32(args[0]);
+				string[] paths = new string[k + 1];
+				for (int i = 0; i < k; i++)
+					paths[i] = "..";
+				paths[k] = "data";
+				dataDirectory = Path.Combine(paths);
+			}
+		}
+
+        static void Main(string[] args)
         {
             // === Login ===
 
