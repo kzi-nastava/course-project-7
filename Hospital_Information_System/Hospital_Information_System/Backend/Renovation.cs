@@ -35,5 +35,10 @@ namespace HospitalIS.Backend
 		{
 			return $"Renovation(Room={Room.Id} {Room.Name}, Start={Start}, End={End})";
 		}
+
+		public int GetTimeToLive()
+		{
+			return (int)(End - DateTime.Now).TotalMilliseconds;
+		}
 	}
 }

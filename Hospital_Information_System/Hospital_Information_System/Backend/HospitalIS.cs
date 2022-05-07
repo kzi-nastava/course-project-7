@@ -83,6 +83,10 @@ namespace HospitalIS.Backend
 			{
 				EquipmentRelocationRepo.AddTask(relocation);
 			}
+			foreach (var renovation in Hospital.Renovations)
+			{
+				RenovationRepo.AddTask(renovation);
+			}
 		}
 	}
 }

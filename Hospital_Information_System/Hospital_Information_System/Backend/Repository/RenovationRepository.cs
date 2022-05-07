@@ -3,6 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace HospitalIS.Backend.Repository
 {
@@ -40,5 +43,38 @@ namespace HospitalIS.Backend.Repository
         {
             File.WriteAllText(fullFilename, JsonConvert.SerializeObject(IS.Instance.Hospital.Renovations, Formatting.Indented, settings));
         }
+
+        private void ExecuteSplit(Renovation renovation) {
+            Debug.Assert(renovation.IsSplitting());
+            IS.Instance.RoomRepo.Add(renovation.Room1);
+            IS.Instance.RoomRepo.Add(renovation.Room2);
+            IS.Instance.RoomRepo.Remove(renovation.Room);
+        }
+
+        public void Execute(Renovation renovation)
+		{
+			Thread.Sleep(Math.Max(renovation.GetTimeToLive(), 0));
+
+			if (renovation.Deleted)
+				return;
+
+			if (!IS.Instance.Hospital.Renovations.Contains(renovation))
+				throw new EntityNotFoundException();
+
+			Console.WriteLine($"Finished renovation {renovation}.");
+
+            if (renovation.IsSplitting()) {
+                ExecuteSplit(renovation);
+            }
+
+			IS.Instance.RenovationRepo.Remove(renovation);       
+		}
+
+		public void AddTask(Renovation renovation)
+		{
+			Task t = new Task(() => Execute(renovation));
+			IS.Instance.Hospital.RenovationTasks.Add(t);
+			t.Start();
+		}
     }
 }

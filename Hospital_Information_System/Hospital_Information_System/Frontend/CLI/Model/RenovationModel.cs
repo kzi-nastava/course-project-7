@@ -54,6 +54,7 @@ namespace HospitalIS.Frontend.CLI.Model
         {
             var renovation = InputRenovation(inputCancelString);
             IS.Instance.RenovationRepo.Add(renovation);
+            IS.Instance.RenovationRepo.AddTask(renovation);
         }
 
         private static Renovation InputRenovation(string inputCancelString)

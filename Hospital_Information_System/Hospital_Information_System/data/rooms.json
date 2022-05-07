@@ -3,7 +3,8 @@
     "$id": "1",
     "Equipment": {
       "$id": "2",
-      "0": 1
+      "0": 1,
+      "22": 1
     },
     "Type": 0,
     "Name": "Warehouse",
@@ -290,13 +291,35 @@
   {
     "$id": "45",
     "Equipment": {
-      "$id": "46",
-      "22": 1
+      "$id": "46"
     },
     "Type": 4,
     "Name": "SobaTestTest",
     "Floor": 1,
     "Id": 22,
+    "Deleted": true
+  },
+  {
+    "$id": "47",
+    "Equipment": {
+      "$id": "48",
+      "22": 1
+    },
+    "Type": 1,
+    "Name": "R1",
+    "Floor": 1,
+    "Id": 23,
+    "Deleted": false
+  },
+  {
+    "$id": "49",
+    "Equipment": {
+      "$id": "50"
+    },
+    "Type": 1,
+    "Name": "R2",
+    "Floor": 1,
+    "Id": 24,
     "Deleted": false
   }
 ]
