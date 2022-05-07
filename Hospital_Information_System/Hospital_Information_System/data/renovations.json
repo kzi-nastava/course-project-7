@@ -48,6 +48,37 @@
       "Deleted": false
     },
     "Id": 2,
+    "Deleted": true
+  },
+  {
+    "$id": "8",
+    "Room": 22,
+    "Start": "2022-05-07T14:00:00",
+    "End": "2022-05-07T16:00:00",
+    "Room1": {
+      "$id": "9",
+      "Equipment": {
+        "$id": "10"
+      },
+      "Type": 1,
+      "Name": "R1",
+      "Floor": 1,
+      "Id": -1,
+      "Deleted": false
+    },
+    "Room2": {
+      "$id": "11",
+      "Equipment": {
+        "$id": "12",
+        "22": 1
+      },
+      "Type": 1,
+      "Name": "R2",
+      "Floor": 1,
+      "Id": -1,
+      "Deleted": false
+    },
+    "Id": 3,
     "Deleted": false
   }
 ]
