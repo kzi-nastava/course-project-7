@@ -3,12 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using HospitalIS.Backend;
+using HospitalIS.Backend.Controller;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
     public class RequestModel
     {
         private const string hintSelectRequests = "Select requests by their number, separated by whitespace.\nEnter a newline to finish";
+        private const string hintSelectAction = "Select action over requests";
+
+        internal static void HandleRequests(string inputCancelString)
+        {
+            try
+            {
+                var actions = new Dictionary<string, Action>
+                {
+                    ["Approve delete requests"] = () => ApproveDeleteRequest(inputCancelString),
+                    ["Deny delete requests"] = () => DenyDeleteRequest(inputCancelString),
+                    ["Approve update requests"] = () => ApproveUpdateRequest(inputCancelString),
+                    ["Deny update requests"] = () => DenyUpdateRequest(inputCancelString),
+                };
+            
+                Console.WriteLine(hintSelectAction);
+                var actionChoice = EasyInput<string>.Select(actions.Keys.ToList(), inputCancelString);
+
+                actions[actionChoice]();
+            }
+            catch (NothingToSelectException e)
+            {
+                Console.WriteLine(e.Message);
+                return;
+            }
+        }
         
         internal static void ViewRequests()
         {
@@ -95,13 +121,11 @@ namespace HospitalIS.Frontend.CLI.Model
         internal static bool isModifiableUpdateRequests(UpdateRequest request)
         {
             return request.OldAppointment.ScheduledFor > DateTime.Now && request.State == Request.StateType.PENDING;
-            // return request.State == Request.StateType.PENDING;
         }
         
         internal static bool isModifiableDeleteRequests(DeleteRequest request)
         {
             return request.Appointment.ScheduledFor > DateTime.Now && request.State == Request.StateType.PENDING;
-            // return request.State == Request.StateType.PENDING;
         }
         
     }
