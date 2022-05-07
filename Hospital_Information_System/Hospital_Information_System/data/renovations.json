@@ -4,6 +4,8 @@
     "Room": 1,
     "Start": "2022-05-01T22:50:17.6143683+02:00",
     "End": "2022-05-05T22:50:17.6149391+02:00",
+    "Room1": null,
+    "Room2": null,
     "Id": 0,
     "Deleted": false
   },
@@ -12,7 +14,40 @@
     "Room": 1,
     "Start": "2022-05-01T20:51:00",
     "End": "2022-05-01T22:50:15",
+    "Room1": null,
+    "Room2": null,
     "Id": 1,
+    "Deleted": false
+  },
+  {
+    "$id": "3",
+    "Room": 22,
+    "Start": "2022-05-07T17:25:00",
+    "End": "2022-05-08T00:00:00",
+    "Room1": {
+      "$id": "4",
+      "Equipment": {
+        "$id": "5",
+        "22": 1
+      },
+      "Type": 5,
+      "Name": "SobaTestTest_Split1",
+      "Floor": 1,
+      "Id": -1,
+      "Deleted": false
+    },
+    "Room2": {
+      "$id": "6",
+      "Equipment": {
+        "$id": "7"
+      },
+      "Type": 4,
+      "Name": "SobaTestTest_Split2",
+      "Floor": 1,
+      "Id": -1,
+      "Deleted": false
+    },
+    "Id": 2,
     "Deleted": false
   }
 ]

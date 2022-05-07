@@ -102,6 +102,7 @@ namespace HospitalIS.Frontend.CLI
         {
             // === Login ===
 
+            HandleCmdArgs(args);
             IS.Instance.Load(dataDirectory);
 
             try

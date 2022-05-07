@@ -10,11 +10,17 @@ namespace HospitalIS.Backend
 		public DateTime Start;
 		public DateTime End;
 
-		public Renovation(Room room, DateTime start, DateTime end)
+		// These are stored directly because they don't exist in the system unti the renovation ends
+		public Room Room1;
+		public Room Room2;
+
+		public Renovation(Room room, DateTime start, DateTime end, Room room1 = null, Room room2 = null)
 		{
 			Room = room;
 			Start = start;
 			End = end;
+			Room1 = room1;
+			Room2 = room2;
 		}
 
 		public Renovation()
