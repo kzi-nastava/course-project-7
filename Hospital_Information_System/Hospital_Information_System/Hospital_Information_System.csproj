@@ -10,12 +10,4 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="Backend\Repository\MedicalRecord.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="data\medicalRecord.json" />
-  </ItemGroup>
-
 </Project>

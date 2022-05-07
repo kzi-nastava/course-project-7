@@ -10,7 +10,7 @@ namespace HospitalIS.Frontend.CLI
 {
     internal static class CLIProgram
     {
-        private static readonly string dataDirectory = Path.Combine("..", "..", "..", "data");
+        private static string dataDirectory = Path.Combine("..", "..", "..", "data");
         private const string inputCancelString = "-q";
         private static UserAccount user;
         private static bool isRunning = true;
@@ -55,21 +55,21 @@ namespace HospitalIS.Frontend.CLI
             new Command("-appointment-update", () => AppointmentModel.UpdateAppointment(inputCancelString, user), new[] {UserAccount.AccountType.DOCTOR, UserAccount.AccountType.PATIENT}),
             new Command("-appointment-delete", () => AppointmentModel.DeleteAppointment(inputCancelString, user), new[] {UserAccount.AccountType.DOCTOR, UserAccount.AccountType.PATIENT}),
             new Command("-appointment-view-start", () => AppointmentModel.ShowNextAppointments(user, inputCancelString), new[] {UserAccount.AccountType.DOCTOR}),
-
-            
+ 
             new Command("-patient-account-create", () => UserAccountModel.CreatePatientAccount(inputCancelString), new []{UserAccount.AccountType.SECRETARY}),
             new Command("-patient-account-view", () => UserAccountModel.ViewPatientAccounts(), new[] {UserAccount.AccountType.SECRETARY}),
             new Command("-patient-account-update", () => UserAccountModel.UpdatePatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
             new Command("-patient-account-delete", () => UserAccountModel.DeleteAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
             new Command("-block-patient-account-delete", () => UserAccountModel.BlockPatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
             new Command("-unblock-patient-account-delete", () => UserAccountModel.UnblockPatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            
+
             new Command("-view-patient-requests", () => RequestModel.ViewRequests(), new[] {UserAccount.AccountType.SECRETARY}),
             new Command("-approve-delete-request", () => RequestModel.ApproveDeleteRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
             new Command("-deny-delete-request", () => RequestModel.DenyDeleteRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
             new Command("-approve-update-request", () => RequestModel.ApproveUpdateRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-deny-update-request", () => RequestModel.DenyUpdateRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY})
-
+            new Command("-deny-update-request", () => RequestModel.DenyUpdateRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
+        
+            new Command("-renovation-schedule", () => RenovationModel.NewRenovation(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
         };
 
         static List<Command> GetCommands(UserAccount user)
@@ -87,7 +87,18 @@ namespace HospitalIS.Frontend.CLI
             Console.ForegroundColor = ConsoleColor.Gray;
         }
 
-        static void Main()
+		static void HandleCmdArgs(string[] args) {
+			if (args.Count() >= 1) {
+				int k = Convert.ToInt32(args[0]);
+				string[] paths = new string[k + 1];
+				for (int i = 0; i < k; i++)
+					paths[i] = "..";
+				paths[k] = "data";
+				dataDirectory = Path.Combine(paths);
+			}
+		}
+
+        static void Main(string[] args)
         {
             // === Login ===
 

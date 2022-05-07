@@ -36,6 +36,13 @@ namespace HospitalIS.Frontend.CLI
 	/// </summary>
 	internal abstract class EasyInput<T>
 	{
+		private static void WriteLineError(string err) 
+		{
+			Console.ForegroundColor = ConsoleColor.Red;
+			Console.WriteLine(err);
+			Console.ForegroundColor = ConsoleColor.Gray;
+		}
+
 		/// <summary>
 		/// Continuously asks for user input until it satisfies all rules or the user cancels the operation.
 		/// </summary>
@@ -66,7 +73,7 @@ namespace HospitalIS.Frontend.CLI
 				}
 				catch
 				{
-					Console.WriteLine("Invalid input.");
+					WriteLineError("Invalid input.");
 					continue;
 				}
 
@@ -74,7 +81,7 @@ namespace HospitalIS.Frontend.CLI
 
 				if (brokenRuleIndex != -1)
 				{
-					Console.WriteLine(errorMsg[brokenRuleIndex]);
+					WriteLineError(errorMsg[brokenRuleIndex]);
 					continue;
 				}
 				else
@@ -134,7 +141,7 @@ namespace HospitalIS.Frontend.CLI
 					int brokenRuleIndex = GetBrokenRuleIndex(rules, elements[selection]);
 					if (brokenRuleIndex != -1)
 					{
-						Console.WriteLine(errorMsg[brokenRuleIndex]);
+						WriteLineError(errorMsg[brokenRuleIndex]);
 						continue;
 					}
 					else

@@ -35,6 +35,11 @@ namespace HospitalIS.Backend.Controller
 			return IS.Instance.Hospital.Rooms.Where(r => !r.Deleted).ToList();
 		}
 
+		public static List<Room> GetUsableRoomsForAppointments(DateTime when)
+		{
+			return GetModifiableRooms().Where(r => RenovationController.IsRenovating(r, when)).ToList();
+		}
+
 		public static List<Room.RoomType> GetModifiableRoomTypes()
 		{
 			return Enum.GetValues(typeof(Room.RoomType)).Cast<Room.RoomType>()
