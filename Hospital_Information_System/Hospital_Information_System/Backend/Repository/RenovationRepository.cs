@@ -5,7 +5,6 @@ using System.Linq;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Diagnostics;
 
 namespace HospitalIS.Backend.Repository
 {
@@ -45,9 +44,22 @@ namespace HospitalIS.Backend.Repository
         }
 
         private void ExecuteSplit(Renovation renovation) {
-            Debug.Assert(renovation.IsSplitting());
             IS.Instance.RoomRepo.Add(renovation.Room1);
             IS.Instance.RoomRepo.Add(renovation.Room2);
+            IS.Instance.RoomRepo.Remove(renovation.Room);
+        }
+
+        private void ExecuteMerge(Renovation renovation) {
+            if (IS.Instance.RoomRepo.GetById(renovation.Room1.Id) == null)
+            {
+                IS.Instance.RoomRepo.Add(renovation.Room1);
+            }
+
+            foreach (var kv in renovation.Room.Equipment)
+            {
+                renovation.Room1.Equipment.Add(kv.Key, kv.Value);
+            }
+
             IS.Instance.RoomRepo.Remove(renovation.Room);
         }
 
@@ -63,8 +75,13 @@ namespace HospitalIS.Backend.Repository
 
 			Console.WriteLine($"Finished renovation {renovation}.");
 
-            if (renovation.IsSplitting()) {
+            if (renovation.IsSplitting()) 
+            {
                 ExecuteSplit(renovation);
+            } 
+            else if (renovation.IsMerging()) 
+            {
+                ExecuteMerge(renovation);
             }
 
 			IS.Instance.RenovationRepo.Remove(renovation);       

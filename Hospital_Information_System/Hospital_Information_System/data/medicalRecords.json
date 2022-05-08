@@ -1,6 +1,5 @@
 [
   {
-    "$id": "1",
     "Patient": 1,
     "Height": 150.0,
     "Weight": 60.0,
@@ -14,7 +13,6 @@
     "Deleted": false
   },
   {
-    "$id": "2",
     "Patient": 2,
     "Height": 180.0,
     "Weight": 70.0,
@@ -28,7 +26,6 @@
     "Deleted": false
   },
   {
-    "$id": "3",
     "Patient": 0,
     "Height": 151.0,
     "Weight": 45.0,

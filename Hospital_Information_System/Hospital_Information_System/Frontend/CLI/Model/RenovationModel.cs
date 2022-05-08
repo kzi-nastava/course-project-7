@@ -49,12 +49,20 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string askWantsToSplit = "Will this room split into 2 new rooms?";
         private const string hintSelectEquipmentForSplit = "Select equipment to be moved into the first room. The remaining equipment will be moved into the second room";
         private const string askToRemoveInvalidRenovations = "There exist renovations for this room that will no longer be valid. Would you like to remove them or cancel creating this renovation?";
+        private const string askWantsToMerge = "Will this room be merged with another room?";
+        private const string hintMergeSelectOtherRoom = "Select other room that will be merged with this one";
+        private const string hintMergeInputNewRoom = "Input data for the room that will be created after merging";
+
+        private static void InsertIntoSystem(Renovation renovation) 
+        {
+            IS.Instance.RenovationRepo.Add(renovation);
+            IS.Instance.RenovationRepo.AddTask(renovation);       
+        }
 
         public static void NewRenovation(string inputCancelString)
         {
             var renovation = InputRenovation(inputCancelString);
-            IS.Instance.RenovationRepo.Add(renovation);
-            IS.Instance.RenovationRepo.AddTask(renovation);
+            InsertIntoSystem(renovation);
         }
 
         private static Renovation InputRenovation(string inputCancelString)
@@ -68,8 +76,19 @@ namespace HospitalIS.Frontend.CLI.Model
             Console.WriteLine(hintSelectEnd);
             renovation.End = InputEnd(inputCancelString, renovation);
 
-			InputSplitRoom(renovation, inputCancelString);
-			InputHandleInvalidRenovationsAfterScheduling(renovation, inputCancelString);
+            // TODO @magley: This is ugly.
+
+            if (InputSplitRoom(renovation, inputCancelString)) {
+                InputHandleInvalidRenovationsAfterScheduling(renovation, inputCancelString);
+            } else {
+                var otherRoomRenovation = InputMergeRooms(renovation, inputCancelString);
+                InputHandleInvalidRenovationsAfterScheduling(renovation, inputCancelString);
+
+                if (otherRoomRenovation != null) {
+                    InputHandleInvalidRenovationsAfterScheduling(otherRoomRenovation, inputCancelString);
+                    InsertIntoSystem(otherRoomRenovation);
+                }
+            }
 
             return renovation;
         }
@@ -94,15 +113,55 @@ namespace HospitalIS.Frontend.CLI.Model
                 }
             }
 		}
+        private static Renovation InputMergeRooms(Renovation renovation, string inputCancelString)
+        {
+            Console.WriteLine(askWantsToMerge);
+            if (EasyInput<bool>.YesNo(inputCancelString))
+            {
+                var mergeRooms = MergeRooms(renovation, inputCancelString);
+                var newRoom = mergeRooms.Item1;
+                var otherRoom = mergeRooms.Item2;
+                renovation.Room1 = newRoom;
+                var otherRoomRenovation =  new Renovation(otherRoom, renovation.Start, renovation.End, newRoom);
 
-		private static void InputSplitRoom(Renovation renovation, string inputCancelString) {
+                return otherRoomRenovation;
+            }
+            return null;
+        }
+
+        private static Tuple<Room, Room> MergeRooms(Renovation renovation, string inputCancelString)
+        {
+            var roomPropertiesToInput = new List<RoomController.RoomProperty>{
+                RoomController.RoomProperty.TYPE,
+                RoomController.RoomProperty.NAME
+            };
+
+            Console.WriteLine(hintMergeInputNewRoom);
+            Room newRoom = RoomModel.InputRoom(inputCancelString, roomPropertiesToInput);
+            newRoom.Floor = renovation.Room.Floor;
+
+            Console.WriteLine(hintMergeSelectOtherRoom);
+            Room otherRoom = EasyInput<Room>.Select(
+                RoomController.GetModifiableRooms().Where(
+                    rm => rm != renovation.Room && rm.Floor == renovation.Room.Floor
+                ).ToList(),
+                inputCancelString
+            );
+
+            return new Tuple<Room, Room>(newRoom, otherRoom);
+        }
+
+		private static bool InputSplitRoom(Renovation renovation, string inputCancelString)
+        {
             Console.WriteLine(askWantsToSplit);
             if (EasyInput<bool>.YesNo(inputCancelString))
             {
                 var newRooms = SplitRoom(renovation, inputCancelString);
                 renovation.Room1 = newRooms.Item1;
                 renovation.Room2 = newRooms.Item2;
+                return true;
             }
+            return false;
 		}
 
         private static Tuple<Room, Room> SplitRoom(Renovation renovation, string inputCancelString)
@@ -159,7 +218,7 @@ namespace HospitalIS.Frontend.CLI.Model
                 new List<Func<DateTime, bool>> 
 				{ 
 					dt => badDates.Count(bd => bd.Contains(dt)) == 0,
-					dt => dt < DateTime.Now
+					dt => dt >= DateTime.Now
 				},
                 new[] 
 				{ 
@@ -204,7 +263,7 @@ namespace HospitalIS.Frontend.CLI.Model
 
         private static List<Renovation> GetInvalidRenovationsAfterScheduling(Renovation renovation)
         {
-            if (renovation.IsSplitting())
+            if (renovation.IsSplitting() || renovation.IsMerging())
             {
                 return RenovationController.GetRenovations()
                     .Where(ren => ren.Room == renovation.Room && ren.Start >= renovation.End)
@@ -220,7 +279,7 @@ namespace HospitalIS.Frontend.CLI.Model
             var relevantRenovations = RenovationController.GetRenovations().Where(ren => ren.Room == r).ToList();
             foreach (var ren in relevantRenovations)
             {
-                if (ren.IsSplitting())
+                if (ren.IsSplitting() || ren.IsMerging())
                 {
                     result.Add(new Interval(ren.Start, DateTime.MaxValue));
                 }

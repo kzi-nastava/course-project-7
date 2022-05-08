@@ -45,7 +45,7 @@ namespace HospitalIS.Backend
 
 		public IS()
 		{
-			settings = new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects };
+			settings = new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.None };
 		}
 
 		public void Save(string directory)

@@ -18,7 +18,7 @@ namespace HospitalIS.Backend.Repository
 
 		public Room GetById(int id)
 		{
-			return IS.Instance.Hospital.Rooms.First(e => e.Id == id);
+			return IS.Instance.Hospital.Rooms.FirstOrDefault(e => e.Id == id);
 		}
 
 		public void Load(string fullFilename, JsonSerializerSettings settings)
