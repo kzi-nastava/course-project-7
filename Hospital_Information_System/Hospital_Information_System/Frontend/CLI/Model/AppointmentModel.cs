@@ -29,7 +29,10 @@ namespace HospitalIS.Frontend.CLI.Model
             "If you want to start any appointment - press 1, if not press anything else";
 
         private const string hintAppointmentIsOver = "Appointment is over.";
-        
+
+        private const string hintMakeReferral =
+            "If you want to make a referral - press 1, if not press anything else";
+
         internal static void CreateAppointment(string inputCancelString, UserAccount user)
         {
             try
@@ -271,8 +274,14 @@ namespace HospitalIS.Frontend.CLI.Model
         private static void StartAppointment(UserAccount user, string inputCancelString, List<Appointment> startableAppointments)
         {
             Console.WriteLine(hintSelectAppointment);
-            var appointmentsToStart = EasyInput<Appointment>.Select(startableAppointments, inputCancelString);
-            MedicalRecordModel.UpdateMedicalRecordAndAnamnesis(appointmentsToStart, inputCancelString);
+            var appointmentToStart = EasyInput<Appointment>.Select(startableAppointments, inputCancelString);
+            MedicalRecordModel.UpdateMedicalRecordAndAnamnesis(appointmentToStart, inputCancelString);
+            Console.WriteLine(hintMakeReferral);
+            var option = Console.ReadLine();
+            if (option == "1")
+            {
+                ReferralModel.CreateReferral(appointmentToStart, inputCancelString);
+            }
             Console.WriteLine(hintAppointmentIsOver);
         }
         
