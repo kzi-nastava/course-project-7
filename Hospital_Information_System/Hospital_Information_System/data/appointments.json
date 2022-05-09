@@ -108,5 +108,15 @@
     "Anamnesis": "",
     "Id": 10,
     "Deleted": false
+  },
+  {
+    "$id": "12",
+    "Doctor": 1,
+    "Patient": 2,
+    "Room": 12,
+    "ScheduledFor": "2022-05-10T09:00:00",
+    "Anamnesis": "",
+    "Id": 11,
+    "Deleted": false
   }
 ]

@@ -81,6 +81,16 @@ namespace HospitalIS.Frontend.CLI.Model
             return Enum.GetValues(typeof(Doctor.MedicineSpeciality)).Cast<Doctor.MedicineSpeciality>().ToList();
         }
         
+        internal static void GetAllReferrals()
+        {
+            var allReferrals = IS.Instance.Hospital.Referrals.ToList();
+            for (int i = 0; i < allReferrals.Count; i++)
+            {
+                var referral = allReferrals[i];
+                Console.WriteLine(referral.ToString());
+            }
+        }
+        
         
         
         

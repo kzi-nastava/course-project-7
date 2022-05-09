@@ -7,6 +7,7 @@ namespace HospitalIS.Backend
     {
         // Sometimes the exact doctor is specified
         [JsonConverter(typeof(Repository.DoctorRepository.DoctorReferenceConverter))]
+        [JsonProperty(NullValueHandling=NullValueHandling.Ignore)]
         public Doctor Doctor { get; set; }
         
         // Sometimes we just know the field
@@ -31,6 +32,10 @@ namespace HospitalIS.Backend
 
         public override string ToString()
         {
+            if (Doctor == null)
+            {
+                return $"Referral{{Id = {Id}, Doctor = Not specified, Specialty = {Specialty}, Patient = {Patient.Id}}}";
+            }
             return $"Referral{{Id = {Id}, Doctor = {Doctor.Id}, Specialty = {Specialty}, Patient = {Patient.Id}}}";
         }
     }
