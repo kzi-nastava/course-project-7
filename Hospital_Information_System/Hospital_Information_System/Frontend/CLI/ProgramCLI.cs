@@ -65,6 +65,7 @@ namespace HospitalIS.Frontend.CLI
 
             new Command("-view-patient-requests", () => RequestModel.ViewRequests(), new[] {UserAccount.AccountType.SECRETARY}),
             new Command("-handle-patient-requests", () => RequestModel.HandleRequests(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("-handle-referrals", () => ReferralModel.HandleReferrals(inputCancelString, user), new[] {UserAccount.AccountType.SECRETARY}),
 
             new Command("-renovation-schedule", () => RenovationModel.NewRenovation(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
         };

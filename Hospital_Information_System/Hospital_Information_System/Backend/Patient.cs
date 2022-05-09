@@ -17,7 +17,7 @@ namespace HospitalIS.Backend
         
         public override string ToString()
         {
-            return $"Patient{{Id = {Id}, Person = {Person.Id}}}";
+            return $"Patient{{Id = {Id}, Person = {Person.Id}, FirstName = {Person.FirstName}, LastName = {Person.LastName}}}";
         }
     }
 }

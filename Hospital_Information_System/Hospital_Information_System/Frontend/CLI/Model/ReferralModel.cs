@@ -11,6 +11,7 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintSelectDoctor = "Select a doctor for the referral: ";
         private const string hintSelectSpecialty = "Select a specialty for the referral: ";
         private const string hintReferralMade = "You've Successfully made a referral!";
+        private const string hintSelectReferral = "Select referral: ";
 
         public enum ReferralProperty
         {
@@ -91,8 +92,28 @@ namespace HospitalIS.Frontend.CLI.Model
             }
         }
         
+        internal static void HandleReferrals(string inputCancelString, UserAccount user)
+        {
+            try
+            {
+                Console.WriteLine(hintSelectReferral);
+                AppointmentModel.CreateAppointmentWithReferral(SelectReferral(inputCancelString), inputCancelString, user);
+            }
+            catch (NothingToSelectException e)
+            {
+                Console.WriteLine(e);
+            }
+        }
         
+        private static Referral SelectReferral(string inputCancelString)
+        {   
+            return EasyInput<Referral>.Select(GetUnusedReferrals(), inputCancelString);
+        }
         
+        private static List<Referral> GetUnusedReferrals()
+        {
+            return IS.Instance.Hospital.Referrals.Where(referral => !referral.Deleted && !referral.Scheduled).ToList();
+        }
         
     }
 }
