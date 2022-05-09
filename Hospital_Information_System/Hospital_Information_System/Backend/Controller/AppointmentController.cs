@@ -96,6 +96,12 @@ namespace HospitalIS.Backend.Controller
         {
             return Enum.GetValues(typeof(AppointmentProperty)).Cast<AppointmentProperty>().ToList();
         }
+
+        public static List<AppointmentProperty> GetPrioritizableProperties()
+        {
+            return GetAllAppointmentProperties().Where(
+                ap => ap == AppointmentProperty.DOCTOR || ap == AppointmentProperty.SCHEDULED_FOR).ToList();
+        }
         
         public static List<Appointment> GetAllPatientsAppointments(UserAccount user)
         {
@@ -304,6 +310,127 @@ namespace HospitalIS.Backend.Controller
             if (whichProperties.Contains(AppointmentProperty.ROOM)) target.Room = source.Room;
             if (whichProperties.Contains(AppointmentProperty.SCHEDULED_FOR)) target.ScheduledFor = source.ScheduledFor;
             if (whichProperties.Contains(AppointmentProperty.ANAMNESIS)) target.Anamnesis = source.Anamnesis;
+        }
+
+        /// <summary>
+        /// Information relevant to automatically finding an appointment fitting certain criteria.
+        /// </summary>
+        public class SearchBundle
+        {
+            public static Predicate<TimeSpan> TsInDay = ts => ts >= TimeSpan.FromHours(0) && ts < TimeSpan.FromHours(24);
+            public static Predicate<TimeSpan> TsZeroSeconds = ts => ts.Seconds == 0;
+            public static Func<TimeSpan, TimeSpan, bool> TsIsAfter = (ts1, ts2) => ts1 > ts2;
+            public static Predicate<DateTime> DtNotTooSoon = dt => (dt.Date - DateTime.Today).TotalDays >= 1;
+            public const string ErrTimeSpanNotInDay = "TimeSpan must be between 00:00:00 and 23:59:59";
+            public const string ErrTimeSpanHasSeconds = "Timespan's seconds component must be zero";
+            public const string ErrEndBeforeStart = "End of range must be after start of range";
+            public const string ErrDateTooSoon = "Latest date must be at least a day after today";
+
+            public Doctor Doctor { get; set; }
+
+            public Patient Patient { get; set; }
+
+            private TimeSpan _start;
+            public TimeSpan Start
+            {
+                get { return _start; }
+                set
+                {
+                    if (!TsInDay(value)) throw new ArgumentException(ErrTimeSpanNotInDay);
+                    if (!TsZeroSeconds(value)) throw new ArgumentException(ErrTimeSpanHasSeconds);
+                    _start = value;
+                }
+            }
+
+            private TimeSpan _end;
+            public TimeSpan End
+            {
+                get { return _end; }
+                set
+                {
+                    if (!TsInDay(value)) throw new ArgumentException(ErrTimeSpanNotInDay);
+                    if (!TsZeroSeconds(value)) throw new ArgumentException(ErrTimeSpanHasSeconds);
+                    if (!TsIsAfter(value, Start)) throw new ArgumentException(ErrEndBeforeStart);
+                    _end = value;
+                }
+            }
+
+            private DateTime _by;
+            public DateTime By
+            {
+                get { return _by; }
+                set
+                {
+                    if (!DtNotTooSoon(value)) throw new ArgumentException(ErrDateTooSoon);
+                    _by = value;
+                }
+            }
+
+            public SearchBundle(Doctor doctor, Patient patient, TimeSpan start, TimeSpan end, DateTime by)
+            {
+                Doctor = doctor;
+                Patient = patient;
+                Start = start;
+                End = end;
+                By = by;
+            }
+
+            public SearchBundle(SearchBundle other) : this(other.Doctor, other.Patient, other.Start, other.End, other.By)
+            {
+
+            }
+        }
+
+        public static Appointment FindRecommendedAppointment(SearchBundle sb)
+        {
+            for (DateTime currDt = DateTime.Today; currDt < sb.By.Date; currDt = currDt.AddDays(1))
+            {
+                for (TimeSpan currTs = sb.Start; currTs <= sb.End; currTs = currTs.Add(TimeSpan.FromMinutes(1)))
+                {
+                    DateTime scheduledFor = currDt.Add(currTs);
+                    if (scheduledFor < DateTime.Now) continue;
+
+                    Doctor doctor = FindFirstAvailableDoctor(sb, scheduledFor);
+                    if (doctor == null) continue;
+
+                    Patient patient = FindFirstAvailablePatient(sb, scheduledFor);
+                    if (patient == null) continue;
+
+                    Room room = FindFirstAvailableExaminationRoom(scheduledFor);
+                    if (room == null) continue;
+
+                    return new Appointment(doctor, patient, room, scheduledFor);
+                }
+            }
+            return null;
+        }
+
+        // TODO: Make this more generic, maybe by passing a predicate showing which doctor we need?
+        private static Doctor FindFirstAvailableDoctor(SearchBundle sb, DateTime scheduledFor)
+        {
+            // If the search bundle has a predefined doctor, he's the one whose availability we're checking.
+            if (sb.Doctor != null)
+            {
+                return IsAvailable(sb.Doctor, null, scheduledFor) ? sb.Doctor : null;
+            }
+
+            return GetModifiableDoctors().Where(d => IsAvailable(d, null, scheduledFor)).First();
+        }
+
+        private static Patient FindFirstAvailablePatient(SearchBundle sb, DateTime scheduledFor)
+        {
+            // If the search bundle has a predefined patient, he's the one whose availability we're checking.
+            if (sb.Patient != null)
+            {
+                return IsAvailable(sb.Patient, null, scheduledFor) ? sb.Patient : null;
+            }
+
+            return GetModifiablePatients().Where(p => IsAvailable(p, null, scheduledFor)).First();
+        }
+
+        private static Room FindFirstAvailableExaminationRoom(DateTime scheduledFor)
+        {
+            return GetModifiableExaminationRooms().Where(r => IsAvailable(r, null, scheduledFor)).First();
         }
     }
 }

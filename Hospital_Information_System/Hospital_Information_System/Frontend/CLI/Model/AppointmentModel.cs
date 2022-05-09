@@ -29,7 +29,16 @@ namespace HospitalIS.Frontend.CLI.Model
             "If you want to start any appointment - press 1, if not press anything else";
 
         private const string hintAppointmentIsOver = "Appointment is over.";
-        
+
+        private const string hintGetStartOfRange = "Enter start of range";
+        private const string hintGetEndOfRange = "Enter end of range";
+        private const string hintGetLatestDesiredDate = "Enter latest desired date";
+        private const string hintGetPrioritizedProperty = "Enter the prioritized property";
+        private const string hintOptimalSearchFailed = "Could not find optimal appointment. Trying priority search...";
+        private const string hintPrioritySearchFailed = "Could not find appointment using priority search. Showing closest matching appointments...";
+        private const string hintDesperateSearchClosestOptimal = "Closest optimal when ignoring latest date";
+        private const string hintDesperateSearchClosestOverall = "Closest overall";
+
         internal static void CreateAppointment(string inputCancelString, UserAccount user)
         {
             try
@@ -97,6 +106,97 @@ namespace HospitalIS.Frontend.CLI.Model
             {
                 Console.WriteLine(e.Message);
             }
+        }
+
+        internal static void CreateRecommendedAppointment(string inputCancelString, UserAccount user)
+        {
+            try
+            {
+                AppointmentController.SearchBundle sb = InputSearchBundle(inputCancelString, user);
+                AppointmentController.AppointmentProperty priority = InputPrioritizedProperty(inputCancelString);
+
+                Appointment appointment = GetRecommendedAppointment(sb, priority, inputCancelString);
+                AppointmentController.Create(appointment, user);
+            }
+            catch (InputFailedException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        private static AppointmentController.SearchBundle InputSearchBundle(string inputCancelString, UserAccount user)
+        {
+            Doctor doctor = InputDoctor(inputCancelString, null, user);
+            Patient patient = InputPatient(inputCancelString, null, user);
+            TimeSpan start = InputStartOfRange(inputCancelString);
+            TimeSpan end = InputEndOfRange(start, inputCancelString);
+            DateTime latestDate = InputLatestDate(inputCancelString);
+
+            return new AppointmentController.SearchBundle(doctor, patient, start, end, latestDate); 
+        }
+
+        private static Appointment GetRecommendedAppointment(AppointmentController.SearchBundle sb, AppointmentController.AppointmentProperty priority, string inputCancelString)
+        {
+            return GetOptimalAppointment(sb) ?? GetPrioritizedAppointment(sb, priority) ?? GetDesperateAppointment(sb, inputCancelString);
+        }
+
+        private static Appointment GetOptimalAppointment(AppointmentController.SearchBundle sb)
+        {
+            return AppointmentController.FindRecommendedAppointment(sb);
+        }
+        private static Appointment GetPrioritizedAppointment(AppointmentController.SearchBundle sb, AppointmentController.AppointmentProperty priority)
+        {
+            Console.WriteLine(hintOptimalSearchFailed);
+            var sbPrioritized = new AppointmentController.SearchBundle(sb);
+            if (priority == AppointmentController.AppointmentProperty.DOCTOR)
+            {
+                sbPrioritized.Start = TimeSpan.FromHours(0);
+                sbPrioritized.End = TimeSpan.FromHours(24) - TimeSpan.FromMinutes(1);
+            }
+            else
+            {
+                sbPrioritized.Doctor = null;
+            }
+            return AppointmentController.FindRecommendedAppointment(sb);
+        }
+
+        private static Appointment GetDesperateAppointment(AppointmentController.SearchBundle sb, string inputCancelString)
+        {
+            Console.WriteLine(hintPrioritySearchFailed);
+
+            var desperateAppointments = new List<Appointment>();
+
+            // Closest optimal when ignoring latest date.
+            var sbDesperate = new AppointmentController.SearchBundle(sb)
+            {
+                By = DateTime.MaxValue
+            };
+            Appointment desperateAppointment = AppointmentController.FindRecommendedAppointment(sbDesperate);
+            if (desperateAppointment != null)
+            {
+                Console.WriteLine(hintDesperateSearchClosestOptimal);
+                Console.WriteLine(desperateAppointment.ToString());
+                desperateAppointments.Add(desperateAppointment);
+            }
+
+            // Closest overall.
+            sbDesperate = new AppointmentController.SearchBundle(sb)
+            {
+                Start = TimeSpan.FromHours(0),
+                End = TimeSpan.FromHours(24) - TimeSpan.FromMinutes(1),
+                Doctor = null,
+                By = DateTime.MaxValue
+            };
+            desperateAppointment = AppointmentController.FindRecommendedAppointment(sbDesperate);
+            if (desperateAppointment != null)
+            {
+                Console.WriteLine(hintDesperateSearchClosestOverall);
+                Console.WriteLine(desperateAppointment.ToString());
+                desperateAppointments.Add(desperateAppointment);
+            }
+
+            Console.WriteLine(hintSelectAppointment);
+            return EasyInput<Appointment>.Select(desperateAppointments, inputCancelString);
         }
 
         private static List<AppointmentController.AppointmentProperty> SelectModifiableProperties(string inputCancelString, UserAccount user)
@@ -237,6 +337,67 @@ namespace HospitalIS.Frontend.CLI.Model
                 },
                 inputCancelString);
         }
+
+        private static TimeSpan InputStartOfRange(string inputCancelString)
+        {
+            Console.WriteLine(hintGetStartOfRange);
+            return EasyInput<TimeSpan>.Get(
+                new List<Func<TimeSpan, bool>>()
+                {
+                    ts => AppointmentController.SearchBundle.TsInDay(ts),
+                    ts => AppointmentController.SearchBundle.TsZeroSeconds(ts),
+                },
+                new string[]
+                {
+                    AppointmentController.SearchBundle.ErrTimeSpanNotInDay,
+                    AppointmentController.SearchBundle.ErrTimeSpanHasSeconds,
+                },
+                inputCancelString,
+                TimeSpan.Parse);
+        }
+
+        private static TimeSpan InputEndOfRange(TimeSpan start, string inputCancelString)
+        {
+            Console.WriteLine(hintGetEndOfRange);
+            return EasyInput<TimeSpan>.Get(
+                new List<Func<TimeSpan, bool>>()
+                {
+                    ts => AppointmentController.SearchBundle.TsInDay(ts),
+                    ts => AppointmentController.SearchBundle.TsZeroSeconds(ts),
+                    ts => AppointmentController.SearchBundle.TsIsAfter(ts, start),
+                },
+                new string[]
+                {
+                    AppointmentController.SearchBundle.ErrTimeSpanNotInDay,
+                    AppointmentController.SearchBundle.ErrTimeSpanHasSeconds,
+                    AppointmentController.SearchBundle.ErrEndBeforeStart,
+                },
+                inputCancelString,
+                TimeSpan.Parse);
+        }
+
+        private static DateTime InputLatestDate(string inputCancelString)
+        {
+            Console.WriteLine(hintGetLatestDesiredDate);
+            return EasyInput<DateTime>.Get(
+                new List<Func<DateTime, bool>>()
+                {
+                    dt => AppointmentController.SearchBundle.DtNotTooSoon(dt),
+                },
+                new string[]
+                {
+                    AppointmentController.SearchBundle.ErrDateTooSoon,
+                },
+                inputCancelString);
+        }
+
+        private static AppointmentController.AppointmentProperty InputPrioritizedProperty(string inputCancelString)
+        {
+            Console.WriteLine(hintGetPrioritizedProperty);
+            return EasyInput<AppointmentController.AppointmentProperty>.Select(
+                AppointmentController.GetPrioritizableProperties(), inputCancelString);
+        }
+
         public static void ShowNextAppointments(UserAccount user, string inputCancelString)
         {
             List <Appointment> nextAppointments = AppointmentController.GetNextDoctorsAppointments(user, inputCancelString);
