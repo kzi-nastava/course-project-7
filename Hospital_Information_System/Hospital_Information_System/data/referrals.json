@@ -4,7 +4,7 @@
     "Doctor": 0,
     "Specialty": 0,
     "Patient": 0,
-    "Scheduled": false,
+    "Scheduled": true,
     "Id": 0,
     "Deleted": false
   },

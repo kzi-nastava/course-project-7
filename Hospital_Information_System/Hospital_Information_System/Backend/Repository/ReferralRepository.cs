@@ -31,7 +31,12 @@ namespace HospitalIS.Backend.Repository
         {
             entity.Deleted = true;
         }
-
+        
+        public static void Scheduled(Referral entity)
+        {
+            entity.Scheduled = true;
+        }
+        
         public void Remove(Func<Referral, bool> condition)
         {
             IS.Instance.Hospital.Referrals.ForEach(entity =>

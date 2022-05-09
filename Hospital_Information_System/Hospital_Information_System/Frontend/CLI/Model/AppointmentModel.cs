@@ -1,8 +1,10 @@
 ﻿using HospitalIS.Backend;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using HospitalIS.Backend.Controller;
+using HospitalIS.Backend.Repository;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
@@ -22,6 +24,7 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintAppointmentScheduled = "You've successfully scheduled an appointment!";
         private const string hintAppointmentUpdated = "You've successfully updated an appointment!";
         private const string hintAppointmentDeleted = "You've successfully deleted an appointment!";
+        private const string hintDeletedPatient = "Patient is deleted!";
         private const string hintNoScheduledAppoinments =
             "You don't have any scheduled appointments for the time given.";
 
@@ -184,7 +187,7 @@ namespace HospitalIS.Frontend.CLI.Model
         private static Room InputExaminationRoom(string inputCancelString, Appointment referenceAppointment, UserAccount user)
         {
             // Patient and doctor cannot modify the Room property, however when creating an Appointment we can reach here.
-            if (user.Type == UserAccount.AccountType.PATIENT || user.Type == UserAccount.AccountType.DOCTOR)
+            if (user.Type != UserAccount.AccountType.MANAGER)
             {
                 return AppointmentController.GetRandomAvailableExaminationRoom(referenceAppointment);
             }
@@ -285,5 +288,50 @@ namespace HospitalIS.Frontend.CLI.Model
             Console.WriteLine(hintAppointmentIsOver);
         }
         
+        internal static void CreateAppointmentWithReferral(Referral referral, string inputCancelString, UserAccount user)
+        {
+            try
+            {
+                if (referral.Patient.Deleted)
+                {
+                    Console.WriteLine(hintDeletedPatient);
+                }
+                if (referral.Doctor == null)
+                {
+                    Doctor doctor = SelectDoctorBySpecialty(inputCancelString, referral.Specialty);
+                    Console.WriteLine(hintSelectDoctor);
+                    referral.Doctor = doctor;
+
+                }
+                
+                Appointment appointment = SelectAppointment(referral, inputCancelString, user);
+                AppointmentController.Create(appointment, user);
+                Console.WriteLine(hintAppointmentScheduled);
+                ReferralRepository.Scheduled(referral);
+            }
+            catch (InputFailedException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            
+        }
+
+        private static Appointment SelectAppointment(Referral referral, string inputCancelString, UserAccount user)
+        {
+            var appointment = new Appointment();
+            
+            appointment.Doctor = referral.Doctor;
+            appointment.Patient = referral.Patient;
+            appointment.Room = InputExaminationRoom(inputCancelString, null, user);
+            appointment.ScheduledFor = InputScheduledFor(inputCancelString, appointment, null);
+
+            return appointment;
+        }
+
+        private static Doctor SelectDoctorBySpecialty(string inputCancelString, Doctor.MedicineSpeciality speciality)
+        {
+            return EasyInput<Doctor>.Select(AppointmentController.GetAvailableDoctorsBySpecialty(speciality),
+                inputCancelString);
+        }
     }
 }

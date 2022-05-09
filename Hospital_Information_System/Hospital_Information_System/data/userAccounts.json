@@ -126,7 +126,9 @@
     "Type": 3,
     "Person": 7,
     "AppointmentModifiedTimestamps": [],
-    "AppointmentCreatedTimestamps": [],
+    "AppointmentCreatedTimestamps": [
+      "2022-05-09T18:36:34.6427545+02:00"
+    ],
     "Blocked": 0,
     "Id": 7,
     "Deleted": false

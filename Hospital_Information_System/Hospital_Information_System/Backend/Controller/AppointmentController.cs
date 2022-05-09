@@ -209,6 +209,12 @@ namespace HospitalIS.Backend.Controller
             return IS.Instance.Hospital.Doctors.Where(
                 d => !d.Deleted && IsAvailable(d, refAppointment, refAppointment.ScheduledFor)).ToList();
         }
+        
+        public static List<Doctor> GetAvailableDoctorsBySpecialty(Doctor.MedicineSpeciality speciality)
+        {
+            return IS.Instance.Hospital.Doctors.Where(
+                d => !d.Deleted && d.Specialty == speciality).ToList();
+        }
 
         public static List<Patient> GetAvailablePatients(Appointment refAppointment)
         {
