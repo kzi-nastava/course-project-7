@@ -157,7 +157,7 @@ namespace HospitalIS.Frontend.CLI.Model
             {
                 sbPrioritized.Doctor = null;
             }
-            return AppointmentController.FindRecommendedAppointment(sb);
+            return AppointmentController.FindRecommendedAppointment(sbPrioritized);
         }
 
         private static Appointment GetDesperateAppointment(AppointmentController.SearchBundle sb, string inputCancelString)
