@@ -257,8 +257,8 @@ namespace HospitalIS.Frontend.CLI.Model
                     MedicalRecordModel.ReadMedicalRecord(appointment, inputCancelString);
                     Console.WriteLine("=====================================");
                 }
+                CheckIfDoctorWantsToStartAppointment(user, inputCancelString, nextAppointments);
             }
-            CheckIfDoctorWantsToStartAppointment(user, inputCancelString, nextAppointments);
         }
         
         public static void CheckIfDoctorWantsToStartAppointment(UserAccount user, string inputCancelString, List<Appointment> startableAppointments)

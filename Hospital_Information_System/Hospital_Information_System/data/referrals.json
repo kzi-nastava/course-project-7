@@ -19,11 +19,34 @@
   },
   {
     "$id": "3",
-    "Doctor": null,
-    "Specialty": 12,
-    "Patient": 2,
+    "Specialty": 10,
+    "Patient": 3,
     "Scheduled": false,
     "Id": 2,
+    "Deleted": false
+  },
+  {
+    "$id": "4",
+    "Specialty": 8,
+    "Patient": 3,
+    "Scheduled": false,
+    "Id": 3,
+    "Deleted": false
+  },
+  {
+    "$id": "5",
+    "Specialty": 3,
+    "Patient": 2,
+    "Scheduled": false,
+    "Id": 4,
+    "Deleted": false
+  },
+  {
+    "$id": "6",
+    "Specialty": 7,
+    "Patient": 2,
+    "Scheduled": false,
+    "Id": 5,
     "Deleted": false
   }
 ]
