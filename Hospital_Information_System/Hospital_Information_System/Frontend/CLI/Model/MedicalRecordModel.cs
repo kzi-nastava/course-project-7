@@ -54,6 +54,7 @@ namespace HospitalIS.Frontend.CLI.Model
                 medicalRecord.Height = inputHeight(inputCancelString);
                 medicalRecord.Illnesses = inputIllnesses();
                 medicalRecord.Allergies = inputAllergies();
+                medicalRecord.Examinations = GetAllPatientsAppointments(patient);
 
                 IS.Instance.MedicalRecordRepo.Add(medicalRecord);
             }

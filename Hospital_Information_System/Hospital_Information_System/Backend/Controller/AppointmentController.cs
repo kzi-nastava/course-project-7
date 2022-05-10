@@ -97,10 +97,10 @@ namespace HospitalIS.Backend.Controller
             return Enum.GetValues(typeof(AppointmentProperty)).Cast<AppointmentProperty>().ToList();
         }
         
-        public static List<Appointment> GetAllPatientsAppointments(UserAccount user)
+        public static List<Appointment> GetAllPatientsAppointments(Patient patient)
         {
             return IS.Instance.Hospital.Appointments.Where(
-                a => !a.Deleted && user.Person.Id == a.Patient.Person.Id).ToList();
+                a => !a.Deleted && patient == a.Patient).ToList();
 
         }
 
