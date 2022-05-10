@@ -68,7 +68,7 @@ namespace HospitalIS.Backend.Controller
 
         public static List<Appointment> MatchAppointmentByAnamnesis(string query, Appointment.AppointmentComparer comparer, Patient patient)
         {
-            var matches = GetPatientsMedicalRecord(patient).Examinations.FindAll(e => e.Anamnesis.ToLower().Contains(query.ToLower()));
+            var matches = GetPatientsMedicalRecord(patient).Examinations.FindAll(e => e.Anamnesis.Trim().ToLower().Contains(query.Trim().ToLower()));
             matches.Sort(comparer);
             return matches;
         }
