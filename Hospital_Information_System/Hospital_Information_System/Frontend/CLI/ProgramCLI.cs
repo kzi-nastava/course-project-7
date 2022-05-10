@@ -60,15 +60,13 @@ namespace HospitalIS.Frontend.CLI
             new Command("-patient-account-view", () => UserAccountModel.ViewPatientAccounts(), new[] {UserAccount.AccountType.SECRETARY}),
             new Command("-patient-account-update", () => UserAccountModel.UpdatePatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
             new Command("-patient-account-delete", () => UserAccountModel.DeleteAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-block-patient-account-delete", () => UserAccountModel.BlockPatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-unblock-patient-account-delete", () => UserAccountModel.UnblockPatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("-block-patient-account", () => UserAccountModel.BlockPatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("-unblock-patient-account", () => UserAccountModel.UnblockPatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
 
             new Command("-view-patient-requests", () => RequestModel.ViewRequests(), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-approve-delete-request", () => RequestModel.ApproveDeleteRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-deny-delete-request", () => RequestModel.DenyDeleteRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-approve-update-request", () => RequestModel.ApproveUpdateRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-deny-update-request", () => RequestModel.DenyUpdateRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-        
+            new Command("-handle-patient-requests", () => RequestModel.HandleRequests(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("-handle-referrals", () => ReferralModel.HandleReferrals(inputCancelString, user), new[] {UserAccount.AccountType.SECRETARY}),
+
             new Command("-renovation-schedule", () => RenovationModel.NewRenovation(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
         };
 

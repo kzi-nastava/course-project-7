@@ -24,7 +24,9 @@
     ],
     "AppointmentCreatedTimestamps": [
       "2022-04-30T17:27:20.091262+02:00",
-      "2022-04-30T22:41:37.7551729+02:00"
+      "2022-04-30T22:41:37.7551729+02:00",
+      "2022-05-08T22:49:18.2062305+02:00",
+      "2022-05-09T17:01:39.9145037+02:00"
     ],
     "Blocked": 0,
     "Id": 1,
@@ -111,14 +113,29 @@
     "Deleted": false
   },
   {
-    "Username": "secretary",
+    "$id": "8",
+    "Username": "sec",
     "Password": "123",
     "Type": 3,
     "Person": 7,
     "AppointmentModifiedTimestamps": [],
-    "AppointmentCreatedTimestamps": [],
+    "AppointmentCreatedTimestamps": [
+      "2022-05-09T18:36:34.6427545+02:00"
+    ],
     "Blocked": 0,
     "Id": 7,
+    "Deleted": false
+  },
+  {
+    "$id": "9",
+    "Username": "jake",
+    "Password": "123",
+    "Type": 0,
+    "Person": 8,
+    "AppointmentModifiedTimestamps": [],
+    "AppointmentCreatedTimestamps": [],
+    "Blocked": 2,
+    "Id": 8,
     "Deleted": false
   }
 ]

@@ -3,12 +3,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using HospitalIS.Backend;
+using HospitalIS.Backend.Controller;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
     public class RequestModel
     {
         private const string hintSelectRequests = "Select requests by their number, separated by whitespace.\nEnter a newline to finish";
+        private const string hintSelectAction = "Select action over requests";
+
+        internal static void HandleRequests(string inputCancelString)
+        {
+            try
+            {
+                var actions = new Dictionary<string, Action>
+                {
+                    ["Approve delete requests"] = () => ApproveDeleteRequest(inputCancelString),
+                    ["Deny delete requests"] = () => DenyDeleteRequest(inputCancelString),
+                    ["Approve update requests"] = () => ApproveUpdateRequest(inputCancelString),
+                    ["Deny update requests"] = () => DenyUpdateRequest(inputCancelString),
+                };
+            
+                Console.WriteLine(hintSelectAction);
+                var actionChoice = EasyInput<string>.Select(actions.Keys.ToList(), inputCancelString);
+
+                actions[actionChoice]();
+            }
+            catch (NothingToSelectException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
         
         internal static void ViewRequests()
         {
@@ -25,7 +50,7 @@ namespace HospitalIS.Frontend.CLI.Model
         }
 
         
-        internal static void ApproveDeleteRequest(string inputCancelString)
+        private static void ApproveDeleteRequest(string inputCancelString)
         {
             Console.WriteLine(hintSelectRequests);
             
@@ -38,7 +63,7 @@ namespace HospitalIS.Frontend.CLI.Model
             }
         }
         
-        internal static void ApproveUpdateRequest(string inputCancelString)
+        private static void ApproveUpdateRequest(string inputCancelString)
         {
             Console.WriteLine(hintSelectRequests);
             
@@ -50,7 +75,7 @@ namespace HospitalIS.Frontend.CLI.Model
             }
         }
 
-        internal static void DenyDeleteRequest(string inputCancelString)
+        private static void DenyDeleteRequest(string inputCancelString)
         {
             Console.WriteLine(hintSelectRequests);
             
@@ -61,7 +86,7 @@ namespace HospitalIS.Frontend.CLI.Model
             }
         }
 
-        internal static void DenyUpdateRequest(string inputCancelString)
+        private static void DenyUpdateRequest(string inputCancelString)
         {
             Console.WriteLine(hintSelectRequests);
             
@@ -77,9 +102,9 @@ namespace HospitalIS.Frontend.CLI.Model
             return EasyInput<DeleteRequest>.SelectMultiple(GetPendingDeleteRequests(), r => r.Id.ToString(), inputCancelString).ToList();
         }
 
-        public static List<DeleteRequest> GetPendingDeleteRequests()
+        private static List<DeleteRequest> GetPendingDeleteRequests()
         {
-            return IS.Instance.Hospital.DeleteRequests.Where(request => !request.Deleted && isModifiableDeleteRequests(request)).ToList();
+            return IS.Instance.Hospital.DeleteRequests.Where(request => !request.Deleted && IsModifiableDeleteRequests(request)).ToList();
         }
         
         private static List<UpdateRequest> SelectUpdateRequests(string inputCancelString)
@@ -87,21 +112,19 @@ namespace HospitalIS.Frontend.CLI.Model
             return EasyInput<UpdateRequest>.SelectMultiple(GetPendingUpdateRequests(), r => r.Id.ToString(), inputCancelString).ToList();
         }
 
-        public static List<UpdateRequest> GetPendingUpdateRequests()
+        private static List<UpdateRequest> GetPendingUpdateRequests()
         {
-            return IS.Instance.Hospital.UpdateRequests.Where(request => !request.Deleted && isModifiableUpdateRequests(request)).ToList();
+            return IS.Instance.Hospital.UpdateRequests.Where(request => !request.Deleted && IsModifiableUpdateRequests(request)).ToList();
         }
 
-        internal static bool isModifiableUpdateRequests(UpdateRequest request)
+        private static bool IsModifiableUpdateRequests(UpdateRequest request)
         {
             return request.OldAppointment.ScheduledFor > DateTime.Now && request.State == Request.StateType.PENDING;
-            // return request.State == Request.StateType.PENDING;
         }
         
-        internal static bool isModifiableDeleteRequests(DeleteRequest request)
+        private static bool IsModifiableDeleteRequests(DeleteRequest request)
         {
             return request.Appointment.ScheduledFor > DateTime.Now && request.State == Request.StateType.PENDING;
-            // return request.State == Request.StateType.PENDING;
         }
         
     }

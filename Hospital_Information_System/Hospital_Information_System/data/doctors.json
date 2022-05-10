@@ -1,16 +1,19 @@
 [
   {
     "Person": 0,
+    "Specialty": 0,
     "Id": 0,
     "Deleted": false
   },
   {
     "Person": 1,
+    "Specialty": 3,
     "Id": 1,
     "Deleted": false
   },
   {
     "Person": 2,
+    "Specialty": 2,
     "Id": 2,
     "Deleted": false
   }

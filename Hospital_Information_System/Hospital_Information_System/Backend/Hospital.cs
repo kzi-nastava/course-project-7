@@ -35,5 +35,6 @@ namespace HospitalIS.Backend
 		internal List<MedicalRecord> MedicalRecords = new List<MedicalRecord>();
 		internal List<Renovation> Renovations = new List<Renovation>();
 		internal List<Task> RenovationTasks = new List<Task>();
+		internal List<Referral> Referrals = new List<Referral>();
 	}
 }

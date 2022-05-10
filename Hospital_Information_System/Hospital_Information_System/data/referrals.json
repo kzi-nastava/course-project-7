@@ -1,0 +1,52 @@
+[
+  {
+    "$id": "1",
+    "Doctor": 0,
+    "Specialty": 0,
+    "Patient": 0,
+    "Scheduled": true,
+    "Id": 0,
+    "Deleted": false
+  },
+  {
+    "$id": "2",
+    "Doctor": 2,
+    "Specialty": 2,
+    "Patient": 2,
+    "Scheduled": false,
+    "Id": 1,
+    "Deleted": false
+  },
+  {
+    "$id": "3",
+    "Specialty": 10,
+    "Patient": 3,
+    "Scheduled": false,
+    "Id": 2,
+    "Deleted": false
+  },
+  {
+    "$id": "4",
+    "Specialty": 8,
+    "Patient": 3,
+    "Scheduled": false,
+    "Id": 3,
+    "Deleted": false
+  },
+  {
+    "$id": "5",
+    "Specialty": 3,
+    "Patient": 2,
+    "Scheduled": false,
+    "Id": 4,
+    "Deleted": false
+  },
+  {
+    "$id": "6",
+    "Specialty": 7,
+    "Patient": 2,
+    "Scheduled": false,
+    "Id": 5,
+    "Deleted": false
+  }
+]
