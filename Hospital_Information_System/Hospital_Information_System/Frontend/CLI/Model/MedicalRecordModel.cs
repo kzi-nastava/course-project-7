@@ -41,6 +41,9 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintUpdatingCurrentAllergies = "Updating current list of allergies";
         private const string hintUpdatingCurrentIllnesses = "Updating current list of illnesses";
 
+        private const string hintSearchSortBy = "Enter sorting criteria";
+        private const string hintSearchQuery = "Enter search query";
+
         internal static void CreateMedicalRecord(Patient patient, string inputCancelString)
         {
             try
@@ -284,6 +287,34 @@ namespace HospitalIS.Frontend.CLI.Model
 
             return updatedList;
 
+        }
+
+        internal static void Search(UserAccount user, string inputCancelString)
+        {
+            if (user.Type != UserAccount.AccountType.PATIENT)
+            {
+                return;
+            }
+
+            var sortBy = new Dictionary<string, Appointment.AppointmentComparer>()
+            {
+                ["Sort by date"] = new Appointment.CompareByDate(),
+                ["Sort by doctor"] = new Appointment.CompareByDoctor(),
+                ["Sort by doctor specialty"] = new Appointment.CompareByDoctorSpecialty(),
+            };
+            Console.WriteLine(hintSearchSortBy);
+            var sortChoice = EasyInput<string>.Select(sortBy.Keys.ToList(), inputCancelString);
+
+            Console.WriteLine(hintSearchQuery);
+            string query = Console.ReadLine();
+
+            Patient patient = IS.Instance.Hospital.Patients.Find(p => p.Person == user.Person);
+            List<Appointment> matches = MatchAppointmentByAnamnesis(query, sortBy[sortChoice], patient);
+
+            foreach (Appointment match in matches)
+            {
+                Console.WriteLine(match.AnamnesisFocusedToString());
+            }
         }
     }
 }
