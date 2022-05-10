@@ -168,6 +168,18 @@ namespace HospitalIS.Frontend.CLI
 			return Select(elements, (elem => elem.ToString()), cancel);
 		}
 
+		public static bool YesNo(string cancel) {
+			Console.WriteLine("[Y/N]");
+			string s = EasyInput<string>.Get(
+				new List<Func<string, bool>> {s => (s.ToLower() == "y" || s.ToLower() == "n")},
+				new [] { "Must be [Y]es or [N]o." },
+				cancel
+			);
+
+			s = s.ToLower();
+			return s == "y";
+		}
+
 		public static IList<T> SelectMultiple(IList<T> elements, string cancel)
 		{
 			return SelectMultiple(elements, e => e.ToString(), cancel);

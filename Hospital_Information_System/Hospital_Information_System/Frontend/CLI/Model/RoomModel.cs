@@ -67,7 +67,7 @@ namespace HospitalIS.Frontend.CLI.Model
 			).ToList();
 		}
 
-		private static Room InputRoom(string inputCancelString, List<RoomController.RoomProperty> whichProperties)
+		public static Room InputRoom(string inputCancelString, List<RoomController.RoomProperty> whichProperties)
 		{
 			Room room = new Room();
 

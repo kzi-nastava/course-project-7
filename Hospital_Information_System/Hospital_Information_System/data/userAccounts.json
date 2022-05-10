@@ -1,6 +1,5 @@
 [
   {
-    "$id": "1",
     "Username": "marlon",
     "Password": "123",
     "Type": 1,
@@ -12,7 +11,6 @@
     "Deleted": false
   },
   {
-    "$id": "2",
     "Username": "grahame",
     "Password": "123",
     "Type": 1,
@@ -35,7 +33,6 @@
     "Deleted": false
   },
   {
-    "$id": "3",
     "Username": "kolby",
     "Password": "123",
     "Type": 1,
@@ -47,7 +44,6 @@
     "Deleted": false
   },
   {
-    "$id": "4",
     "Username": "gertrude",
     "Password": "123",
     "Type": 0,
@@ -74,7 +70,6 @@
     "Deleted": false
   },
   {
-    "$id": "5",
     "Username": "janeka",
     "Password": "123",
     "Type": 0,
@@ -90,7 +85,6 @@
     "Deleted": false
   },
   {
-    "$id": "6",
     "Username": "bowen",
     "Password": "123",
     "Type": 0,
@@ -108,7 +102,6 @@
     "Deleted": false
   },
   {
-    "$id": "7",
     "Username": "admin",
     "Password": "admin",
     "Type": 2,

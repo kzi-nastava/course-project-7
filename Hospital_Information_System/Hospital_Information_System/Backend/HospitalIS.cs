@@ -47,7 +47,7 @@ namespace HospitalIS.Backend
 
 		public IS()
 		{
-			settings = new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects };
+			settings = new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.None };
 		}
 
 		public void Save(string directory)
@@ -86,6 +86,10 @@ namespace HospitalIS.Backend
 			foreach (var relocation in Hospital.EquipmentRelocations)
 			{
 				EquipmentRelocationRepo.AddTask(relocation);
+			}
+			foreach (var renovation in Hospital.Renovations)
+			{
+				RenovationRepo.AddTask(renovation);
 			}
 		}
 	}
