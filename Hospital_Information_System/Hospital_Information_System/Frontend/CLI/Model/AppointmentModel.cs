@@ -37,10 +37,16 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintGetEndOfRange = "Enter end of range";
         private const string hintGetLatestDesiredDate = "Enter latest desired date";
         private const string hintGetPrioritizedProperty = "Enter the prioritized property";
+
         private const string hintOptimalSearchFailed = "Could not find optimal appointment. Trying priority search...";
         private const string hintPrioritySearchFailed = "Could not find appointment using priority search. Showing closest matching appointments...";
-        private const string hintDesperateSearchClosestOptimal = "Closest optimal when ignoring latest date";
+
+        private const string hintDesperateSearchRespectDoctorOnly = "Closest respecting only doctor";
+        private const string hintDesperateSearchRespectIntervalOnly = "Closest respecting only time interval";
+        private const string hintDesperateSearchRespectDateOnly = "Closest respecting only latest date";
+        private const string hintDesperateSearchIgnoreDate = "Closest optimal when ignoring latest date";
         private const string hintDesperateSearchClosestOverall = "Closest overall";
+
         private const string askCreateAppointment = "Are you sure you want to create this appointment?";
 
         private const string hintMakeReferral =
@@ -119,7 +125,7 @@ namespace HospitalIS.Frontend.CLI.Model
         {
             try
             {
-                AppointmentController.SearchBundle sb = InputSearchBundle(inputCancelString, user);
+                AppointmentSearchBundle sb = InputSearchBundle(inputCancelString, user);
                 AppointmentController.AppointmentProperty priority = InputPrioritizedProperty(inputCancelString);
 
                 Appointment appointment = GetRecommendedAppointment(sb, priority, inputCancelString);
@@ -136,7 +142,7 @@ namespace HospitalIS.Frontend.CLI.Model
             }
         }
 
-        private static AppointmentController.SearchBundle InputSearchBundle(string inputCancelString, UserAccount user)
+        private static AppointmentSearchBundle InputSearchBundle(string inputCancelString, UserAccount user)
         {
             Doctor doctor = InputDoctor(inputCancelString, null, user);
             Patient patient = InputPatient(inputCancelString, null, user);
@@ -144,68 +150,68 @@ namespace HospitalIS.Frontend.CLI.Model
             TimeSpan end = InputEndOfRange(start, inputCancelString);
             DateTime latestDate = InputLatestDate(inputCancelString);
 
-            return new AppointmentController.SearchBundle(doctor, patient, start, end, latestDate); 
+            return new AppointmentSearchBundle(doctor, patient, start, end, latestDate); 
         }
 
-        private static Appointment GetRecommendedAppointment(AppointmentController.SearchBundle sb, AppointmentController.AppointmentProperty priority, string inputCancelString)
+        private static Appointment GetRecommendedAppointment(AppointmentSearchBundle sb, AppointmentController.AppointmentProperty priority, string inputCancelString)
         {
             return GetOptimalAppointment(sb) ?? GetPrioritizedAppointment(sb, priority) ?? GetDesperateAppointment(sb, inputCancelString);
         }
 
-        private static Appointment GetOptimalAppointment(AppointmentController.SearchBundle sb)
+        private static Appointment GetOptimalAppointment(AppointmentSearchBundle sb)
         {
             return AppointmentController.FindRecommendedAppointment(sb);
         }
-        private static Appointment GetPrioritizedAppointment(AppointmentController.SearchBundle sb, AppointmentController.AppointmentProperty priority)
+        private static Appointment GetPrioritizedAppointment(AppointmentSearchBundle sb, AppointmentController.AppointmentProperty priority)
         {
             Console.WriteLine(hintOptimalSearchFailed);
-            var sbPrioritized = new AppointmentController.SearchBundle(sb);
+
+            AppointmentSearchBundle sbPrioritized;
             if (priority == AppointmentController.AppointmentProperty.DOCTOR)
             {
-                sbPrioritized.Start = TimeSpan.FromHours(0);
-                sbPrioritized.End = TimeSpan.FromHours(24) - TimeSpan.FromMinutes(1);
+                sbPrioritized = AppointmentSearchBundle.IgnoreInterval(sb);
             }
             else
             {
-                sbPrioritized.Doctor = null;
+                sbPrioritized = AppointmentSearchBundle.IgnoreDoctor(sb);
             }
             return AppointmentController.FindRecommendedAppointment(sbPrioritized);
         }
 
-        private static Appointment GetDesperateAppointment(AppointmentController.SearchBundle sb, string inputCancelString)
+        private static Appointment GetDesperateAppointment(AppointmentSearchBundle sb, string inputCancelString)
         {
             Console.WriteLine(hintPrioritySearchFailed);
 
             var desperateAppointments = new List<Appointment>();
+            var desperateAppointment = new Appointment();
+
+            void processDesperate(Func<AppointmentSearchBundle, AppointmentSearchBundle> newSb, string hint)
+            {
+                desperateAppointment = AppointmentController.FindRecommendedAppointment(newSb(sb));
+                if (desperateAppointment != null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine(hint);
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.WriteLine(desperateAppointment.ToString());
+                    desperateAppointments.Add(desperateAppointment);
+                }
+            }
+
+            // Closest respecting only doctor
+            processDesperate(AppointmentSearchBundle.RespectOnlyDoctorAndPatient, hintDesperateSearchRespectDoctorOnly);
+
+            // Closest respecting only time interval
+            processDesperate(AppointmentSearchBundle.RespectOnlyIntervalAndPatient, hintDesperateSearchRespectIntervalOnly);
+
+            // Closest respecting only latest date.
+            processDesperate(AppointmentSearchBundle.RespectOnlyLatestDateAndPatient, hintDesperateSearchRespectDateOnly);
 
             // Closest optimal when ignoring latest date.
-            var sbDesperate = new AppointmentController.SearchBundle(sb)
-            {
-                By = DateTime.MaxValue
-            };
-            Appointment desperateAppointment = AppointmentController.FindRecommendedAppointment(sbDesperate);
-            if (desperateAppointment != null)
-            {
-                Console.WriteLine(hintDesperateSearchClosestOptimal);
-                Console.WriteLine(desperateAppointment.ToString());
-                desperateAppointments.Add(desperateAppointment);
-            }
+            processDesperate(AppointmentSearchBundle.IgnoreLatestDate, hintDesperateSearchIgnoreDate);
 
             // Closest overall.
-            sbDesperate = new AppointmentController.SearchBundle(sb)
-            {
-                Start = TimeSpan.FromHours(0),
-                End = TimeSpan.FromHours(24) - TimeSpan.FromMinutes(1),
-                Doctor = null,
-                By = DateTime.MaxValue
-            };
-            desperateAppointment = AppointmentController.FindRecommendedAppointment(sbDesperate);
-            if (desperateAppointment != null)
-            {
-                Console.WriteLine(hintDesperateSearchClosestOverall);
-                Console.WriteLine(desperateAppointment.ToString());
-                desperateAppointments.Add(desperateAppointment);
-            }
+            processDesperate(AppointmentSearchBundle.RespectOnlyPatient, hintDesperateSearchClosestOverall);
 
             Console.WriteLine(hintSelectAppointment);
             return EasyInput<Appointment>.Select(desperateAppointments, inputCancelString);
@@ -356,13 +362,13 @@ namespace HospitalIS.Frontend.CLI.Model
             return EasyInput<TimeSpan>.Get(
                 new List<Func<TimeSpan, bool>>()
                 {
-                    ts => AppointmentController.SearchBundle.TsInDay(ts),
-                    ts => AppointmentController.SearchBundle.TsZeroSeconds(ts),
+                    ts => AppointmentSearchBundle.TsInDay(ts),
+                    ts => AppointmentSearchBundle.TsZeroSeconds(ts),
                 },
                 new string[]
                 {
-                    AppointmentController.SearchBundle.ErrTimeSpanNotInDay,
-                    AppointmentController.SearchBundle.ErrTimeSpanHasSeconds,
+                    AppointmentSearchBundle.ErrTimeSpanNotInDay,
+                    AppointmentSearchBundle.ErrTimeSpanHasSeconds,
                 },
                 inputCancelString,
                 TimeSpan.Parse);
@@ -374,15 +380,15 @@ namespace HospitalIS.Frontend.CLI.Model
             return EasyInput<TimeSpan>.Get(
                 new List<Func<TimeSpan, bool>>()
                 {
-                    ts => AppointmentController.SearchBundle.TsInDay(ts),
-                    ts => AppointmentController.SearchBundle.TsZeroSeconds(ts),
-                    ts => AppointmentController.SearchBundle.TsIsAfter(ts, start),
+                    ts => AppointmentSearchBundle.TsInDay(ts),
+                    ts => AppointmentSearchBundle.TsZeroSeconds(ts),
+                    ts => AppointmentSearchBundle.TsIsAfter(ts, start),
                 },
                 new string[]
                 {
-                    AppointmentController.SearchBundle.ErrTimeSpanNotInDay,
-                    AppointmentController.SearchBundle.ErrTimeSpanHasSeconds,
-                    AppointmentController.SearchBundle.ErrEndBeforeStart,
+                    AppointmentSearchBundle.ErrTimeSpanNotInDay,
+                    AppointmentSearchBundle.ErrTimeSpanHasSeconds,
+                    AppointmentSearchBundle.ErrEndBeforeStart,
                 },
                 inputCancelString,
                 TimeSpan.Parse);
@@ -394,11 +400,11 @@ namespace HospitalIS.Frontend.CLI.Model
             return EasyInput<DateTime>.Get(
                 new List<Func<DateTime, bool>>()
                 {
-                    dt => AppointmentController.SearchBundle.DtNotTooSoon(dt),
+                    dt => AppointmentSearchBundle.DtNotTooSoon(dt),
                 },
                 new string[]
                 {
-                    AppointmentController.SearchBundle.ErrDateTooSoon,
+                    AppointmentSearchBundle.ErrDateTooSoon,
                 },
                 inputCancelString);
         }
