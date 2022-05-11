@@ -1,9 +1,11 @@
 [
   {
-    "$id": "1",
     "Equipment": {
-      "$id": "2",
-      "0": 1
+      "0": 3,
+      "22": 5,
+      "21": 6,
+      "14": 8,
+      "11": 1
     },
     "Type": 0,
     "Name": "Warehouse",
@@ -12,9 +14,7 @@
     "Deleted": false
   },
   {
-    "$id": "3",
     "Equipment": {
-      "$id": "4",
       "1": 9,
       "23": 4
     },
@@ -25,9 +25,7 @@
     "Deleted": false
   },
   {
-    "$id": "5",
     "Equipment": {
-      "$id": "6",
       "2": 3,
       "24": 4
     },
@@ -38,9 +36,7 @@
     "Deleted": false
   },
   {
-    "$id": "7",
     "Equipment": {
-      "$id": "8",
       "3": 3,
       "0": 5
     },
@@ -51,9 +47,7 @@
     "Deleted": false
   },
   {
-    "$id": "9",
     "Equipment": {
-      "$id": "10",
       "4": 5,
       "1": 5
     },
@@ -64,9 +58,7 @@
     "Deleted": false
   },
   {
-    "$id": "11",
     "Equipment": {
-      "$id": "12",
       "5": 5,
       "2": 6
     },
@@ -77,9 +69,7 @@
     "Deleted": false
   },
   {
-    "$id": "13",
     "Equipment": {
-      "$id": "14",
       "6": 5,
       "3": 6
     },
@@ -90,9 +80,7 @@
     "Deleted": false
   },
   {
-    "$id": "15",
     "Equipment": {
-      "$id": "16",
       "7": 1,
       "4": 6
     },
@@ -103,9 +91,7 @@
     "Deleted": false
   },
   {
-    "$id": "17",
     "Equipment": {
-      "$id": "18",
       "8": 9,
       "5": 9
     },
@@ -116,9 +102,7 @@
     "Deleted": false
   },
   {
-    "$id": "19",
     "Equipment": {
-      "$id": "20",
       "9": 2,
       "6": 5
     },
@@ -129,9 +113,7 @@
     "Deleted": false
   },
   {
-    "$id": "21",
     "Equipment": {
-      "$id": "22",
       "10": 3,
       "7": 7
     },
@@ -142,9 +124,7 @@
     "Deleted": false
   },
   {
-    "$id": "23",
     "Equipment": {
-      "$id": "24",
       "11": 7,
       "8": 4
     },
@@ -155,9 +135,7 @@
     "Deleted": false
   },
   {
-    "$id": "25",
     "Equipment": {
-      "$id": "26",
       "12": 4,
       "9": 1
     },
@@ -168,9 +146,7 @@
     "Deleted": false
   },
   {
-    "$id": "27",
     "Equipment": {
-      "$id": "28",
       "13": 7,
       "10": 4
     },
@@ -181,22 +157,15 @@
     "Deleted": false
   },
   {
-    "$id": "29",
-    "Equipment": {
-      "$id": "30",
-      "14": 8,
-      "11": 1
-    },
+    "Equipment": {},
     "Type": 2,
     "Name": "recovery 1-2-0",
     "Floor": 1,
     "Id": 14,
-    "Deleted": false
+    "Deleted": true
   },
   {
-    "$id": "31",
     "Equipment": {
-      "$id": "32",
       "15": 4,
       "12": 8
     },
@@ -207,9 +176,7 @@
     "Deleted": false
   },
   {
-    "$id": "33",
     "Equipment": {
-      "$id": "34",
       "16": 1,
       "13": 6
     },
@@ -220,9 +187,7 @@
     "Deleted": false
   },
   {
-    "$id": "35",
     "Equipment": {
-      "$id": "36",
       "17": 9,
       "14": 2
     },
@@ -233,9 +198,7 @@
     "Deleted": false
   },
   {
-    "$id": "37",
     "Equipment": {
-      "$id": "38",
       "18": 7,
       "15": 1
     },
@@ -246,9 +209,7 @@
     "Deleted": false
   },
   {
-    "$id": "39",
     "Equipment": {
-      "$id": "40",
       "19": 9,
       "16": 9
     },
@@ -259,9 +220,7 @@
     "Deleted": false
   },
   {
-    "$id": "41",
     "Equipment": {
-      "$id": "42",
       "20": 1,
       "17": 3,
       "22": 1
@@ -273,14 +232,7 @@
     "Deleted": false
   },
   {
-    "$id": "43",
-    "Equipment": {
-      "$id": "44",
-      "21": 6,
-      "18": 7,
-      "22": 3,
-      "0": 2
-    },
+    "Equipment": {},
     "Type": 2,
     "Name": "recovery 2-2-0",
     "Floor": 2,
@@ -288,15 +240,26 @@
     "Deleted": false
   },
   {
-    "$id": "45",
-    "Equipment": {
-      "$id": "46",
-      "22": 1
-    },
+    "Equipment": {},
     "Type": 4,
     "Name": "SobaTestTest",
     "Floor": 1,
     "Id": 22,
+    "Deleted": true
+  },
+  {
+    "Equipment": {
+      "21": 6,
+      "18": 7,
+      "22": 3,
+      "0": 2,
+      "14": 8,
+      "11": 1
+    },
+    "Type": 1,
+    "Name": "NEW_ROOM",
+    "Floor": 1,
+    "Id": 23,
     "Deleted": false
   }
 ]

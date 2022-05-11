@@ -1,19 +1,19 @@
 [
   {
-    "$id": "1",
     "Person": 0,
+    "Specialty": 0,
     "Id": 0,
     "Deleted": false
   },
   {
-    "$id": "2",
     "Person": 1,
+    "Specialty": 3,
     "Id": 1,
     "Deleted": false
   },
   {
-    "$id": "3",
     "Person": 2,
+    "Specialty": 2,
     "Id": 2,
     "Deleted": false
   }

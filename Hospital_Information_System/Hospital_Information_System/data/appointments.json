@@ -1,6 +1,5 @@
 [
   {
-    "$id": "1",
     "Doctor": 1,
     "Patient": 0,
     "Room": 4,
@@ -10,7 +9,6 @@
     "Deleted": false
   },
   {
-    "$id": "2",
     "Doctor": 2,
     "Patient": 1,
     "Room": 5,
@@ -20,7 +18,6 @@
     "Deleted": false
   },
   {
-    "$id": "3",
     "Doctor": 1,
     "Patient": 1,
     "Room": 11,
@@ -30,7 +27,6 @@
     "Deleted": true
   },
   {
-    "$id": "4",
     "Doctor": 2,
     "Patient": 1,
     "Room": 12,
@@ -40,7 +36,6 @@
     "Deleted": false
   },
   {
-    "$id": "5",
     "Doctor": 2,
     "Patient": 1,
     "Room": 4,
@@ -50,7 +45,6 @@
     "Deleted": false
   },
   {
-    "$id": "6",
     "Doctor": 1,
     "Patient": 2,
     "Room": 5,
@@ -60,7 +54,6 @@
     "Deleted": true
   },
   {
-    "$id": "7",
     "Doctor": 0,
     "Patient": 2,
     "Room": 4,
@@ -70,7 +63,6 @@
     "Deleted": false
   },
   {
-    "$id": "8",
     "Doctor": 1,
     "Patient": 2,
     "Room": 11,
@@ -80,7 +72,6 @@
     "Deleted": true
   },
   {
-    "$id": "9",
     "Doctor": 1,
     "Patient": 1,
     "Room": 12,
@@ -90,13 +81,42 @@
     "Deleted": true
   },
   {
-    "$id": "10",
     "Doctor": 1,
     "Patient": 1,
     "Room": 11,
     "ScheduledFor": "2022-05-02T18:00:00",
     "Anamnesis": "Patient's health has worsen.",
     "Id": 9,
+    "Deleted": false
+  },
+  {
+    "$id": "11",
+    "Doctor": 1,
+    "Patient": 2,
+    "Room": 12,
+    "ScheduledFor": "2022-05-09T09:00:00",
+    "Anamnesis": "",
+    "Id": 10,
+    "Deleted": false
+  },
+  {
+    "$id": "12",
+    "Doctor": 1,
+    "Patient": 2,
+    "Room": 12,
+    "ScheduledFor": "2022-05-10T09:00:00",
+    "Anamnesis": "",
+    "Id": 11,
+    "Deleted": false
+  },
+  {
+    "$id": "13",
+    "Doctor": 0,
+    "Patient": 0,
+    "Room": 19,
+    "ScheduledFor": "2022-10-05T10:00:00",
+    "Anamnesis": null,
+    "Id": 12,
     "Deleted": false
   }
 ]
