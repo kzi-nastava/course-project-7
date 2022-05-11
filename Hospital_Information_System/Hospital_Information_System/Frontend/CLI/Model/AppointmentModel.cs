@@ -41,6 +41,7 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintPrioritySearchFailed = "Could not find appointment using priority search. Showing closest matching appointments...";
         private const string hintDesperateSearchClosestOptimal = "Closest optimal when ignoring latest date";
         private const string hintDesperateSearchClosestOverall = "Closest overall";
+        private const string askCreateAppointment = "Are you sure you want to create this appointment?";
 
         private const string hintMakeReferral =
             "If you want to make a referral - press 1, if not press anything else";
@@ -122,7 +123,12 @@ namespace HospitalIS.Frontend.CLI.Model
                 AppointmentController.AppointmentProperty priority = InputPrioritizedProperty(inputCancelString);
 
                 Appointment appointment = GetRecommendedAppointment(sb, priority, inputCancelString);
-                AppointmentController.Create(appointment, user);
+                Console.WriteLine(appointment.ToString());
+                Console.WriteLine(askCreateAppointment);
+                if (EasyInput<bool>.YesNo(inputCancelString))
+                {
+                    AppointmentController.Create(appointment, user);
+                }
             }
             catch (InputFailedException e)
             {
