@@ -336,9 +336,9 @@ namespace HospitalIS.Frontend.CLI.Model
                 new List<Func<DateTime, bool>>()
                 {
                     newSchedule => newSchedule.CompareTo(DateTime.Now) > 0,
-                    newSchedule => AppointmentController.IsAvailable(patient, patientReferenceAppointment, newSchedule),
-                    newSchedule => AppointmentController.IsAvailable(doctor, doctorReferenceAppointment, newSchedule),
-                    newSchedule => AppointmentController.IsAvailable(room, roomReferenceAppointment, newSchedule),
+                    newSchedule => AppointmentController.IsAvailable(patient, newSchedule, patientReferenceAppointment),
+                    newSchedule => AppointmentController.IsAvailable(doctor, newSchedule, doctorReferenceAppointment),
+                    newSchedule => AppointmentController.IsAvailable(room, newSchedule, roomReferenceAppointment),
                 },
                 new string[]
                 {

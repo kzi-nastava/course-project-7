@@ -213,7 +213,7 @@ namespace HospitalIS.Backend.Controller
             }
 
             return IS.Instance.Hospital.Doctors.Where(
-                d => !d.Deleted && IsAvailable(d, refAppointment, refAppointment.ScheduledFor)).ToList();
+                d => !d.Deleted && IsAvailable(d, refAppointment.ScheduledFor, refAppointment)).ToList();
         }
         
         public static List<Doctor> GetAvailableDoctorsBySpecialty(Doctor.MedicineSpeciality speciality)
@@ -230,7 +230,7 @@ namespace HospitalIS.Backend.Controller
             }
 
             return IS.Instance.Hospital.Patients.Where(
-                p => !p.Deleted && IsAvailable(p, refAppointment, refAppointment.ScheduledFor)).ToList();
+                p => !p.Deleted && IsAvailable(p, refAppointment.ScheduledFor, refAppointment)).ToList();
         }
 
         public static List<Room> GetAvailableExaminationRooms(Appointment refAppointment)
@@ -241,7 +241,7 @@ namespace HospitalIS.Backend.Controller
             }
 
             return RoomController.GetUsableRoomsForAppointments(refAppointment.ScheduledFor).Intersect(
-                GetModifiableExaminationRooms().Where(r => IsAvailable(r, refAppointment, refAppointment.ScheduledFor))
+                GetModifiableExaminationRooms().Where(r => IsAvailable(r, refAppointment.ScheduledFor, refAppointment))
             ).ToList();
         }
 
@@ -252,7 +252,7 @@ namespace HospitalIS.Backend.Controller
             return rooms[rnd.Next(rooms.Count)];
         }
 
-        public static bool IsAvailable(Patient patient, Appointment refAppointment, DateTime newSchedule)
+        public static bool IsAvailable(Patient patient, DateTime newSchedule, Appointment refAppointment = null)
         {
             foreach (Appointment appointment in GetAppointments())
             {
@@ -267,7 +267,7 @@ namespace HospitalIS.Backend.Controller
             return true;
         }
 
-        public static bool IsAvailable(Doctor doctor, Appointment refAppointment, DateTime newSchedule)
+        public static bool IsAvailable(Doctor doctor, DateTime newSchedule, Appointment refAppointment = null)
         {
             foreach (Appointment appointment in GetAppointments())
             {
@@ -282,7 +282,7 @@ namespace HospitalIS.Backend.Controller
             return true;
         }
 
-        public static bool IsAvailable(Room room, Appointment refAppointment, DateTime newSchedule)
+        public static bool IsAvailable(Room room, DateTime newSchedule, Appointment refAppointment = null)
         {
             var relevantAppointments = GetAppointments().Where(ap => ap != refAppointment && ap.Room == room);
             foreach (var Appointment in relevantAppointments)
@@ -396,10 +396,10 @@ namespace HospitalIS.Backend.Controller
                     DateTime scheduledFor = currDt.Add(currTs);
                     if (scheduledFor < DateTime.Now) continue;
 
-                    Doctor doctor = FindFirstAvailableDoctor(sb, scheduledFor);
+                    Doctor doctor = (sb.Doctor != null) ? (IsAvailable(sb.Doctor, scheduledFor) ? sb.Doctor : null) : FindFirstAvailableDoctor(scheduledFor);
                     if (doctor == null) continue;
 
-                    Patient patient = FindFirstAvailablePatient(sb, scheduledFor);
+                    Patient patient = (sb.Patient != null) ? (IsAvailable(sb.Patient, scheduledFor) ? sb.Patient : null) : FindFirstAvailablePatient(scheduledFor);
                     if (patient == null) continue;
 
                     Room room = FindFirstAvailableExaminationRoom(scheduledFor);
@@ -411,32 +411,19 @@ namespace HospitalIS.Backend.Controller
             return null;
         }
 
-        // TODO: Make this more generic, maybe by passing a predicate showing which doctor we need?
-        private static Doctor FindFirstAvailableDoctor(SearchBundle sb, DateTime scheduledFor)
+        private static Doctor FindFirstAvailableDoctor(DateTime scheduledFor)
         {
-            // If the search bundle has a predefined doctor, he's the one whose availability we're checking.
-            if (sb.Doctor != null)
-            {
-                return IsAvailable(sb.Doctor, null, scheduledFor) ? sb.Doctor : null;
-            }
-
-            return GetModifiableDoctors().Where(d => IsAvailable(d, null, scheduledFor)).First();
+            return GetModifiableDoctors().First(d => IsAvailable(d, scheduledFor));
         }
 
-        private static Patient FindFirstAvailablePatient(SearchBundle sb, DateTime scheduledFor)
+        private static Patient FindFirstAvailablePatient(DateTime scheduledFor)
         {
-            // If the search bundle has a predefined patient, he's the one whose availability we're checking.
-            if (sb.Patient != null)
-            {
-                return IsAvailable(sb.Patient, null, scheduledFor) ? sb.Patient : null;
-            }
-
-            return GetModifiablePatients().Where(p => IsAvailable(p, null, scheduledFor)).First();
+            return GetModifiablePatients().First(p => IsAvailable(p, scheduledFor));
         }
 
         private static Room FindFirstAvailableExaminationRoom(DateTime scheduledFor)
         {
-            return GetModifiableExaminationRooms().Where(r => IsAvailable(r, null, scheduledFor)).First();
+            return GetModifiableExaminationRooms().First(r => IsAvailable(r, scheduledFor));
         }
     }
 }
