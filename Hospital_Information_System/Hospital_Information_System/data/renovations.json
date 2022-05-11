@@ -3,22 +3,8 @@
     "Room": 14,
     "Start": "2022-05-08T13:56:00",
     "End": "2022-05-08T13:57:00",
-    "Room1": {
-      "Equipment": {
-        "21": 6,
-        "18": 7,
-        "22": 3,
-        "0": 2,
-        "14": 8,
-        "11": 1
-      },
-      "Type": 1,
-      "Name": "NEW_ROOM",
-      "Floor": 1,
-      "Id": 23,
-      "Deleted": false
-    },
-    "Room2": null,
+    "_room1": null,
+    "_room2": null,
     "Id": 0,
     "Deleted": true
   },
@@ -26,22 +12,8 @@
     "Room": 22,
     "Start": "2022-05-08T13:56:00",
     "End": "2022-05-08T13:57:00",
-    "Room1": {
-      "Equipment": {
-        "21": 6,
-        "18": 7,
-        "22": 3,
-        "0": 2,
-        "14": 8,
-        "11": 1
-      },
-      "Type": 1,
-      "Name": "NEW_ROOM",
-      "Floor": 1,
-      "Id": 23,
-      "Deleted": false
-    },
-    "Room2": null,
+    "_room1": null,
+    "_room2": null,
     "Id": 1,
     "Deleted": true
   }

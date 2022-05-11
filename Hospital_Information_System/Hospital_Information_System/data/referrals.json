@@ -1,6 +1,5 @@
 [
   {
-    "$id": "1",
     "Doctor": 0,
     "Specialty": 0,
     "Patient": 0,
@@ -9,7 +8,6 @@
     "Deleted": false
   },
   {
-    "$id": "2",
     "Doctor": 2,
     "Specialty": 2,
     "Patient": 2,
@@ -18,7 +16,6 @@
     "Deleted": false
   },
   {
-    "$id": "3",
     "Specialty": 10,
     "Patient": 3,
     "Scheduled": false,
@@ -26,7 +23,6 @@
     "Deleted": false
   },
   {
-    "$id": "4",
     "Specialty": 8,
     "Patient": 3,
     "Scheduled": false,
@@ -34,7 +30,6 @@
     "Deleted": false
   },
   {
-    "$id": "5",
     "Specialty": 3,
     "Patient": 2,
     "Scheduled": false,
@@ -42,7 +37,6 @@
     "Deleted": false
   },
   {
-    "$id": "6",
     "Specialty": 7,
     "Patient": 2,
     "Scheduled": false,

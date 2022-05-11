@@ -121,7 +121,7 @@ namespace HospitalIS.Frontend.CLI.Model
                 var mergeRooms = MergeRooms(renovation, inputCancelString);
                 var newRoom = mergeRooms.Item1;
                 var otherRoom = mergeRooms.Item2;
-                renovation.Room1 = newRoom;
+                renovation.MergeRoomTarget = newRoom;
                 var otherRoomRenovation =  new Renovation(otherRoom, renovation.Start, renovation.End, newRoom);
 
                 return otherRoomRenovation;
@@ -157,8 +157,8 @@ namespace HospitalIS.Frontend.CLI.Model
             if (EasyInput<bool>.YesNo(inputCancelString))
             {
                 var newRooms = SplitRoom(renovation, inputCancelString);
-                renovation.Room1 = newRooms.Item1;
-                renovation.Room2 = newRooms.Item2;
+                renovation.SplitRoomTarget1 = newRooms.Item1;
+                renovation.SplitRoomTarget2 = newRooms.Item2;
                 return true;
             }
             return false;
