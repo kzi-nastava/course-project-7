@@ -6,39 +6,12 @@ using HospitalIS.Backend;
 using HospitalIS.Backend.Controller;
 
 using System.Diagnostics;
+using HospitalIS.Backend.Util;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
 	internal static class RenovationModel
 	{
-		struct Interval
-		{
-			public DateTime Start;
-			public DateTime End;
-
-			public Interval(DateTime start, DateTime end)
-			{
-				Debug.Assert(start < end);
-				Start = start;
-				End = end;
-			}
-
-			public bool Contains(DateTime dt)
-			{
-				return Start <= dt && dt <= End;
-			}
-
-			public override string ToString()
-			{
-				const string format = "dd.MM.yyyy. HH:mm:ss";
-
-				string start = Start == DateTime.MinValue ? "" : $"{Start.ToString(format)}";
-				string end = End == DateTime.MaxValue ? "" : $"{End.ToString(format)}";
-
-				return $"({start} - {end})";
-			}
-		}
-
 		private const string hintSelectRoom = "Select room for renovation";
 		private const string hintSelectStart = "Select renovation starting time";
 		private const string hintSelectEnd = "Select renovation ending time";
@@ -279,20 +252,20 @@ namespace HospitalIS.Frontend.CLI.Model
 			return new List<Renovation>();
 		}
 
-		private static List<Interval> GetUnavailableTimeslotsForRenovation(Room r)
+		private static List<DateTimeRange> GetUnavailableTimeslotsForRenovation(Room r)
 		{
-			List<Interval> result = new List<Interval>();
+			List<DateTimeRange> result = new List<DateTimeRange>();
 
 			var relevantRenovations = RenovationController.GetRenovations().Where(ren => ren.Room == r).ToList();
 			foreach (var ren in relevantRenovations)
 			{
 				if (ren.IsSplitting() || ren.IsMerging())
 				{
-					result.Add(new Interval(ren.Start, DateTime.MaxValue));
+					result.Add(new DateTimeRange(ren.Start, DateTime.MaxValue));
 				}
 				else
 				{
-					result.Add(new Interval(ren.Start, ren.End));
+					result.Add(new DateTimeRange(ren.Start, ren.End));
 				}
 			}
 
@@ -302,7 +275,7 @@ namespace HospitalIS.Frontend.CLI.Model
 				// TODO @magley: Utilize "duration" property once it gets implemented into Appointments.
 				DateTime start = ap.ScheduledFor;
 				DateTime end = start.AddMinutes(AppointmentController.LengthOfAppointmentInMinutes);
-				result.Add(new Interval(start, end));
+				result.Add(new DateTimeRange(start, end));
 			}
 
 			return result;
