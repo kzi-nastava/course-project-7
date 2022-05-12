@@ -90,7 +90,6 @@
     "Deleted": false
   },
   {
-    "$id": "11",
     "Doctor": 1,
     "Patient": 2,
     "Room": 12,
@@ -100,7 +99,6 @@
     "Deleted": false
   },
   {
-    "$id": "12",
     "Doctor": 1,
     "Patient": 2,
     "Room": 12,
@@ -110,7 +108,6 @@
     "Deleted": false
   },
   {
-    "$id": "13",
     "Doctor": 0,
     "Patient": 0,
     "Room": 19,
