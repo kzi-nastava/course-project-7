@@ -1,6 +1,6 @@
 [
   {
-    "Name": "Dummy_medication",
+    "Name": "Empty",
     "Ingredients": [],
     "Id": 0,
     "Deleted": false
@@ -23,7 +23,7 @@
     "Deleted": false
   },
   {
-    "Name": "Probiotic",
+    "Name": "Zoloft",
     "Ingredients": [
       2,
       3

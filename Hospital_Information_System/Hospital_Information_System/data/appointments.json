@@ -130,7 +130,7 @@
     "Patient": 0,
     "Room": 11,
     "ScheduledFor": "2022-05-15T08:00:00",
-    "Anamnesis": "worse than ever",
+    "Anamnesis": "",
     "Id": 12,
     "Deleted": false
   },

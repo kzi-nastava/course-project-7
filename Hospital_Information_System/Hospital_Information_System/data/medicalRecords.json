@@ -12,7 +12,9 @@
     "OtherAllergies": [
       "Dust"
     ],
-    "Prescriptions": [],
+    "Prescriptions": [
+      1
+    ],
     "Examinations": [
       1,
       2,
@@ -39,7 +41,9 @@
       "Dust",
       "Cold"
     ],
-    "Prescriptions": [],
+    "Prescriptions": [
+      2
+    ],
     "Examinations": [
       5,
       6,
@@ -55,17 +59,13 @@
     "Height": 151.0,
     "Weight": 45.0,
     "Illnesses": [],
-    "IngredientAllergies": [
-      0,
-      3
-    ],
+    "IngredientAllergies": [],
     "OtherAllergies": [
       "Dust"
     ],
     "Prescriptions": [
-      1,
-      2,
-      3
+      3,
+      5
     ],
     "Examinations": [
       0,
