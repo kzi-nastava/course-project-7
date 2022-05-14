@@ -71,7 +71,8 @@ namespace HospitalIS.Frontend.CLI.Model
             List<Appointment> allAppointments = new List<Appointment>();
             if (user.Type == UserAccount.AccountType.PATIENT)
             {
-                allAppointments = AppointmentController.GetAllPatientsAppointments(user);
+                var patient = IS.Instance.Hospital.Patients.First(p => p.Person.Id == user.Person.Id);
+                allAppointments = AppointmentController.GetAllPatientsAppointments(patient);
             }
             
             if (user.Type == UserAccount.AccountType.DOCTOR)

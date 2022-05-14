@@ -27,6 +27,8 @@ namespace HospitalIS.Backend.Controller
         public static void Create(Appointment appointment, UserAccount user)
         {
             UserAccountController.AddCreatedAppointmentTimestamp(user, DateTime.Now);
+            MedicalRecord patientsRecord = MedicalRecordController.GetPatientsMedicalRecord(appointment.Patient);
+            patientsRecord.Examinations.Add(appointment);
             IS.Instance.AppointmentRepo.Add(appointment);
         }
 
@@ -58,6 +60,8 @@ namespace HospitalIS.Backend.Controller
             else
             {
                 IS.Instance.AppointmentRepo.Remove(appointment);
+                MedicalRecord patientsRecord = MedicalRecordController.GetPatientsMedicalRecord(appointment.Patient);
+                patientsRecord.Examinations.Remove(appointment);
             }
         }
 
@@ -103,10 +107,10 @@ namespace HospitalIS.Backend.Controller
                 ap => ap == AppointmentProperty.DOCTOR || ap == AppointmentProperty.SCHEDULED_FOR).ToList();
         }
         
-        public static List<Appointment> GetAllPatientsAppointments(UserAccount user)
+        public static List<Appointment> GetAllPatientsAppointments(Patient patient)
         {
             return IS.Instance.Hospital.Appointments.Where(
-                a => !a.Deleted && user.Person.Id == a.Patient.Person.Id).ToList();
+                a => !a.Deleted && patient == a.Patient).ToList();
 
         }
 

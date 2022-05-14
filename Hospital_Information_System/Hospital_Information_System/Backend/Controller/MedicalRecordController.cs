@@ -64,6 +64,14 @@ namespace HospitalIS.Backend.Controller
             if (whichProperties.Contains(MedicalRecordProperty.WEIGHT)) target.Weight = source.Weight;
             if (whichProperties.Contains(MedicalRecordProperty.ILLNESSES)) target.Illnesses = source.Illnesses;
             if (whichProperties.Contains(MedicalRecordProperty.ALLERGIES)) target.Allergies = source.Allergies;
-        } 
+        }
+
+        public static List<Appointment> MatchAppointmentByAnamnesis(string query, Appointment.AppointmentComparer comparer, Patient patient)
+        {
+            var matches = GetPatientsMedicalRecord(patient).Examinations.FindAll(
+                e => e.ScheduledFor < DateTime.Now && e.Anamnesis.Trim().ToLower().Contains(query.Trim().ToLower()));
+            matches.Sort(comparer);
+            return matches;
+        }
     }
 }

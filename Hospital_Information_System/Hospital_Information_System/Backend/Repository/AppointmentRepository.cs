@@ -60,5 +60,34 @@ namespace HospitalIS.Backend.Repository
                 serializer.Serialize(writer, ((Appointment)value).Id);
             }
         }
+
+        internal class AppointmentListConverter : JsonConverter
+        {
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(List<Appointment>);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                List<int> appointmentRefs = serializer.Deserialize<List<int>>(reader);
+                var appointments = new List<Appointment>();
+                foreach (int appointmentRef in appointmentRefs)
+                {
+                    appointments.Add(IS.Instance.AppointmentRepo.GetById(appointmentRef));
+                }
+                return appointments;
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                var appointmentRefs = new List<int>();
+                foreach (Appointment appointment in (List<Appointment>) value)
+                {
+                    appointmentRefs.Add(appointment.Id);
+                }
+                serializer.Serialize(writer, appointmentRefs);
+            }
+        }
     }
 }

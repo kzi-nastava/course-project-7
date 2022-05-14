@@ -13,7 +13,7 @@
     "Patient": 1,
     "Room": 5,
     "ScheduledFor": "2022-04-30T13:40:00",
-    "Anamnesis": "",
+    "Anamnesis": "Patient is doing worse",
     "Id": 1,
     "Deleted": false
   },
@@ -22,7 +22,7 @@
     "Patient": 1,
     "Room": 11,
     "ScheduledFor": "2022-04-30T13:00:00",
-    "Anamnesis": "",
+    "Anamnesis": "abc",
     "Id": 2,
     "Deleted": true
   },
@@ -31,7 +31,7 @@
     "Patient": 1,
     "Room": 12,
     "ScheduledFor": "2022-04-30T12:45:00",
-    "Anamnesis": "",
+    "Anamnesis": "DFG",
     "Id": 3,
     "Deleted": false
   },
@@ -40,7 +40,7 @@
     "Patient": 1,
     "Room": 4,
     "ScheduledFor": "2022-04-24T05:00:00",
-    "Anamnesis": "",
+    "Anamnesis": "11",
     "Id": 4,
     "Deleted": false
   },
@@ -49,7 +49,7 @@
     "Patient": 2,
     "Room": 5,
     "ScheduledFor": "2023-01-01T00:00:00",
-    "Anamnesis": "",
+    "Anamnesis": "Z",
     "Id": 5,
     "Deleted": true
   },
@@ -58,7 +58,7 @@
     "Patient": 2,
     "Room": 4,
     "ScheduledFor": "2022-04-27T10:00:00",
-    "Anamnesis": "",
+    "Anamnesis": "kopfwasf",
     "Id": 6,
     "Deleted": false
   },
@@ -67,7 +67,7 @@
     "Patient": 2,
     "Room": 11,
     "ScheduledFor": "2023-01-02T00:00:00",
-    "Anamnesis": "",
+    "Anamnesis": "sfhrtdsfg",
     "Id": 7,
     "Deleted": true
   },
@@ -76,7 +76,7 @@
     "Patient": 1,
     "Room": 12,
     "ScheduledFor": "2022-05-02T17:00:00",
-    "Anamnesis": "",
+    "Anamnesis": "ijtmlkbfd",
     "Id": 8,
     "Deleted": true
   },
@@ -85,37 +85,34 @@
     "Patient": 1,
     "Room": 11,
     "ScheduledFor": "2022-05-02T18:00:00",
-    "Anamnesis": "Patient's health has worsen.",
+    "Anamnesis": "Patient's health has worsened.",
     "Id": 9,
     "Deleted": false
   },
   {
-    "$id": "11",
     "Doctor": 1,
     "Patient": 2,
     "Room": 12,
     "ScheduledFor": "2022-05-09T09:00:00",
-    "Anamnesis": "",
+    "Anamnesis": "bad",
     "Id": 10,
     "Deleted": false
   },
   {
-    "$id": "12",
     "Doctor": 1,
     "Patient": 2,
     "Room": 12,
     "ScheduledFor": "2022-05-10T09:00:00",
-    "Anamnesis": "",
+    "Anamnesis": "better",
     "Id": 11,
     "Deleted": false
   },
   {
-    "$id": "13",
     "Doctor": 0,
     "Patient": 0,
     "Room": 19,
     "ScheduledFor": "2022-10-05T10:00:00",
-    "Anamnesis": null,
+    "Anamnesis": "horrible",
     "Id": 12,
     "Deleted": false
   }

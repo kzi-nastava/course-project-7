@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HospitalIS.Backend.Util;
 
 namespace HospitalIS.Backend.Controller
 {
@@ -18,9 +19,9 @@ namespace HospitalIS.Backend.Controller
 
 		public static bool IsRenovating(Room room, DateTime start, DateTime end)
 		{
-			return GetRenovations().Count(ren => ren.Room == room && 
-			((ren.Start <= start && start <= ren.End) || (ren.Start <= end && end <= ren.End))
-		) > 0;
+			return GetRenovations().Count(ren => 
+				ren.Room == room && 
+				new DateTimeRange(start, end).Intersects(new DateTimeRange(ren.Start, ren.End))) > 0;
 		}
 	}
 }

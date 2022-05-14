@@ -14,6 +14,11 @@ namespace HospitalIS.Frontend.CLI.Model
 		private const string hintFilter = "Select criteria to filer by, separated by whitespace.\nEnter a newline to finish";
 		private const string hintFilterByType = "Select type of equipment";
 		private const string hintFilterByUse = "Select use of equipment";
+		private static readonly Dictionary<string, Func<string, List<Equipment>>> matchBy = new Dictionary<string, Func<string, List<Equipment>>>
+		{
+			["Type"] = (string query) => EquipmentController.MatchByType(query),
+			["Use"] = (string query) => EquipmentController.MatchByUse(query)
+		};
 
 		internal static void Filter(string inputCancelString)
 		{
@@ -36,12 +41,6 @@ namespace HospitalIS.Frontend.CLI.Model
 		internal static void Search(string inputCancelString)
 		{
 			Console.WriteLine(hintSearchSelectCriteria);
-
-			var matchBy = new Dictionary<string, Func<string, List<Equipment>>>
-			{
-				["Type"] = (string query) => EquipmentController.MatchByType(query),
-				["Use"] = (string query) => EquipmentController.MatchByUse(query)
-			};
 			var critsSelected = EasyInput<string>.SelectMultiple(matchBy.Keys.ToList(), inputCancelString);
 
 			Console.WriteLine(hintSearch);

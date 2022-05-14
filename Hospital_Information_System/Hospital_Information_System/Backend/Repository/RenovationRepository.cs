@@ -44,20 +44,20 @@ namespace HospitalIS.Backend.Repository
         }
 
         private void ExecuteSplit(Renovation renovation) {
-            IS.Instance.RoomRepo.Add(renovation.Room1);
-            IS.Instance.RoomRepo.Add(renovation.Room2);
+            IS.Instance.RoomRepo.Add(renovation.SplitRoomTarget1);
+            IS.Instance.RoomRepo.Add(renovation.SplitRoomTarget2);
             IS.Instance.RoomRepo.Remove(renovation.Room);
         }
 
         private void ExecuteMerge(Renovation renovation) {
-            if (IS.Instance.RoomRepo.GetById(renovation.Room1.Id) == null)
+            if (IS.Instance.RoomRepo.GetById(renovation.MergeRoomTarget.Id) == null)
             {
-                IS.Instance.RoomRepo.Add(renovation.Room1);
+                IS.Instance.RoomRepo.Add(renovation.MergeRoomTarget);
             }
 
             foreach (var kv in renovation.Room.Equipment)
             {
-                renovation.Room1.Equipment.Add(kv.Key, kv.Value);
+                renovation.MergeRoomTarget.Equipment.Add(kv.Key, kv.Value);
             }
 
             IS.Instance.RoomRepo.Remove(renovation.Room);
@@ -76,15 +76,11 @@ namespace HospitalIS.Backend.Repository
 			Console.WriteLine($"Finished renovation {renovation}.");
 
             if (renovation.IsSplitting()) 
-            {
-                ExecuteSplit(renovation);
-            } 
+                ExecuteSplit(renovation); 
             else if (renovation.IsMerging()) 
-            {
                 ExecuteMerge(renovation);
-            }
 
-			IS.Instance.RenovationRepo.Remove(renovation);       
+			IS.Instance.RenovationRepo.Remove(renovation);
 		}
 
 		public void AddTask(Renovation renovation)

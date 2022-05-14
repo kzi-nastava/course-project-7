@@ -9,6 +9,14 @@
     "Allergies": [
       "Pollen"
     ],
+    "Examinations": [
+      1,
+      2,
+      3,
+      4,
+      8,
+      9
+    ],
     "Id": 0,
     "Deleted": false
   },
@@ -22,6 +30,13 @@
       "Dust",
       "Dust"
     ],
+    "Examinations": [
+      5,
+      6,
+      7,
+      10,
+      11
+    ],
     "Id": 1,
     "Deleted": false
   },
@@ -33,16 +48,20 @@
     "Allergies": [
       "Dust"
     ],
+    "Examinations": [
+      0,
+      12
+    ],
     "Id": 2,
     "Deleted": false
   },
   {
-    "$id": "4",
     "Patient": 3,
     "Height": 0.0,
     "Weight": 0.0,
     "Illnesses": [],
     "Allergies": [],
+    "Examinations": [],
     "Id": 3,
     "Deleted": false
   }

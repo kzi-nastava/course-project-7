@@ -3,6 +3,10 @@ using System;
 
 namespace HospitalIS.Backend
 {
+	class RenovationAccessorException : Exception {
+		public RenovationAccessorException(string msg = ""): base(msg) {}
+	}
+
 	internal class Renovation : Entity
 	{
 		[JsonConverter(typeof(Repository.RoomRepository.RoomReferenceConverter))]
@@ -12,35 +16,78 @@ namespace HospitalIS.Backend
 
 		// These are stored directly because they don't exist in the system unti the renovation ends
 		
-		/// <summary>
-		/// If the renovation splits this room into two rooms, then this will be the first of the 2.
-		/// If the renovation merges this room into a new room, then this will be the new room.
-		/// Otherwise, this is null.
-		/// </summary>
-		public Room Room1 = null;
+		[JsonProperty]
+		private Room _room1 = null;
+
+		[JsonProperty]
+		private Room _room2 = null;
 
 		/// <summary>
-		/// If the renovation splits this room into two rooms, then this will be the second of the 2.
-		/// If the renovation merges this room into a new room, then this will be null.
-		/// Otherwise, this is null.
+		/// The first of the two rooms that Room is split in.
 		/// </summary>
-		public Room Room2 = null;
+		[JsonIgnore]
+		public Room SplitRoomTarget1 {
+			get {
+				if (!IsSplitting())
+					throw new RenovationAccessorException("Renovation does not split the room.");
+				return _room1;
+			}
+			set {
+				if (!IsSplitting())
+					throw new RenovationAccessorException("Renovation does not split the room.");
+				_room1 = value;
+			}
+		}
+
+		/// <summary>
+		/// The second of the two rooms that Room is split in.
+		/// </summary>
+		[JsonIgnore]
+		public Room SplitRoomTarget2 {
+			get {
+				if (!IsSplitting())
+					throw new Exception("Renovation does not split the room.");
+				return _room2;
+			}
+			set {
+				if (!IsSplitting())
+					throw new Exception("Renovation does not split the room.");
+				_room2 = value;
+			}
+		}
+
+		/// <summary>
+		/// The room that Room will be merged into.
+		/// </summary>
+		[JsonIgnore]
+		public Room MergeRoomTarget {
+			get {
+				if (!IsMerging())
+					throw new Exception("Renovation does not merge the room.");
+				return _room1;
+			}
+			set {
+				if (!IsMerging())
+					throw new Exception("Renovation does not merge the room.");
+				_room1 = value;
+			}
+		}
 
 		public Renovation(Room room, DateTime start, DateTime end, Room room1 = null, Room room2 = null)
 		{
 			Room = room;
 			Start = start;
 			End = end;
-			Room1 = room1;
-			Room2 = room2;
+			_room1 = room1;
+			_room2 = room2;
 		}
 
 		public bool IsSplitting() {
-			return Room1 != null && Room2 != null;
+			return _room1 != null && _room2 != null;
 		}
 
 		public bool IsMerging() {
-			return Room1 != null && Room2 == null;
+			return _room1 != null && _room2 == null;
 		}
 
 		public Renovation()
