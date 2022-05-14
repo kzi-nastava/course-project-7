@@ -144,6 +144,27 @@ namespace HospitalIS.Frontend.CLI.Model
                 Console.WriteLine(e.Message);
             }
         }
+        
+        internal static void CreateUrgentAppointment(string inputCancelString, UserAccount user)
+        {
+            try
+            {
+                Doctor.MedicineSpeciality speciality = ReferralModel.inputSpecialty(inputCancelString);
+                AppointmentSearchBundle sb = InputSearchBundleUrgent(inputCancelString, user);
+                
+                Appointment appointment = AppointmentController.FindUrgentAppointmentSlot(sb, speciality);
+                Console.WriteLine(appointment.ToString());
+                Console.WriteLine(askCreateAppointment);
+                if (EasyInput<bool>.YesNo(inputCancelString))
+                {
+                    AppointmentController.Create(appointment, user);
+                }
+            }
+            catch (InputFailedException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
 
         private static AppointmentSearchBundle InputSearchBundle(string inputCancelString, UserAccount user)
         {
@@ -154,6 +175,23 @@ namespace HospitalIS.Frontend.CLI.Model
             DateTime latestDate = InputLatestDate(inputCancelString);
 
             return new AppointmentSearchBundle(doctor, patient, start, end, latestDate); 
+        }
+        
+        private static AppointmentSearchBundle InputSearchBundleUrgent(string inputCancelString, UserAccount user)
+        {
+            //Doctor doctor = InputDoctorBySpecialty(inputCancelString);
+            Doctor doctor = null;
+            Patient patient = InputPatient(inputCancelString, null, user);
+
+            TimeSpan start = TimeSpan.FromHours(DateTime.Now.TimeOfDay.TotalHours);
+            start = new TimeSpan(start.Hours, start.Minutes + 10, 0);
+            Console.WriteLine(start);
+    
+            TimeSpan end = new TimeSpan(start.Hours+2, start.Minutes, 0);
+            Console.WriteLine(end);
+            DateTime latestDate = DateTime.Today;
+
+            return new AppointmentSearchBundle(doctor, patient, start, end, latestDate, true); 
         }
 
         private static Appointment GetRecommendedAppointment(AppointmentSearchBundle sb, AppointmentController.AppointmentProperty priority, string inputCancelString)
