@@ -17,18 +17,22 @@ namespace HospitalIS.Backend
 
         public List<String> Allergies { get; set; }
 
+        [JsonConverter(typeof(Repository.AppointmentRepository.AppointmentListConverter))]
+        public List<Appointment> Examinations { get; set; }
+
         public MedicalRecord()
         {
         }
         
 
-        public MedicalRecord(Patient patient, float height, float weight, List<string> illnesses, List<string> allergies)
+        public MedicalRecord(Patient patient, float height, float weight, List<string> illnesses, List<string> allergies, List<Appointment> examinations)
         {
             Patient = patient;
             Height = height;
             Weight = weight;
             Illnesses = illnesses;
             Allergies = allergies;
+            Examinations = examinations;
         }
 
         public MedicalRecord(Patient patient)
@@ -38,6 +42,7 @@ namespace HospitalIS.Backend
             Weight = 0;
             Illnesses = new List<string>();
             Allergies = new List<string>();
+            Examinations = new List<Appointment>();
         }
         
         public override string ToString()
