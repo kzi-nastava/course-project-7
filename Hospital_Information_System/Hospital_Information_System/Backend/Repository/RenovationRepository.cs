@@ -76,15 +76,11 @@ namespace HospitalIS.Backend.Repository
 			Console.WriteLine($"Finished renovation {renovation}.");
 
             if (renovation.IsSplitting()) 
-            {
-                ExecuteSplit(renovation);
-            } 
+                ExecuteSplit(renovation); 
             else if (renovation.IsMerging()) 
-            {
                 ExecuteMerge(renovation);
-            }
 
-			IS.Instance.RenovationRepo.Remove(renovation);       
+			IS.Instance.RenovationRepo.Remove(renovation);
 		}
 
 		public void AddTask(Renovation renovation)
