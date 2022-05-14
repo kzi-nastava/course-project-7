@@ -14,7 +14,8 @@ namespace HospitalIS.Backend.Controller
         private const string hintRequestSent = "Request for modification sent.";
         private const string hintDateTimeNotInFuture = "Date and time must be in the future, try something else";
         private const string hintInputDate = "Input the date for which you want to be given scheduled appointments";
-
+        private const string hintSelectAppointment = "Select appointment";
+        
         public enum AppointmentProperty
         {
             DOCTOR,
@@ -168,6 +169,12 @@ namespace HospitalIS.Backend.Controller
             }
         }
 
+        private static List<Appointment> GetFirstFiveModifiableAppointments()
+        {
+            List<Appointment> modifiableAppointments = GetAppointments().Where(a => CanModify(a, new UserAccount(UserAccount.AccountType.SECRETARY)) && a.ScheduledFor == DateTime.Now).ToList();
+            return modifiableAppointments.OrderBy(a => a.ScheduledFor).ToList().Take(5).ToList();
+        }
+        
         public static bool CanModify(Appointment appointment, UserAccount user)
         {
             if (user.Type == UserAccount.AccountType.PATIENT)
@@ -224,6 +231,12 @@ namespace HospitalIS.Backend.Controller
         {
             return IS.Instance.Hospital.Doctors.Where(
                 d => !d.Deleted && d.Specialty == speciality).ToList();
+        }
+        
+        
+        public static bool DoctorExistForSpecialty(Doctor.MedicineSpeciality speciality)
+        {
+            return IS.Instance.Hospital.Doctors.Any(d => d.Specialty == speciality);
         }
 
         public static List<Patient> GetAvailablePatients(Appointment refAppointment)
@@ -346,19 +359,21 @@ namespace HospitalIS.Backend.Controller
             return null;
         }
 
-        public static Appointment FindUrgentAppointmentSlot(AppointmentSearchBundle sb, Doctor.MedicineSpeciality speciality)
+        public static Appointment FindUrgentAppointmentSlot(string inputCancelString, AppointmentSearchBundle sb, Doctor.MedicineSpeciality speciality, UserAccount user)
         {
-            DateTime currDt = DateTime.Today;
-            
+            DateTime currDt = sb.By;
+            Doctor doctor = sb.Doctor;
+            Patient patient = sb.Patient;
+
             for (TimeSpan currTs = sb.Start; currTs <= sb.End; currTs = currTs.Add(TimeSpan.FromMinutes(1)))
             {
                 DateTime scheduledFor = currDt.Add(currTs);
                 if (scheduledFor < DateTime.Now) continue;
 
-                Doctor doctor = (sb.Doctor != null) ? (IsAvailable(sb.Doctor, scheduledFor) ? sb.Doctor : null) : FindFirstAvailableDoctorOfSpecialty(scheduledFor, speciality);
+                doctor = (sb.Doctor != null) ? (IsAvailable(sb.Doctor, scheduledFor) ? sb.Doctor : null) : FindFirstAvailableDoctorOfSpecialty(scheduledFor, speciality);
                 if (doctor == null) continue;
 
-                Patient patient = (sb.Patient != null) ? (IsAvailable(sb.Patient, scheduledFor) ? sb.Patient : null) : FindFirstAvailablePatient(scheduledFor);
+                patient = (sb.Patient != null) ? (IsAvailable(sb.Patient, scheduledFor) ? sb.Patient : null) : FindFirstAvailablePatient(scheduledFor);
                 if (patient == null) continue;
 
                 Room room = FindFirstAvailableExaminationRoom(scheduledFor);
@@ -366,7 +381,29 @@ namespace HospitalIS.Backend.Controller
 
                 return new Appointment(doctor, patient, room, scheduledFor);
             }
-            return null;
+            
+            Appointment rescheduledAppointment = RescheduleAppointment(inputCancelString, user);
+            return new Appointment(doctor, patient, rescheduledAppointment.Room, rescheduledAppointment.ScheduledFor);
+        }
+
+        private static Appointment RescheduleAppointment(string inputCancelString, UserAccount user)
+        {
+            Appointment appointment = SelectAppointmentToReschedule(inputCancelString);
+            
+            AppointmentSearchBundle sb = new AppointmentSearchBundle(appointment.Doctor, appointment.Patient, AppointmentSearchBundle.DefaultStart, AppointmentSearchBundle.DefaultEnd, DateTime.Today);
+            Appointment newAppointment = FindRecommendedAppointment(sb);
+            
+            AppointmentController.Create(newAppointment, user);
+            AppointmentController.Delete(appointment, user);
+            
+            return appointment;
+        }
+        
+        private static Appointment SelectAppointmentToReschedule(string inputCancelString)
+        {
+            Console.WriteLine(hintSelectAppointment);
+            return EasyInput<Appointment>.Select(
+                GetFirstFiveModifiableAppointments(), inputCancelString);
         }
 
         private static Doctor FindFirstAvailableDoctor(DateTime scheduledFor)
