@@ -27,6 +27,8 @@ namespace HospitalIS.Backend.Controller
         public static void Create(Appointment appointment, UserAccount user)
         {
             UserAccountController.AddCreatedAppointmentTimestamp(user, DateTime.Now);
+            MedicalRecord patientsRecord = MedicalRecordController.GetPatientsMedicalRecord(appointment.Patient);
+            patientsRecord.Examinations.Add(appointment);
             IS.Instance.AppointmentRepo.Add(appointment);
         }
 
@@ -58,6 +60,8 @@ namespace HospitalIS.Backend.Controller
             else
             {
                 IS.Instance.AppointmentRepo.Remove(appointment);
+                MedicalRecord patientsRecord = MedicalRecordController.GetPatientsMedicalRecord(appointment.Patient);
+                patientsRecord.Examinations.Remove(appointment);
             }
         }
 

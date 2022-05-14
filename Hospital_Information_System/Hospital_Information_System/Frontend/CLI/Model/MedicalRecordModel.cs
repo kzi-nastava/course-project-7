@@ -297,6 +297,9 @@ namespace HospitalIS.Frontend.CLI.Model
                 return;
             }
 
+            Console.WriteLine(hintSearchQuery);
+            string query = Console.ReadLine();
+
             var sortBy = new Dictionary<string, Appointment.AppointmentComparer>()
             {
                 ["Sort by date"] = new Appointment.CompareByDate(),
@@ -305,9 +308,6 @@ namespace HospitalIS.Frontend.CLI.Model
             };
             Console.WriteLine(hintSearchSortBy);
             var sortChoice = EasyInput<string>.Select(sortBy.Keys.ToList(), inputCancelString);
-
-            Console.WriteLine(hintSearchQuery);
-            string query = Console.ReadLine();
 
             Patient patient = IS.Instance.Hospital.Patients.Find(p => p.Person == user.Person);
             List<Appointment> matches = MatchAppointmentByAnamnesis(query, sortBy[sortChoice], patient);
