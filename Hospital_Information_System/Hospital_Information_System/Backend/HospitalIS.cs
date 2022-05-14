@@ -29,6 +29,9 @@ namespace HospitalIS.Backend
 		public MedicalRecordRepository MedicalRecordRepo = new MedicalRecordRepository();
 		public RenovationRepository RenovationRepo = new RenovationRepository();
 		public ReferralRepository ReferralRepo = new ReferralRepository();
+		public IngredientRepository IngredientRepo = new IngredientRepository();
+		public MedicationRepository MedicationRepo = new MedicationRepository();
+		public PrescriptionRepository PrescriptionRepo = new PrescriptionRepository();
 
 		private readonly JsonSerializerSettings settings;
 		private const string fnameRooms = "rooms.json";
@@ -44,6 +47,9 @@ namespace HospitalIS.Backend
 		private const string fnameMedicalRecords = "medicalRecords.json";
 		private const string fnameRenovations = "renovations.json";
 		private const string fnameReferrals = "referrals.json";
+		private const string fnameIngredients = "ingredients.json";
+		private const string fnameMedications = "medications.json";
+		private const string fnamePrescriptions = "prescriptions.json";
 
 		public IS()
 		{
@@ -62,9 +68,12 @@ namespace HospitalIS.Backend
 			UserAccountRepo.Save(Path.Combine(directory, fnameUserAccounts), settings);
 			UpdateRequestRepo.Save(Path.Combine(directory, fnameUpdateRequests), settings);
 			DeleteRequestRepo.Save(Path.Combine(directory, fnameDeleteRequests), settings);
-			MedicalRecordRepo.Save(Path.Combine(directory, fnameMedicalRecords), settings);
 			RenovationRepo.Save(Path.Combine(directory, fnameRenovations), settings);
 			ReferralRepo.Save(Path.Combine(directory, fnameReferrals), settings);
+			IngredientRepo.Save(Path.Combine(directory, fnameIngredients), settings);
+			MedicationRepo.Save(Path.Combine(directory, fnameMedications), settings);
+			PrescriptionRepo.Save(Path.Combine(directory, fnamePrescriptions), settings);
+			MedicalRecordRepo.Save(Path.Combine(directory, fnameMedicalRecords), settings);
 		}
 
 		public void Load(string directory)
@@ -79,9 +88,13 @@ namespace HospitalIS.Backend
 			UserAccountRepo.Load(Path.Combine(directory, fnameUserAccounts), settings);
 			UpdateRequestRepo.Load(Path.Combine(directory, fnameUpdateRequests), settings);
 			DeleteRequestRepo.Load(Path.Combine(directory, fnameDeleteRequests), settings);
-			MedicalRecordRepo.Load(Path.Combine(directory, fnameMedicalRecords), settings);
 			RenovationRepo.Load(Path.Combine(directory, fnameRenovations), settings);
 			ReferralRepo.Load(Path.Combine(directory, fnameReferrals), settings);
+			IngredientRepo.Load(Path.Combine(directory, fnameIngredients), settings);
+			MedicationRepo.Load(Path.Combine(directory, fnameMedications), settings);
+			PrescriptionRepo.Load(Path.Combine(directory, fnamePrescriptions), settings);
+			MedicalRecordRepo.Load(Path.Combine(directory, fnameMedicalRecords), settings);
+
 
 			foreach (var relocation in Hospital.EquipmentRelocations)
 			{

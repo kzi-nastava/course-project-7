@@ -51,6 +51,8 @@ namespace HospitalIS.Frontend.CLI.Model
 
         private const string hintMakeReferral =
             "If you want to make a referral - press 1, if not press anything else";
+        private const string hintWritePrescription =
+            "If you want to write a prescription - press 1, if not press anything else";
 
         internal static void CreateAppointment(string inputCancelString, UserAccount user)
         {
@@ -496,6 +498,12 @@ namespace HospitalIS.Frontend.CLI.Model
             if (option == "1")
             {
                 ReferralModel.CreateReferral(appointmentToStart, inputCancelString);
+            }
+            Console.WriteLine(hintWritePrescription);
+            option = Console.ReadLine();
+            if (option == "1")
+            {
+                PrescriptionModel.CreatePrescription(inputCancelString, MedicalRecordController.GetPatientsMedicalRecord(appointmentToStart.Patient));
             }
             Console.WriteLine(hintAppointmentIsOver);
         }

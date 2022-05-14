@@ -6,16 +6,24 @@
     "Illnesses": [
       "Diabetes"
     ],
-    "Allergies": [
-      "Pollen"
+    "IngredientAllergies": [
+      1
     ],
+    "OtherAllergies": [
+      "Dust"
+    ],
+    "Prescriptions": [],
     "Examinations": [
       1,
       2,
       3,
       4,
       8,
-      9
+      9,
+      13,
+      13,
+      14,
+      15
     ],
     "Id": 0,
     "Deleted": false
@@ -25,11 +33,14 @@
     "Height": 180.0,
     "Weight": 70.0,
     "Illnesses": [],
-    "Allergies": [
-      "Cold",
-      "Dust",
-      "Dust"
+    "IngredientAllergies": [
+      1
     ],
+    "OtherAllergies": [
+      "Dust",
+      "Cold"
+    ],
+    "Prescriptions": [],
     "Examinations": [
       5,
       6,
@@ -45,8 +56,17 @@
     "Height": 151.0,
     "Weight": 45.0,
     "Illnesses": [],
-    "Allergies": [
+    "IngredientAllergies": [
+      0,
+      3
+    ],
+    "OtherAllergies": [
       "Dust"
+    ],
+    "Prescriptions": [
+      1,
+      2,
+      3
     ],
     "Examinations": [
       0,
@@ -57,13 +77,13 @@
   },
   {
     "Patient": 3,
-    "Height": 0.0,
-    "Weight": 0.0,
+    "Height": 160.0,
+    "Weight": 50.0,
     "Illnesses": [],
-    "Allergies": [],
-    "Examinations": [
-      13
-    ],
+    "IngredientAllergies": [],
+    "OtherAllergies": [],
+    "Prescriptions": [],
+    "Examinations": [],
     "Id": 3,
     "Deleted": false
   }
