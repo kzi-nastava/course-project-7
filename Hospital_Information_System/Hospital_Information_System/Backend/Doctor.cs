@@ -10,9 +10,16 @@ namespace HospitalIS.Backend
         [JsonConverter(typeof(Repository.PersonRepository.PersonReferenceConverter))]
         public Person Person { get; set; }
 
+        public enum MedicineSpeciality
+        {
+            GENERAL_PRACTICE, UROLOGY, SURGERY, PSYCHIATRY, PEDIATRICS, OPHTHAMOLOGY, NEUROLOGY, ANESTHESIOLOGY, DERMATOLOGY, PATHOLOGY, GENETICS, EMERGENCY_MEDICINE, GYNAECOLOGY
+        }
+
+        public MedicineSpeciality Specialty { get; set; }
+
         public override string ToString()
         {
-            return $"Doctor{{Id = {Id}, Person = {Person.Id}}}";
+            return $"Doctor{{Id = {Id}, Person = {Person.Id}, Specialty = {Specialty}}}";
         }
     }
 }

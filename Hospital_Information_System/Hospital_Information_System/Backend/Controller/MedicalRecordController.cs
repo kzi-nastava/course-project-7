@@ -12,8 +12,10 @@ namespace HospitalIS.Backend.Controller
             PATIENT,
             HEIGHT,
             WEIGHT,
-            ALLERGIES,
-            ILLNESSES
+            ALLERGIES_TO_INGREDIENTS,
+            OTHER_ALLERGIES,
+            ILLNESSES,
+            PRESCRIPTIONS
         }
 
         public static string GetAppointmentPropertyName(MedicalRecordProperty ap)
@@ -28,6 +30,7 @@ namespace HospitalIS.Backend.Controller
         public static List<MedicalRecordProperty> GetModifiableProperties(){
             List<MedicalRecordProperty> modifiableProperties = GetAllMedicalRecordProperties();
             modifiableProperties.Remove(MedicalRecordProperty.PATIENT);
+            modifiableProperties.Remove(MedicalRecordProperty.PRESCRIPTIONS);
             return modifiableProperties;
         }
         public static List<MedicalRecord> GetAllMedicalRedords()
@@ -63,7 +66,17 @@ namespace HospitalIS.Backend.Controller
             if (whichProperties.Contains(MedicalRecordProperty.HEIGHT)) target.Height = source.Height;
             if (whichProperties.Contains(MedicalRecordProperty.WEIGHT)) target.Weight = source.Weight;
             if (whichProperties.Contains(MedicalRecordProperty.ILLNESSES)) target.Illnesses = source.Illnesses;
-            if (whichProperties.Contains(MedicalRecordProperty.ALLERGIES)) target.Allergies = source.Allergies;
-        } 
+            if (whichProperties.Contains(MedicalRecordProperty.OTHER_ALLERGIES)) target.OtherAllergies = source.OtherAllergies;
+            if (whichProperties.Contains(MedicalRecordProperty.ALLERGIES_TO_INGREDIENTS)) target.IngredientAllergies = source.IngredientAllergies;
+            if (whichProperties.Contains(MedicalRecordProperty.PRESCRIPTIONS)) target.Prescriptions = source.Prescriptions;
+        }
+
+        public static List<Appointment> MatchAppointmentByAnamnesis(string query, Appointment.AppointmentComparer comparer, Patient patient)
+        {
+            var matches = GetPatientsMedicalRecord(patient).Examinations.FindAll(
+                e => e.ScheduledFor < DateTime.Now && e.Anamnesis.Trim().ToLower().Contains(query.Trim().ToLower()));
+            matches.Sort(comparer);
+            return matches;
+        }
     }
 }

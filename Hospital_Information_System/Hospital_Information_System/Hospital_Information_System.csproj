@@ -11,11 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Backend\Repository\MedicalRecord.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="data\medicalRecord.json" />
+    <Compile Remove="data\Ingredients.cs" />
   </ItemGroup>
 
 </Project>

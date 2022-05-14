@@ -18,7 +18,7 @@ namespace HospitalIS.Backend.Repository
 
 		public Room GetById(int id)
 		{
-			return IS.Instance.Hospital.Rooms.First(e => e.Id == id);
+			return IS.Instance.Hospital.Rooms.FirstOrDefault(e => e.Id == id);
 		}
 
 		public void Load(string fullFilename, JsonSerializerSettings settings)
@@ -39,6 +39,9 @@ namespace HospitalIS.Backend.Repository
 			IS.Instance.EquipmentRelocationRepo.Remove(relocation => relocation.RoomNew == entity);
 			
 			entity.Deleted = true;
+
+			// Remove all renovations for that room
+			IS.Instance.RenovationRepo.Remove(ren => ren.Room == entity);
 		}
 
 		public void Remove(Func<Room, bool> condition)

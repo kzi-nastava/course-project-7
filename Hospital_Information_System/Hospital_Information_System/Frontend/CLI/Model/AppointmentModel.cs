@@ -1,8 +1,10 @@
 ﻿using HospitalIS.Backend;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using HospitalIS.Backend.Controller;
+using HospitalIS.Backend.Repository;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
@@ -22,6 +24,7 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintAppointmentScheduled = "You've successfully scheduled an appointment!";
         private const string hintAppointmentUpdated = "You've successfully updated an appointment!";
         private const string hintAppointmentDeleted = "You've successfully deleted an appointment!";
+        private const string hintDeletedPatient = "Patient is deleted!";
         private const string hintNoScheduledAppoinments =
             "You don't have any scheduled appointments for the time given.";
 
@@ -29,7 +32,28 @@ namespace HospitalIS.Frontend.CLI.Model
             "If you want to start any appointment - press 1, if not press anything else";
 
         private const string hintAppointmentIsOver = "Appointment is over.";
-        
+
+        private const string hintGetStartOfRange = "Enter start of range";
+        private const string hintGetEndOfRange = "Enter end of range";
+        private const string hintGetLatestDesiredDate = "Enter latest desired date";
+        private const string hintGetPrioritizedProperty = "Enter the prioritized property";
+
+        private const string hintOptimalSearchFailed = "Could not find optimal appointment. Trying priority search...";
+        private const string hintPrioritySearchFailed = "Could not find appointment using priority search. Showing closest matching appointments...";
+
+        private const string hintDesperateSearchRespectDoctorOnly = "Closest respecting only doctor";
+        private const string hintDesperateSearchRespectIntervalOnly = "Closest respecting only time interval";
+        private const string hintDesperateSearchRespectDateOnly = "Closest respecting only latest date";
+        private const string hintDesperateSearchIgnoreDate = "Closest optimal when ignoring latest date";
+        private const string hintDesperateSearchClosestOverall = "Closest overall";
+
+        private const string askCreateAppointment = "Are you sure you want to create this appointment?";
+
+        private const string hintMakeReferral =
+            "If you want to make a referral - press 1, if not press anything else";
+        private const string hintWritePrescription =
+            "If you want to write a prescription - press 1, if not press anything else";
+
         internal static void CreateAppointment(string inputCancelString, UserAccount user)
         {
             try
@@ -49,7 +73,8 @@ namespace HospitalIS.Frontend.CLI.Model
             List<Appointment> allAppointments = new List<Appointment>();
             if (user.Type == UserAccount.AccountType.PATIENT)
             {
-                allAppointments = AppointmentController.GetAllPatientsAppointments(user);
+                var patient = IS.Instance.Hospital.Patients.First(p => p.Person.Id == user.Person.Id);
+                allAppointments = AppointmentController.GetAllPatientsAppointments(patient);
             }
             
             if (user.Type == UserAccount.AccountType.DOCTOR)
@@ -97,6 +122,147 @@ namespace HospitalIS.Frontend.CLI.Model
             {
                 Console.WriteLine(e.Message);
             }
+        }
+
+        internal static void CreateRecommendedAppointment(string inputCancelString, UserAccount user)
+        {
+            try
+            {
+                AppointmentSearchBundle sb = InputSearchBundle(inputCancelString, user);
+                AppointmentController.AppointmentProperty priority = InputPrioritizedProperty(inputCancelString);
+
+                Appointment appointment = GetRecommendedAppointment(sb, priority, inputCancelString);
+                Console.WriteLine(appointment.ToString());
+                Console.WriteLine(askCreateAppointment);
+                if (EasyInput<bool>.YesNo(inputCancelString))
+                {
+                    AppointmentController.Create(appointment, user);
+                }
+            }
+            catch (InputFailedException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+        
+        internal static void CreateUrgentAppointment(string inputCancelString, UserAccount user)
+        {
+            try
+            {
+                Doctor.MedicineSpeciality speciality = ReferralModel.inputSpecialty(inputCancelString);
+                if (!AppointmentController.DoctorExistForSpecialty(speciality))
+                    throw new NothingToSelectException();
+                
+                AppointmentSearchBundle sb = InputSearchBundleUrgent(inputCancelString, user);
+                Appointment appointment = AppointmentController.FindUrgentAppointmentSlot(inputCancelString, sb, speciality, user);
+                
+                Console.WriteLine(appointment.ToString());
+                Console.WriteLine(askCreateAppointment);
+                if (EasyInput<bool>.YesNo(inputCancelString))
+                {
+                    AppointmentController.Create(appointment, user);
+                }
+            }
+            catch (InputFailedException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        private static AppointmentSearchBundle InputSearchBundle(string inputCancelString, UserAccount user)
+        {
+            Doctor doctor = InputDoctor(inputCancelString, null, user);
+            Patient patient = InputPatient(inputCancelString, null, user);
+            TimeSpan start = InputStartOfRange(inputCancelString);
+            TimeSpan end = InputEndOfRange(start, inputCancelString);
+            DateTime latestDate = InputLatestDate(inputCancelString);
+
+            return new AppointmentSearchBundle(doctor, patient, start, end, latestDate); 
+        }
+        
+        private static AppointmentSearchBundle InputSearchBundleUrgent(string inputCancelString, UserAccount user)
+        {
+            Doctor doctor = null;
+            Patient patient = InputPatient(inputCancelString, null, user);
+            DateTime latestDate = DateTime.Today;
+
+            TimeSpan start = TimeSpan.FromHours(DateTime.Now.TimeOfDay.TotalHours);
+            start = new TimeSpan(start.Hours, start.Minutes + 10, 0);
+
+            TimeSpan end = new TimeSpan((start.Hours+2)%24, start.Minutes, 0);
+
+            if (end > TimeSpan.FromHours(0) && end < TimeSpan.FromHours(2))
+            {
+                start = new TimeSpan(0, 0, 0);
+                end = new TimeSpan(start.Hours + 2, 0, 0);
+                latestDate = DateTime.Today.AddDays(1);
+            }
+
+            return new AppointmentSearchBundle(doctor, patient, start, end, latestDate, true); 
+        }
+
+        private static Appointment GetRecommendedAppointment(AppointmentSearchBundle sb, AppointmentController.AppointmentProperty priority, string inputCancelString)
+        {
+            return GetOptimalAppointment(sb) ?? GetPrioritizedAppointment(sb, priority) ?? GetDesperateAppointment(sb, inputCancelString);
+        }
+
+        private static Appointment GetOptimalAppointment(AppointmentSearchBundle sb)
+        {
+            return AppointmentController.FindRecommendedAppointment(sb);
+        }
+        private static Appointment GetPrioritizedAppointment(AppointmentSearchBundle sb, AppointmentController.AppointmentProperty priority)
+        {
+            Console.WriteLine(hintOptimalSearchFailed);
+
+            AppointmentSearchBundle sbPrioritized;
+            if (priority == AppointmentController.AppointmentProperty.DOCTOR)
+            {
+                sbPrioritized = AppointmentSearchBundle.IgnoreInterval(sb);
+            }
+            else
+            {
+                sbPrioritized = AppointmentSearchBundle.IgnoreDoctor(sb);
+            }
+            return AppointmentController.FindRecommendedAppointment(sbPrioritized);
+        }
+
+        private static Appointment GetDesperateAppointment(AppointmentSearchBundle sb, string inputCancelString)
+        {
+            Console.WriteLine(hintPrioritySearchFailed);
+
+            var desperateAppointments = new List<Appointment>();
+            var desperateAppointment = new Appointment();
+
+            void processDesperate(Func<AppointmentSearchBundle, AppointmentSearchBundle> newSb, string hint)
+            {
+                desperateAppointment = AppointmentController.FindRecommendedAppointment(newSb(sb));
+                if (desperateAppointment != null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine(hint);
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.WriteLine(desperateAppointment.ToString());
+                    desperateAppointments.Add(desperateAppointment);
+                }
+            }
+
+            // Closest respecting only doctor
+            processDesperate(AppointmentSearchBundle.RespectOnlyDoctorAndPatient, hintDesperateSearchRespectDoctorOnly);
+
+            // Closest respecting only time interval
+            processDesperate(AppointmentSearchBundle.RespectOnlyIntervalAndPatient, hintDesperateSearchRespectIntervalOnly);
+
+            // Closest respecting only latest date.
+            processDesperate(AppointmentSearchBundle.RespectOnlyLatestDateAndPatient, hintDesperateSearchRespectDateOnly);
+
+            // Closest optimal when ignoring latest date.
+            processDesperate(AppointmentSearchBundle.IgnoreLatestDate, hintDesperateSearchIgnoreDate);
+
+            // Closest overall.
+            processDesperate(AppointmentSearchBundle.RespectOnlyPatient, hintDesperateSearchClosestOverall);
+
+            Console.WriteLine(hintSelectAppointment);
+            return EasyInput<Appointment>.Select(desperateAppointments, inputCancelString);
         }
 
         private static List<AppointmentController.AppointmentProperty> SelectModifiableProperties(string inputCancelString, UserAccount user)
@@ -181,7 +347,7 @@ namespace HospitalIS.Frontend.CLI.Model
         private static Room InputExaminationRoom(string inputCancelString, Appointment referenceAppointment, UserAccount user)
         {
             // Patient and doctor cannot modify the Room property, however when creating an Appointment we can reach here.
-            if (user.Type == UserAccount.AccountType.PATIENT || user.Type == UserAccount.AccountType.DOCTOR)
+            if (user.Type != UserAccount.AccountType.MANAGER)
             {
                 return AppointmentController.GetRandomAvailableExaminationRoom(referenceAppointment);
             }
@@ -224,9 +390,9 @@ namespace HospitalIS.Frontend.CLI.Model
                 new List<Func<DateTime, bool>>()
                 {
                     newSchedule => newSchedule.CompareTo(DateTime.Now) > 0,
-                    newSchedule => AppointmentController.IsAvailable(patient, patientReferenceAppointment, newSchedule),
-                    newSchedule => AppointmentController.IsAvailable(doctor, doctorReferenceAppointment, newSchedule),
-                    newSchedule => AppointmentController.IsAvailable(room, roomReferenceAppointment, newSchedule),
+                    newSchedule => AppointmentController.IsAvailable(patient, newSchedule, patientReferenceAppointment),
+                    newSchedule => AppointmentController.IsAvailable(doctor, newSchedule, doctorReferenceAppointment),
+                    newSchedule => AppointmentController.IsAvailable(room, newSchedule, roomReferenceAppointment),
                 },
                 new string[]
                 {
@@ -237,6 +403,67 @@ namespace HospitalIS.Frontend.CLI.Model
                 },
                 inputCancelString);
         }
+
+        private static TimeSpan InputStartOfRange(string inputCancelString)
+        {
+            Console.WriteLine(hintGetStartOfRange);
+            return EasyInput<TimeSpan>.Get(
+                new List<Func<TimeSpan, bool>>()
+                {
+                    ts => AppointmentSearchBundle.TsInDay(ts),
+                    ts => AppointmentSearchBundle.TsZeroSeconds(ts),
+                },
+                new string[]
+                {
+                    AppointmentSearchBundle.ErrTimeSpanNotInDay,
+                    AppointmentSearchBundle.ErrTimeSpanHasSeconds,
+                },
+                inputCancelString,
+                TimeSpan.Parse);
+        }
+
+        private static TimeSpan InputEndOfRange(TimeSpan start, string inputCancelString)
+        {
+            Console.WriteLine(hintGetEndOfRange);
+            return EasyInput<TimeSpan>.Get(
+                new List<Func<TimeSpan, bool>>()
+                {
+                    ts => AppointmentSearchBundle.TsInDay(ts),
+                    ts => AppointmentSearchBundle.TsZeroSeconds(ts),
+                    ts => AppointmentSearchBundle.TsIsAfter(ts, start),
+                },
+                new string[]
+                {
+                    AppointmentSearchBundle.ErrTimeSpanNotInDay,
+                    AppointmentSearchBundle.ErrTimeSpanHasSeconds,
+                    AppointmentSearchBundle.ErrEndBeforeStart,
+                },
+                inputCancelString,
+                TimeSpan.Parse);
+        }
+
+        private static DateTime InputLatestDate(string inputCancelString)
+        {
+            Console.WriteLine(hintGetLatestDesiredDate);
+            return EasyInput<DateTime>.Get(
+                new List<Func<DateTime, bool>>()
+                {
+                    dt => AppointmentSearchBundle.DtNotTooSoon(dt),
+                },
+                new string[]
+                {
+                    AppointmentSearchBundle.ErrDateTooSoon,
+                },
+                inputCancelString);
+        }
+
+        private static AppointmentController.AppointmentProperty InputPrioritizedProperty(string inputCancelString)
+        {
+            Console.WriteLine(hintGetPrioritizedProperty);
+            return EasyInput<AppointmentController.AppointmentProperty>.Select(
+                AppointmentController.GetPrioritizableProperties(), inputCancelString);
+        }
+
         public static void ShowNextAppointments(UserAccount user, string inputCancelString)
         {
             List <Appointment> nextAppointments = AppointmentController.GetNextDoctorsAppointments(user, inputCancelString);
@@ -254,8 +481,8 @@ namespace HospitalIS.Frontend.CLI.Model
                     MedicalRecordModel.ReadMedicalRecord(appointment, inputCancelString);
                     Console.WriteLine("=====================================");
                 }
+                CheckIfDoctorWantsToStartAppointment(user, inputCancelString, nextAppointments);
             }
-            CheckIfDoctorWantsToStartAppointment(user, inputCancelString, nextAppointments);
         }
         
         public static void CheckIfDoctorWantsToStartAppointment(UserAccount user, string inputCancelString, List<Appointment> startableAppointments)
@@ -271,10 +498,67 @@ namespace HospitalIS.Frontend.CLI.Model
         private static void StartAppointment(UserAccount user, string inputCancelString, List<Appointment> startableAppointments)
         {
             Console.WriteLine(hintSelectAppointment);
-            var appointmentsToStart = EasyInput<Appointment>.Select(startableAppointments, inputCancelString);
-            MedicalRecordModel.UpdateMedicalRecordAndAnamnesis(appointmentsToStart, inputCancelString);
+            var appointmentToStart = EasyInput<Appointment>.Select(startableAppointments, inputCancelString);
+            MedicalRecordModel.UpdateMedicalRecordAndAnamnesis(appointmentToStart, inputCancelString);
+            Console.WriteLine(hintMakeReferral);
+            var option = Console.ReadLine();
+            if (option == "1")
+            {
+                ReferralModel.CreateReferral(appointmentToStart, inputCancelString);
+            }
+            Console.WriteLine(hintWritePrescription);
+            option = Console.ReadLine();
+            if (option == "1")
+            {
+                PrescriptionModel.CreatePrescription(inputCancelString, MedicalRecordController.GetPatientsMedicalRecord(appointmentToStart.Patient));
+            }
             Console.WriteLine(hintAppointmentIsOver);
         }
         
+        internal static void CreateAppointmentWithReferral(Referral referral, string inputCancelString, UserAccount user)
+        {
+            try
+            {
+                if (referral.Patient.Deleted)
+                {
+                    Console.WriteLine(hintDeletedPatient);
+                }
+                if (referral.Doctor == null)
+                {
+                    Doctor doctor = SelectDoctorBySpecialty(inputCancelString, referral.Specialty);
+                    Console.WriteLine(hintSelectDoctor);
+                    referral.Doctor = doctor;
+
+                }
+                
+                Appointment appointment = SelectAppointment(referral, inputCancelString, user);
+                AppointmentController.Create(appointment, user);
+                Console.WriteLine(hintAppointmentScheduled);
+                ReferralRepository.Scheduled(referral);
+            }
+            catch (InputFailedException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            
+        }
+
+        private static Appointment SelectAppointment(Referral referral, string inputCancelString, UserAccount user)
+        {
+            var appointment = new Appointment();
+            
+            appointment.Doctor = referral.Doctor;
+            appointment.Patient = referral.Patient;
+            appointment.Room = InputExaminationRoom(inputCancelString, null, user);
+            appointment.ScheduledFor = InputScheduledFor(inputCancelString, appointment, null);
+
+            return appointment;
+        }
+
+        private static Doctor SelectDoctorBySpecialty(string inputCancelString, Doctor.MedicineSpeciality speciality)
+        {
+            return EasyInput<Doctor>.Select(AppointmentController.GetAvailableDoctorsBySpecialty(speciality),
+                inputCancelString);
+        }
     }
 }

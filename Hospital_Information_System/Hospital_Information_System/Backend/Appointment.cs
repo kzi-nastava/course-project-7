@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace HospitalIS.Backend
@@ -36,6 +37,40 @@ namespace HospitalIS.Backend
         public override string ToString()
         {
             return $"Appointment{{Id = {Id}, Doctor = {Doctor.Id}, Patient = {Patient.Id}, Room = {Room.Id}, ScheduledFor = {ScheduledFor}, Anamnesis = {Anamnesis}}}";
+        }
+
+        public string AnamnesisFocusedToString()
+        {
+            return $"Appointment{{Id = {Id}, Doctor = {Doctor.Id}, DoctorSpecialty = {Doctor.Specialty}, ScheduledFor = {ScheduledFor}, Anamnesis = {Anamnesis}}}";
+        }
+
+        public abstract class AppointmentComparer : Comparer<Appointment>
+        {
+
+        }
+
+        public class CompareByDate : AppointmentComparer
+        {
+            public override int Compare([AllowNull] Appointment x, [AllowNull] Appointment y)
+            {
+                return x.ScheduledFor.CompareTo(y.ScheduledFor);
+            }
+        }
+
+        public class CompareByDoctor : AppointmentComparer
+        {
+            public override int Compare([AllowNull] Appointment x, [AllowNull] Appointment y)
+            {
+                return x.Doctor.Id.CompareTo(y.Doctor.Id);
+            }
+        }
+
+        public class CompareByDoctorSpecialty : AppointmentComparer
+        {
+            public override int Compare([AllowNull] Appointment x, [AllowNull] Appointment y)
+            {
+                return x.Doctor.Specialty.CompareTo(y.Doctor.Specialty);
+            }
         }
     }
 }

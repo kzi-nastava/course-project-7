@@ -1,6 +1,5 @@
 [
   {
-    "$id": "1",
     "FirstName": "Marlon",
     "LastName": "Martie",
     "Gender": 0,
@@ -8,7 +7,6 @@
     "Deleted": false
   },
   {
-    "$id": "2",
     "FirstName": "Grahame",
     "LastName": "Jordana",
     "Gender": 0,
@@ -16,7 +14,6 @@
     "Deleted": false
   },
   {
-    "$id": "3",
     "FirstName": "Kolby",
     "LastName": "Doran",
     "Gender": 0,
@@ -24,7 +21,6 @@
     "Deleted": false
   },
   {
-    "$id": "4",
     "FirstName": "Gertrude",
     "LastName": "Fleurette",
     "Gender": 1,
@@ -32,7 +28,6 @@
     "Deleted": false
   },
   {
-    "$id": "5",
     "FirstName": "Janeka",
     "LastName": "Kellen",
     "Gender": 1,
@@ -40,7 +35,6 @@
     "Deleted": false
   },
   {
-    "$id": "6",
     "FirstName": "Bowen",
     "LastName": "Evonne",
     "Gender": 0,
@@ -48,7 +42,6 @@
     "Deleted": false
   },
   {
-    "$id": "7",
     "FirstName": "ADMIN",
     "LastName": "ADMIN",
     "Gender": 0,
@@ -56,11 +49,17 @@
     "Deleted": false
   },
   {
-    "$id": "8",
     "FirstName": "SECRETARY",
     "LastName": "SECRETARY",
     "Gender": 0,
     "Id": 7,
+    "Deleted": false
+  },
+  {
+    "FirstName": "Jake",
+    "LastName": "Kelly",
+    "Gender": 0,
+    "Id": 8,
     "Deleted": false
   }
 ]

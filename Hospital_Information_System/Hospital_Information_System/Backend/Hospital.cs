@@ -32,6 +32,12 @@ namespace HospitalIS.Backend
 		internal List<UserAccount> UserAccounts = new List<UserAccount>();
 		internal List<UpdateRequest> UpdateRequests = new List<UpdateRequest>();
 		internal List<DeleteRequest> DeleteRequests = new List<DeleteRequest>();
+		internal List<Renovation> Renovations = new List<Renovation>();
+		internal List<Task> RenovationTasks = new List<Task>();
+		internal List<Referral> Referrals = new List<Referral>();
+		internal List<Ingredient> Ingredients = new List<Ingredient>();
+		internal List<Medication> Medications = new List<Medication>();
+		internal List<Prescription> Prescriptions = new List<Prescription>();
 		internal List<MedicalRecord> MedicalRecords = new List<MedicalRecord>();
 	}
 }

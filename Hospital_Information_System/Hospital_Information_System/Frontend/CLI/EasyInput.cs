@@ -36,6 +36,13 @@ namespace HospitalIS.Frontend.CLI
 	/// </summary>
 	internal abstract class EasyInput<T>
 	{
+		private static void WriteLineError(string err) 
+		{
+			Console.ForegroundColor = ConsoleColor.Red;
+			Console.WriteLine(err);
+			Console.ForegroundColor = ConsoleColor.Gray;
+		}
+
 		/// <summary>
 		/// Continuously asks for user input until it satisfies all rules or the user cancels the operation.
 		/// </summary>
@@ -66,7 +73,7 @@ namespace HospitalIS.Frontend.CLI
 				}
 				catch
 				{
-					Console.WriteLine("Invalid input.");
+					WriteLineError("Invalid input.");
 					continue;
 				}
 
@@ -74,7 +81,7 @@ namespace HospitalIS.Frontend.CLI
 
 				if (brokenRuleIndex != -1)
 				{
-					Console.WriteLine(errorMsg[brokenRuleIndex]);
+					WriteLineError(errorMsg[brokenRuleIndex]);
 					continue;
 				}
 				else
@@ -134,7 +141,7 @@ namespace HospitalIS.Frontend.CLI
 					int brokenRuleIndex = GetBrokenRuleIndex(rules, elements[selection]);
 					if (brokenRuleIndex != -1)
 					{
-						Console.WriteLine(errorMsg[brokenRuleIndex]);
+						WriteLineError(errorMsg[brokenRuleIndex]);
 						continue;
 					}
 					else
@@ -159,6 +166,18 @@ namespace HospitalIS.Frontend.CLI
 		public static T Select(IList<T> elements, string cancel)
 		{
 			return Select(elements, (elem => elem.ToString()), cancel);
+		}
+
+		public static bool YesNo(string cancel) {
+			Console.WriteLine("[Y/N]");
+			string s = EasyInput<string>.Get(
+				new List<Func<string, bool>> {s => (s.ToLower() == "y" || s.ToLower() == "n")},
+				new [] { "Must be [Y]es or [N]o." },
+				cancel
+			);
+
+			s = s.ToLower();
+			return s == "y";
 		}
 
 		public static IList<T> SelectMultiple(IList<T> elements, string cancel)

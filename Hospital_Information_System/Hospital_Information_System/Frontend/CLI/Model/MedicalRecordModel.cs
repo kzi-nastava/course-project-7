@@ -21,6 +21,7 @@ namespace HospitalIS.Frontend.CLI.Model
             "Input patient's allergies one by one\nEnter q to finish";
 
         private const string hintInputAllergy = "Input allegie:";
+        private const string hintInputIngredients = "Input ingredients: ";
         private const string hintInputAnamnesis = "Input anamnesis (newLine to finish)";
 
         private const string hintSelectProperties =
@@ -41,6 +42,9 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintUpdatingCurrentAllergies = "Updating current list of allergies";
         private const string hintUpdatingCurrentIllnesses = "Updating current list of illnesses";
 
+        private const string hintSearchSortBy = "Enter sorting criteria";
+        private const string hintSearchQuery = "Enter search query";
+
         internal static void CreateMedicalRecord(Patient patient, string inputCancelString)
         {
             try
@@ -50,7 +54,11 @@ namespace HospitalIS.Frontend.CLI.Model
                 medicalRecord.Weight = inputWeight(inputCancelString);
                 medicalRecord.Height = inputHeight(inputCancelString);
                 medicalRecord.Illnesses = inputIllnesses();
-                medicalRecord.Allergies = inputAllergies();
+                medicalRecord.IngredientAllergies = inputIngredients(inputCancelString);
+                medicalRecord.OtherAllergies = inputAllergies();
+                medicalRecord.Prescriptions = new List<Prescription>();
+
+                medicalRecord.Examinations = GetAllPatientsAppointments(patient);
 
                 IS.Instance.MedicalRecordRepo.Add(medicalRecord);
             }
@@ -191,6 +199,20 @@ namespace HospitalIS.Frontend.CLI.Model
 
             return allergies;
         }
+        
+        internal static List<Ingredient> inputIngredients(string inputCancelString)
+        {
+            Console.WriteLine(hintInputIngredients);
+            List<Ingredient> ingredients = getAllIngredients();
+            var selectedIngredients = EasyInput<Ingredient>.SelectMultiple(ingredients, inputCancelString).ToList();
+            return selectedIngredients;
+        }
+
+        internal static List<Ingredient> getAllIngredients()
+        {
+            return IS.Instance.Hospital.Ingredients.Where(
+                a => !a.Deleted).ToList();
+        }
 
         internal static string InputAnamnesis()
         {
@@ -213,22 +235,27 @@ namespace HospitalIS.Frontend.CLI.Model
                 updatedMedicalRecord.Weight = inputWeight(inputCancelString);
             }
 
-            if (propertiesToUpdate.Contains(MedicalRecordProperty.ALLERGIES))
+            if (propertiesToUpdate.Contains(MedicalRecordProperty.OTHER_ALLERGIES))
             {
                 Console.WriteLine(hintUpdatingCurrentAllergies);
-                updatedMedicalRecord.Allergies = performActionsOnList(oldMedicalRecord.Allergies, inputCancelString);
+                updatedMedicalRecord.OtherAllergies = PerformActionsOnList(oldMedicalRecord.OtherAllergies, inputCancelString);
+            }
+            if (propertiesToUpdate.Contains(MedicalRecordProperty.ALLERGIES_TO_INGREDIENTS))
+            {
+                Console.WriteLine(hintUpdatingCurrentAllergies);
+                updatedMedicalRecord.IngredientAllergies = inputIngredients(inputCancelString);
             }
 
             if (propertiesToUpdate.Contains(MedicalRecordProperty.ILLNESSES))
             {
                 Console.WriteLine(hintUpdatingCurrentIllnesses);
-                updatedMedicalRecord.Illnesses = performActionsOnList(oldMedicalRecord.Illnesses, inputCancelString);
+                updatedMedicalRecord.Illnesses = PerformActionsOnList(oldMedicalRecord.Illnesses, inputCancelString);
             }
 
             return updatedMedicalRecord;
         }
 
-        public static List<String> performActionsOnList(List<String> properties, string inputCancelString)
+        public static List<String> PerformActionsOnList(List<String> properties, string inputCancelString)
         {
             Console.WriteLine(hintSelectAction);
             List<string> allActions = GetActionsPerformableOnList();
@@ -238,11 +265,11 @@ namespace HospitalIS.Frontend.CLI.Model
             {
                 if (action == "ADD")
                 {
-                    updatedProperties = add(properties);
+                    updatedProperties = Add(properties);
                 }
                 else
                 {
-                    updatedProperties = remove(properties, inputCancelString);
+                    updatedProperties = Remove(properties, inputCancelString);
                 }
 
             }
@@ -251,7 +278,7 @@ namespace HospitalIS.Frontend.CLI.Model
         }
 
 
-        public static List<String> add(List<String> oldList)
+        public static List<String> Add(List<String> oldList)
         {
             List<String> updatedList = oldList;
             while (true)
@@ -272,7 +299,7 @@ namespace HospitalIS.Frontend.CLI.Model
             return updatedList;
         }
 
-        public static List<String> remove(List<String> oldList, string inputCancelString)
+        public static List<String> Remove(List<String> oldList, string inputCancelString)
         {
             List<String> updatedList = oldList;
             Console.WriteLine(hintSelectToRemove);
@@ -284,6 +311,34 @@ namespace HospitalIS.Frontend.CLI.Model
 
             return updatedList;
 
+        }
+
+        internal static void Search(UserAccount user, string inputCancelString)
+        {
+            if (user.Type != UserAccount.AccountType.PATIENT)
+            {
+                return;
+            }
+
+            Console.WriteLine(hintSearchQuery);
+            string query = Console.ReadLine();
+
+            var sortBy = new Dictionary<string, Appointment.AppointmentComparer>()
+            {
+                ["Sort by date"] = new Appointment.CompareByDate(),
+                ["Sort by doctor"] = new Appointment.CompareByDoctor(),
+                ["Sort by doctor specialty"] = new Appointment.CompareByDoctorSpecialty(),
+            };
+            Console.WriteLine(hintSearchSortBy);
+            var sortChoice = EasyInput<string>.Select(sortBy.Keys.ToList(), inputCancelString);
+
+            Patient patient = IS.Instance.Hospital.Patients.Find(p => p.Person == user.Person);
+            List<Appointment> matches = MatchAppointmentByAnamnesis(query, sortBy[sortChoice], patient);
+
+            foreach (Appointment match in matches)
+            {
+                Console.WriteLine(match.AnamnesisFocusedToString());
+            }
         }
     }
 }

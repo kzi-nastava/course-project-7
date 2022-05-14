@@ -10,12 +10,12 @@ namespace HospitalIS.Frontend.CLI
 {
     internal static class CLIProgram
     {
-        private static readonly string dataDirectory = Path.Combine("..", "..", "..", "data");
+        private static string dataDirectory = Path.Combine("..", "..", "..", "data");
         private const string inputCancelString = "-q";
         private static UserAccount user;
         private static bool isRunning = true;
 
-        private struct Command
+        private class Command
         {
             public string CommandName;
             public Action CommandMethod;
@@ -55,21 +55,23 @@ namespace HospitalIS.Frontend.CLI
             new Command("-appointment-update", () => AppointmentModel.UpdateAppointment(inputCancelString, user), new[] {UserAccount.AccountType.DOCTOR, UserAccount.AccountType.PATIENT}),
             new Command("-appointment-delete", () => AppointmentModel.DeleteAppointment(inputCancelString, user), new[] {UserAccount.AccountType.DOCTOR, UserAccount.AccountType.PATIENT}),
             new Command("-appointment-view-start", () => AppointmentModel.ShowNextAppointments(user, inputCancelString), new[] {UserAccount.AccountType.DOCTOR}),
+            new Command("-appointment-create-rec", () => AppointmentModel.CreateRecommendedAppointment(inputCancelString, user), new[] {UserAccount.AccountType.PATIENT}),
 
-            
+            new Command("-anamnesis-search", () => MedicalRecordModel.Search(user, inputCancelString), new[] {UserAccount.AccountType.PATIENT}),
+
             new Command("-patient-account-create", () => UserAccountModel.CreatePatientAccount(inputCancelString), new []{UserAccount.AccountType.SECRETARY}),
             new Command("-patient-account-view", () => UserAccountModel.ViewPatientAccounts(), new[] {UserAccount.AccountType.SECRETARY}),
             new Command("-patient-account-update", () => UserAccountModel.UpdatePatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
             new Command("-patient-account-delete", () => UserAccountModel.DeleteAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-block-patient-account-delete", () => UserAccountModel.BlockPatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-unblock-patient-account-delete", () => UserAccountModel.UnblockPatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            
-            new Command("-view-patient-requests", () => RequestModel.ViewRequests(), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-approve-delete-request", () => RequestModel.ApproveDeleteRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-deny-delete-request", () => RequestModel.DenyDeleteRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-approve-update-request", () => RequestModel.ApproveUpdateRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-deny-update-request", () => RequestModel.DenyUpdateRequest(inputCancelString), new[] {UserAccount.AccountType.SECRETARY})
+            new Command("-block-patient-account", () => UserAccountModel.BlockPatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("-unblock-patient-account", () => UserAccountModel.UnblockPatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
 
+            new Command("-view-patient-requests", () => RequestModel.ViewRequests(), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("-handle-patient-requests", () => RequestModel.HandleRequests(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("-handle-referrals", () => ReferralModel.HandleReferrals(inputCancelString, user), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("-create-urgent-appointment", () => AppointmentModel.CreateUrgentAppointment(inputCancelString, user), new[] {UserAccount.AccountType.SECRETARY}),
+
+            new Command("-renovation-schedule", () => RenovationModel.NewRenovation(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
         };
 
         static List<Command> GetCommands(UserAccount user)
@@ -87,10 +89,37 @@ namespace HospitalIS.Frontend.CLI
             Console.ForegroundColor = ConsoleColor.Gray;
         }
 
-        static void Main()
+		static void HandleCmdArgs(string[] args) {
+			if (args.Count() >= 1) {
+				int k = Convert.ToInt32(args[0]);
+				string[] paths = new string[k + 1];
+				for (int i = 0; i < k; i++)
+					paths[i] = "..";
+				paths[k] = "data";
+				dataDirectory = Path.Combine(paths);
+			}
+		}
+
+		private static string GetUserCommand() {
+			var userCommands = GetCommands(user);
+			return EasyInput<string>.Get(
+				new List<Func<string, bool>>
+				{
+					s => userCommands.Count(command => command.CommandName == s) == 1 || s?.Length == 0
+				},
+				new[]
+				{
+					"Command not found!\nType -help for a list of commands\n"
+				},
+				inputCancelString
+			);
+		}
+
+        static void Main(string[] args)
         {
             // === Login ===
 
+            HandleCmdArgs(args);
             IS.Instance.Load(dataDirectory);
 
             try
@@ -104,7 +133,7 @@ namespace HospitalIS.Frontend.CLI
 
             // === Use program ===
 
-            var userCommands = GetCommands(user);
+            
             Console.WriteLine("Type -help for a list of commands\n\n");
       
             try
@@ -114,24 +143,11 @@ namespace HospitalIS.Frontend.CLI
                     Console.Write($"{user.Username}>");
                     try
                     {
-                        string cmdInput = EasyInput<string>.Get(
-                            new List<Func<string, bool>>
-                            {
-                            s => userCommands.Count(command => command.CommandName == s) == 1 || s?.Length == 0
-							},
-                            new[]
-                            {
-                            "Command not found!\nType -help for a list of commands\n"
-                            },
-                            inputCancelString
-                        );
-
+                        string cmdInput = GetUserCommand();
                         if (cmdInput.Length == 0)
-						{
                             continue;
-						}
 
-                        userCommands.First(cmd => cmd.CommandName == cmdInput).CommandMethod();
+                        Commands.First(cmd => cmd.CommandName == cmdInput).CommandMethod();
                     }
                     catch (InputCancelledException)
                     {
@@ -149,49 +165,6 @@ namespace HospitalIS.Frontend.CLI
                 IS.Instance.Save(dataDirectory);
                 Console.WriteLine("Press any key to exit.");
                 Console.ReadLine();
-            }
-        }
-
-		private static void InitHospital()
-		{
-            IS.Instance.RoomRepo.Add(new Room(0, Room.RoomType.WAREHOUSE, "Warehouse"));
-
-            const int floorNo = 3;
-            var roomCountPerFloor = new List<KeyValuePair<Room.RoomType, int>>
-            {
-                new KeyValuePair<Room.RoomType, int>(Room.RoomType.BATHROOM, 3),
-                new KeyValuePair<Room.RoomType, int>(Room.RoomType.EXAMINATION, 2),
-                new KeyValuePair<Room.RoomType, int>(Room.RoomType.OPERATION, 1),
-                new KeyValuePair<Room.RoomType, int>(Room.RoomType.RECOVERY, 1),
-            };
-
-            for (int floor = 0; floor < floorNo; floor++)
-            {
-                foreach (var rc in roomCountPerFloor)
-                {
-                    for (int i = 0; i < rc.Value; i++)
-                    {
-                        IS.Instance.RoomRepo.Add(new Room(floor, rc.Key, i));
-                    }
-                }
-            }
-
-            for (int i = 0; i < Enum.GetValues(typeof(Equipment.EquipmentType)).Length; i++)
-            {
-                for (int j = 0; j < Enum.GetValues(typeof(Equipment.EquipmentUse)).Length; j++)
-				{
-                    Equipment eq = new Equipment((Equipment.EquipmentType)i, (Equipment.EquipmentUse)j);
-                    IS.Instance.EquipmentRepo.Add(eq);
-				}
-            }
-
-            for (int i = 0; i < IS.Instance.Hospital.Rooms.Count * 2; i++)
-			{
-                IS.Instance.RoomRepo.Add(
-                    IS.Instance.Hospital.Rooms[i % IS.Instance.Hospital.Rooms.Count],
-                    IS.Instance.Hospital.Equipment[i % IS.Instance.Hospital.Equipment.Count],
-                    new Random().Next(1, 10)
-                );
             }
         }
     }
