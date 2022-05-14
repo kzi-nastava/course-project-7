@@ -346,6 +346,29 @@ namespace HospitalIS.Backend.Controller
             return null;
         }
 
+        public static Appointment FindUrgentAppointmentSlot(AppointmentSearchBundle sb, Doctor.MedicineSpeciality speciality)
+        {
+            DateTime currDt = DateTime.Today;
+            
+            for (TimeSpan currTs = sb.Start; currTs <= sb.End; currTs = currTs.Add(TimeSpan.FromMinutes(1)))
+            {
+                DateTime scheduledFor = currDt.Add(currTs);
+                if (scheduledFor < DateTime.Now) continue;
+
+                Doctor doctor = (sb.Doctor != null) ? (IsAvailable(sb.Doctor, scheduledFor) ? sb.Doctor : null) : FindFirstAvailableDoctorOfSpecialty(scheduledFor, speciality);
+                if (doctor == null) continue;
+
+                Patient patient = (sb.Patient != null) ? (IsAvailable(sb.Patient, scheduledFor) ? sb.Patient : null) : FindFirstAvailablePatient(scheduledFor);
+                if (patient == null) continue;
+
+                Room room = FindFirstAvailableExaminationRoom(scheduledFor);
+                if (room == null) continue;
+
+                return new Appointment(doctor, patient, room, scheduledFor);
+            }
+            return null;
+        }
+
         private static Doctor FindFirstAvailableDoctor(DateTime scheduledFor)
         {
             return GetModifiableDoctors().First(d => IsAvailable(d, scheduledFor));
@@ -359,6 +382,11 @@ namespace HospitalIS.Backend.Controller
         private static Room FindFirstAvailableExaminationRoom(DateTime scheduledFor)
         {
             return GetModifiableExaminationRooms().First(r => IsAvailable(r, scheduledFor));
+        }
+        
+        private static Doctor FindFirstAvailableDoctorOfSpecialty(DateTime scheduledFor, Doctor.MedicineSpeciality speciality)
+        {
+            return GetModifiableDoctors().First(d => IsAvailable(d, scheduledFor) && d.Specialty == speciality);
         }
     }
 }

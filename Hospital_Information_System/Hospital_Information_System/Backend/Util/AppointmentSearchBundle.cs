@@ -23,7 +23,7 @@ namespace HospitalIS.Backend
         public readonly static TimeSpan DefaultEnd = TimeSpan.FromHours(24) - TimeSpan.FromMinutes(1);
         public readonly static DateTime DefaultBy = DateTime.MaxValue;
 
-
+        public static bool Urgent = false;
         public Doctor Doctor { get; set; }
 
         public Patient Patient { get; set; }
@@ -59,7 +59,7 @@ namespace HospitalIS.Backend
             get { return _by; }
             set
             {
-                if (!DtNotTooSoon(value)) throw new ArgumentException(ErrDateTooSoon);
+                if (!DtNotTooSoon(value) && !Urgent) throw new ArgumentException(ErrDateTooSoon);
                 _by = value;
             }
         }
@@ -73,6 +73,16 @@ namespace HospitalIS.Backend
             By = by;
         }
 
+        public AppointmentSearchBundle(Doctor doctor, Patient patient, TimeSpan start, TimeSpan end, DateTime by, bool urgent)
+        {
+            Urgent = urgent;
+            Doctor = doctor;
+            Patient = patient;
+            Start = start;
+            End = end;
+            By = by;
+        }
+        
         public AppointmentSearchBundle() : this(DefaultDoctor, DefaultPatient, DefaultStart, DefaultEnd, DefaultBy)
         {
 

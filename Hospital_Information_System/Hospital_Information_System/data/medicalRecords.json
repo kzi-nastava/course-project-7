@@ -61,7 +61,9 @@
     "Weight": 0.0,
     "Illnesses": [],
     "Allergies": [],
-    "Examinations": [],
+    "Examinations": [
+      13
+    ],
     "Id": 3,
     "Deleted": false
   }
