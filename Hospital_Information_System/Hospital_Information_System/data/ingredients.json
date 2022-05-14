@@ -1,0 +1,22 @@
+[
+  {
+    "Name": "Eggs",
+    "Id": 0,
+    "Deleted": false
+  },
+  {
+    "Name": "Apple",
+    "Id": 1,
+    "Deleted": false
+  },
+  {
+    "Name": "Strawberry",
+    "Id": 2,
+    "Deleted": false
+  },
+  {
+    "Name": "Probiotic",
+    "Id": 3,
+    "Deleted": false
+  }
+]
