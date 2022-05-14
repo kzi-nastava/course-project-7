@@ -150,9 +150,12 @@ namespace HospitalIS.Frontend.CLI.Model
             try
             {
                 Doctor.MedicineSpeciality speciality = ReferralModel.inputSpecialty(inputCancelString);
-                AppointmentSearchBundle sb = InputSearchBundleUrgent(inputCancelString, user);
+                if (!AppointmentController.DoctorExistForSpecialty(speciality))
+                    throw new NothingToSelectException();
                 
-                Appointment appointment = AppointmentController.FindUrgentAppointmentSlot(sb, speciality);
+                AppointmentSearchBundle sb = InputSearchBundleUrgent(inputCancelString, user);
+                Appointment appointment = AppointmentController.FindUrgentAppointmentSlot(inputCancelString, sb, speciality, user);
+                
                 Console.WriteLine(appointment.ToString());
                 Console.WriteLine(askCreateAppointment);
                 if (EasyInput<bool>.YesNo(inputCancelString))
@@ -179,17 +182,21 @@ namespace HospitalIS.Frontend.CLI.Model
         
         private static AppointmentSearchBundle InputSearchBundleUrgent(string inputCancelString, UserAccount user)
         {
-            //Doctor doctor = InputDoctorBySpecialty(inputCancelString);
             Doctor doctor = null;
             Patient patient = InputPatient(inputCancelString, null, user);
+            DateTime latestDate = DateTime.Today;
 
             TimeSpan start = TimeSpan.FromHours(DateTime.Now.TimeOfDay.TotalHours);
             start = new TimeSpan(start.Hours, start.Minutes + 10, 0);
-            Console.WriteLine(start);
-    
-            TimeSpan end = new TimeSpan(start.Hours+2, start.Minutes, 0);
-            Console.WriteLine(end);
-            DateTime latestDate = DateTime.Today;
+
+            TimeSpan end = new TimeSpan((start.Hours+2)%24, start.Minutes, 0);
+
+            if (end > TimeSpan.FromHours(0) && end < TimeSpan.FromHours(2))
+            {
+                start = new TimeSpan(0, 0, 0);
+                end = new TimeSpan(start.Hours + 2, 0, 0);
+                latestDate = DateTime.Today.AddDays(1);
+            }
 
             return new AppointmentSearchBundle(doctor, patient, start, end, latestDate, true); 
         }
