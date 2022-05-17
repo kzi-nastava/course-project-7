@@ -58,7 +58,7 @@ namespace HospitalIS.Frontend.CLI.Model
         {
             try
             {
-                Appointment appointment = InputAppointment(inputCancelString, AppointmentController.GetAllAppointmentProperties(), user);
+                Appointment appointment = InputAppointment(inputCancelString, AppointmentController.GetProperties(), user);
                 AppointmentController.Create(appointment, user);
                 Console.WriteLine(hintAppointmentScheduled);
             }
@@ -73,13 +73,12 @@ namespace HospitalIS.Frontend.CLI.Model
             List<Appointment> allAppointments = new List<Appointment>();
             if (user.Type == UserAccount.AccountType.PATIENT)
             {
-                var patient = IS.Instance.Hospital.Patients.First(p => p.Person.Id == user.Person.Id);
-                allAppointments = AppointmentController.GetAllPatientsAppointments(patient);
+                allAppointments = AppointmentController.GetPatientsAppointments(PatientController.GetPatientFromPerson(user.Person));
             }
             
             if (user.Type == UserAccount.AccountType.DOCTOR)
             {
-                allAppointments = AppointmentController.GetAllDoctorsAppointments(user);
+                allAppointments = AppointmentController.GetDoctorsAppointments(DoctorController.GetDoctorFromPerson(user.Person));
             }
 
             
@@ -150,7 +149,7 @@ namespace HospitalIS.Frontend.CLI.Model
             try
             {
                 Doctor.MedicineSpeciality speciality = ReferralModel.inputSpecialty(inputCancelString);
-                if (!AppointmentController.DoctorExistForSpecialty(speciality))
+                if (!DoctorController.DoctorExistForSpecialty(speciality))
                     throw new NothingToSelectException();
                 
                 AppointmentSearchBundle sb = InputSearchBundleUrgent(inputCancelString, user);
@@ -270,7 +269,7 @@ namespace HospitalIS.Frontend.CLI.Model
             Console.WriteLine(hintSelectProperties);
             return EasyInput<AppointmentController.AppointmentProperty>.SelectMultiple(
                 AppointmentController.GetModifiableProperties(user),
-                ap => AppointmentController.GetName(ap),
+                ap => ap.ToString(),
                 inputCancelString
             ).ToList();
         }
@@ -325,7 +324,7 @@ namespace HospitalIS.Frontend.CLI.Model
             else
             {
                 Console.WriteLine(hintSelectDoctor);
-                return EasyInput<Doctor>.Select(AppointmentController.GetAvailableDoctors(referenceAppointment),
+                return EasyInput<Doctor>.Select(DoctorController.GetAvailableDoctors(referenceAppointment),
                     inputCancelString);
             }
         }
@@ -340,7 +339,7 @@ namespace HospitalIS.Frontend.CLI.Model
             else
             {
                 Console.WriteLine(hintSelectPatient);
-                return EasyInput<Patient>.Select(AppointmentController.GetAvailablePatients(referenceAppointment), inputCancelString);
+                return EasyInput<Patient>.Select(PatientController.GetAvailablePatients(referenceAppointment), inputCancelString);
             }
         }
 
@@ -349,12 +348,12 @@ namespace HospitalIS.Frontend.CLI.Model
             // Patient and doctor cannot modify the Room property, however when creating an Appointment we can reach here.
             if (user.Type != UserAccount.AccountType.MANAGER)
             {
-                return AppointmentController.GetRandomAvailableExaminationRoom(referenceAppointment);
+                return RoomController.GetRandomAvailableExaminationRoom(referenceAppointment);
             }
             else
             {
                 Console.WriteLine(hintSelectExaminationRoom);
-                return EasyInput<Room>.Select(AppointmentController.GetAvailableExaminationRooms(referenceAppointment), inputCancelString);
+                return EasyInput<Room>.Select(RoomController.GetAvailableExaminationRooms(referenceAppointment), inputCancelString);
             }
         }
 
@@ -390,9 +389,9 @@ namespace HospitalIS.Frontend.CLI.Model
                 new List<Func<DateTime, bool>>()
                 {
                     newSchedule => newSchedule.CompareTo(DateTime.Now) > 0,
-                    newSchedule => AppointmentController.IsAvailable(patient, newSchedule, patientReferenceAppointment),
-                    newSchedule => AppointmentController.IsAvailable(doctor, newSchedule, doctorReferenceAppointment),
-                    newSchedule => AppointmentController.IsAvailable(room, newSchedule, roomReferenceAppointment),
+                    newSchedule => PatientController.IsAvailable(patient, newSchedule, patientReferenceAppointment),
+                    newSchedule => DoctorController.IsAvailable(doctor, newSchedule, doctorReferenceAppointment),
+                    newSchedule => RoomController.IsAvailable(room, newSchedule, roomReferenceAppointment),
                 },
                 new string[]
                 {
@@ -557,7 +556,7 @@ namespace HospitalIS.Frontend.CLI.Model
 
         private static Doctor SelectDoctorBySpecialty(string inputCancelString, Doctor.MedicineSpeciality speciality)
         {
-            return EasyInput<Doctor>.Select(AppointmentController.GetAvailableDoctorsBySpecialty(speciality),
+            return EasyInput<Doctor>.Select(DoctorController.GetDoctorsBySpecialty(speciality),
                 inputCancelString);
         }
     }

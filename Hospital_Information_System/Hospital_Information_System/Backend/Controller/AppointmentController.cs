@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HospitalIS.Backend;
 using HospitalIS.Frontend.CLI;
 
 namespace HospitalIS.Backend.Controller
@@ -39,7 +38,7 @@ namespace HospitalIS.Backend.Controller
             if (MustRequestModification(appointment, user))
             {
                 var proposedAppointment = new Appointment();
-                CopyAppointment(proposedAppointment, appointment, GetAllAppointmentProperties());
+                CopyAppointment(proposedAppointment, appointment, GetProperties());
                 CopyAppointment(proposedAppointment, updatedAppointment, propertiesToUpdate);
                 IS.Instance.UpdateRequestRepo.Add(new UpdateRequest(user, appointment, proposedAppointment));
                 Console.WriteLine(hintRequestSent);
@@ -66,19 +65,14 @@ namespace HospitalIS.Backend.Controller
             }
         }
 
-        public static string GetName(AppointmentProperty ap)
-        {
-            return Enum.GetName(typeof(AppointmentProperty), ap);
-        }
-
         public static List<Appointment> GetAppointments()
 		{
-            return IS.Instance.Hospital.Appointments.Where(ap => !ap.Deleted).ToList();
+            return IS.Instance.Hospital.Appointments.FindAll(ap => !ap.Deleted);
 		}
 
         public static List<AppointmentProperty> GetModifiableProperties(UserAccount user)
         {
-            List<AppointmentProperty> modifiableProperties = GetAllAppointmentProperties();
+            List<AppointmentProperty> modifiableProperties = GetProperties();
 
             if (user.Type == UserAccount.AccountType.PATIENT)
             {
@@ -97,28 +91,24 @@ namespace HospitalIS.Backend.Controller
             return modifiableProperties;
         }
 
-        public static List<AppointmentProperty> GetAllAppointmentProperties()
+        public static List<AppointmentProperty> GetProperties()
         {
             return Enum.GetValues(typeof(AppointmentProperty)).Cast<AppointmentProperty>().ToList();
         }
 
         public static List<AppointmentProperty> GetPrioritizableProperties()
         {
-            return GetAllAppointmentProperties().Where(
-                ap => ap == AppointmentProperty.DOCTOR || ap == AppointmentProperty.SCHEDULED_FOR).ToList();
+            return GetProperties().FindAll(ap => ap == AppointmentProperty.DOCTOR || ap == AppointmentProperty.SCHEDULED_FOR);
         }
         
-        public static List<Appointment> GetAllPatientsAppointments(Patient patient)
+        public static List<Appointment> GetPatientsAppointments(Patient patient)
         {
-            return IS.Instance.Hospital.Appointments.Where(
-                a => !a.Deleted && patient == a.Patient).ToList();
-
+            return GetAppointments().FindAll(a => a.Patient == patient);
         }
 
-        public static List<Appointment> GetAllDoctorsAppointments(UserAccount user)
+        public static List<Appointment> GetDoctorsAppointments(Doctor doctor)
         {
-            return IS.Instance.Hospital.Appointments.Where(
-                a => !a.Deleted && user.Person.Id == a.Doctor.Person.Id ).ToList();
+            return GetAppointments().FindAll(a => a.Doctor == doctor);
         }
         
         public static List<Appointment> GetNextDoctorsAppointments(UserAccount user, string inputCancelString)
@@ -136,7 +126,7 @@ namespace HospitalIS.Backend.Controller
                 },
                 inputCancelString);
             var lastRelevantDay = firstRelevantDay.AddDays(3);
-            List<Appointment> allAppointments = GetAllDoctorsAppointments(user);
+            List<Appointment> allAppointments = GetDoctorsAppointments(DoctorController.GetDoctorFromPerson(user.Person));
             List<Appointment> nextAppointments = new List<Appointment>();
             foreach (var appointment in allAppointments)
             {
@@ -154,18 +144,16 @@ namespace HospitalIS.Backend.Controller
         {
             if (user.Type == UserAccount.AccountType.PATIENT)
             {
-                return GetAppointments().Where(
-                    a => user.Person.Id == a.Patient.Person.Id && CanModify(a, user)).ToList();
+                return GetAppointments().FindAll(a => a.Patient.Person == user.Person && CanModify(a, user));
             }
             
             if (user.Type == UserAccount.AccountType.DOCTOR)
             {
-                return GetAppointments().Where(
-                    a => user.Person.Id == a.Doctor.Person.Id && CanModify(a, user)).ToList();
+                return GetAppointments().FindAll(a => a.Doctor.Person == user.Person && CanModify(a, user));
             }
             else
             {
-                return GetAppointments().Where(a => CanModify(a, user)).ToList();
+                return GetAppointments().FindAll(a => CanModify(a, user));
             }
         }
 
@@ -201,125 +189,6 @@ namespace HospitalIS.Backend.Controller
             }
         }
 
-        public static List<Doctor> GetModifiableDoctors()
-        {
-            return IS.Instance.Hospital.Doctors.Where(d => !d.Deleted).ToList();
-        }
-
-        public static List<Patient> GetModifiablePatients()
-        {
-            return IS.Instance.Hospital.Patients.Where(p => !p.Deleted).ToList();
-        }
-
-        public static List<Room> GetModifiableExaminationRooms()
-        {
-            return IS.Instance.Hospital.Rooms.Where(r => !r.Deleted && r.Type == Room.RoomType.EXAMINATION).ToList();
-        }
-
-        public static List<Doctor> GetAvailableDoctors(Appointment refAppointment)
-        {
-            if (refAppointment == null)
-            {
-                return GetModifiableDoctors();
-            }
-
-            return IS.Instance.Hospital.Doctors.Where(
-                d => !d.Deleted && IsAvailable(d, refAppointment.ScheduledFor, refAppointment)).ToList();
-        }
-        
-        public static List<Doctor> GetAvailableDoctorsBySpecialty(Doctor.MedicineSpeciality speciality)
-        {
-            return IS.Instance.Hospital.Doctors.Where(
-                d => !d.Deleted && d.Specialty == speciality).ToList();
-        }
-        
-        
-        public static bool DoctorExistForSpecialty(Doctor.MedicineSpeciality speciality)
-        {
-            return IS.Instance.Hospital.Doctors.Any(d => d.Specialty == speciality);
-        }
-
-        public static List<Patient> GetAvailablePatients(Appointment refAppointment)
-        {
-            if (refAppointment == null)
-            {
-                return GetModifiablePatients();
-            }
-
-            return IS.Instance.Hospital.Patients.Where(
-                p => !p.Deleted && IsAvailable(p, refAppointment.ScheduledFor, refAppointment)).ToList();
-        }
-
-        public static List<Room> GetAvailableExaminationRooms(Appointment refAppointment)
-        {
-            if (refAppointment == null)
-            {
-                return GetModifiableExaminationRooms();
-            }
-
-            return RoomController.GetUsableRoomsForAppointments(refAppointment.ScheduledFor).Intersect(
-                GetModifiableExaminationRooms().Where(r => IsAvailable(r, refAppointment.ScheduledFor, refAppointment))
-            ).ToList();
-        }
-
-        public static Room GetRandomAvailableExaminationRoom(Appointment refAppointment)
-        {
-            var rnd = new Random();
-            var rooms = GetAvailableExaminationRooms(refAppointment);
-            return rooms[rnd.Next(rooms.Count)];
-        }
-
-        public static bool IsAvailable(Patient patient, DateTime newSchedule, Appointment refAppointment = null)
-        {
-            foreach (Appointment appointment in GetAppointments())
-            {
-                if ((patient == appointment.Patient) && (appointment != refAppointment))
-                {
-                    if (AreColliding(appointment.ScheduledFor, newSchedule))
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
-        public static bool IsAvailable(Doctor doctor, DateTime newSchedule, Appointment refAppointment = null)
-        {
-            foreach (Appointment appointment in GetAppointments())
-            {
-                if ((doctor == appointment.Doctor) && (appointment != refAppointment))
-                {
-                    if (AreColliding(appointment.ScheduledFor, newSchedule))
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
-        public static bool IsAvailable(Room room, DateTime newSchedule, Appointment refAppointment = null)
-        {
-            var relevantAppointments = GetAppointments().Where(ap => ap != refAppointment && ap.Room == room);
-            foreach (var Appointment in relevantAppointments)
-			{
-                if (AreColliding(Appointment.ScheduledFor, newSchedule))
-				{
-                    return false;
-				}
-
-                // TODO @magley: This will have to change once appointments have a variable duration.
-
-                if (RenovationController.IsRenovating(room, newSchedule, newSchedule.AddMinutes(LengthOfAppointmentInMinutes))) 
-                {
-                    return false;
-				}
-			}
-
-            return true;
-        }
-
         public static bool AreColliding(DateTime schedule1, DateTime schedule2)
         {
             TimeSpan difference = schedule1 - schedule2;
@@ -344,13 +213,15 @@ namespace HospitalIS.Backend.Controller
                     DateTime scheduledFor = currDt.Add(currTs);
                     if (scheduledFor < DateTime.Now) continue;
 
-                    Doctor doctor = (sb.Doctor != null) ? (IsAvailable(sb.Doctor, scheduledFor) ? sb.Doctor : null) : FindFirstAvailableDoctor(scheduledFor);
+                    Doctor doctor = (sb.Doctor != null) ?
+                        (DoctorController.IsAvailable(sb.Doctor, scheduledFor) ? sb.Doctor : null) : DoctorController.FindFirstAvailableDoctor(scheduledFor);
                     if (doctor == null) continue;
 
-                    Patient patient = (sb.Patient != null) ? (IsAvailable(sb.Patient, scheduledFor) ? sb.Patient : null) : FindFirstAvailablePatient(scheduledFor);
+                    Patient patient = (sb.Patient != null) ?
+                        (PatientController.IsAvailable(sb.Patient, scheduledFor) ? sb.Patient : null) : PatientController.FindFirstAvailablePatient(scheduledFor);
                     if (patient == null) continue;
 
-                    Room room = FindFirstAvailableExaminationRoom(scheduledFor);
+                    Room room = RoomController.FindFirstAvailableExaminationRoom(scheduledFor);
                     if (room == null) continue;
 
                     return new Appointment(doctor, patient, room, scheduledFor);
@@ -370,13 +241,15 @@ namespace HospitalIS.Backend.Controller
                 DateTime scheduledFor = currDt.Add(currTs);
                 if (scheduledFor < DateTime.Now) continue;
 
-                doctor = (sb.Doctor != null) ? (IsAvailable(sb.Doctor, scheduledFor) ? sb.Doctor : null) : FindFirstAvailableDoctorOfSpecialty(scheduledFor, speciality);
+                doctor = (sb.Doctor != null) ?
+                    (DoctorController.IsAvailable(sb.Doctor, scheduledFor) ? sb.Doctor : null) : DoctorController.FindFirstAvailableDoctorOfSpecialty(scheduledFor, speciality);
                 if (doctor == null) continue;
 
-                patient = (sb.Patient != null) ? (IsAvailable(sb.Patient, scheduledFor) ? sb.Patient : null) : FindFirstAvailablePatient(scheduledFor);
+                patient = (sb.Patient != null) ?
+                    (PatientController.IsAvailable(sb.Patient, scheduledFor) ? sb.Patient : null) : PatientController.FindFirstAvailablePatient(scheduledFor);
                 if (patient == null) continue;
 
-                Room room = FindFirstAvailableExaminationRoom(scheduledFor);
+                Room room = RoomController.FindFirstAvailableExaminationRoom(scheduledFor);
                 if (room == null) continue;
 
                 return new Appointment(doctor, patient, room, scheduledFor);
@@ -404,26 +277,6 @@ namespace HospitalIS.Backend.Controller
             Console.WriteLine(hintSelectAppointment);
             return EasyInput<Appointment>.Select(
                 GetFirstFiveModifiableAppointments(), inputCancelString);
-        }
-
-        private static Doctor FindFirstAvailableDoctor(DateTime scheduledFor)
-        {
-            return GetModifiableDoctors().First(d => IsAvailable(d, scheduledFor));
-        }
-
-        private static Patient FindFirstAvailablePatient(DateTime scheduledFor)
-        {
-            return GetModifiablePatients().First(p => IsAvailable(p, scheduledFor));
-        }
-
-        private static Room FindFirstAvailableExaminationRoom(DateTime scheduledFor)
-        {
-            return GetModifiableExaminationRooms().First(r => IsAvailable(r, scheduledFor));
-        }
-        
-        private static Doctor FindFirstAvailableDoctorOfSpecialty(DateTime scheduledFor, Doctor.MedicineSpeciality speciality)
-        {
-            return GetModifiableDoctors().First(d => IsAvailable(d, scheduledFor) && d.Specialty == speciality);
         }
     }
 }
