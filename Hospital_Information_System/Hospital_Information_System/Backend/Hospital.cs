@@ -39,5 +39,6 @@ namespace HospitalIS.Backend
 		internal List<Medication> Medications = new List<Medication>();
 		internal List<Prescription> Prescriptions = new List<Prescription>();
 		internal List<MedicalRecord> MedicalRecords = new List<MedicalRecord>();
+		internal List<MedicationRequest> MedicationRequests = new List<MedicationRequest>();
 	}
 }

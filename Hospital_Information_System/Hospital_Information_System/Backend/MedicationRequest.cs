@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using Newtonsoft.Json;
 
 namespace HospitalIS.Backend
 {
@@ -14,6 +15,8 @@ namespace HospitalIS.Backend
 		public string Message {get; private set;}
 		public DateTime Timestamp {get; private set;}
 		public RequestState State {get; private set;}
+
+		[JsonConverter(typeof(Repository.DoctorRepository.DoctorReferenceConverter))]
 		public Doctor Reviewer {get; private set;}
 		
 		public MedicationRequestFeedback() 
