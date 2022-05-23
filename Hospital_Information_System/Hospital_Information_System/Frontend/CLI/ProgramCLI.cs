@@ -74,6 +74,9 @@ namespace HospitalIS.Frontend.CLI
             new Command("renovation-schedule", () => RenovationModel.NewRenovation(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
 
 			new Command("medication-create", () => MedicationModel.CreateNewMedicine(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
+
+			new Command("ingredient-create", () => IngredientModel.Create(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
+
         };
 
         static List<Command> GetCommands(UserAccount user)
@@ -136,7 +139,7 @@ namespace HospitalIS.Frontend.CLI
             // === Use program ===
 
             
-            Console.WriteLine("Type -help for a list of commands\n\n");
+            Console.WriteLine("Type help for a list of commands\n\n");
       
             try
             {
