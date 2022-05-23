@@ -1,1 +1,17 @@
-[]
+[
+  {
+    "Medication": {
+      "Name": "MedsTest",
+      "Ingredients": [
+        0,
+        1,
+        2
+      ],
+      "Id": -1,
+      "Deleted": false
+    },
+    "Feedback": [],
+    "Id": 0,
+    "Deleted": false
+  }
+]

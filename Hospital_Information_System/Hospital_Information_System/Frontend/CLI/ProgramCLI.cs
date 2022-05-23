@@ -111,7 +111,7 @@ namespace HospitalIS.Frontend.CLI
 				},
 				new[]
 				{
-					"Command not found!\nType -help for a list of commands\n"
+					"Command not found!\nType help for a list of commands\n"
 				},
 				inputCancelString
 			);

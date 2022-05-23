@@ -20,7 +20,9 @@ namespace HospitalIS.Frontend.CLI.Model
 		public static void CreateNewMedicine(string inputCancelString)
 		{
 			Medication medication = InputMedication(medicationPropertiesAll, inputCancelString);
-			IS.Instance.MedicationRepo.Add(medication);
+
+			MedicationRequest medicationRequest = new MedicationRequest(medication);
+			IS.Instance.MedicationRequestRepo.Add(medicationRequest);
 		}
 
 		private static Medication InputMedication(List<MedicationProperty> whichProperties, string inputCancelString) 
