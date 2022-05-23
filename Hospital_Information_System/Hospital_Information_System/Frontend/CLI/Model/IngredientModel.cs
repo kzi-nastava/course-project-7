@@ -18,6 +18,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		private static readonly string hintInputName = "Input name";
 		private static readonly string hintSelectIngredient = "Select ingredient by number";
 		private static readonly string hintSelectProperties = "Select properties, separated by whitespace. Input a blank line to finish selection";
+		private static readonly string warningDependantMedicine = "The following medicine will be removed. Do you wish to proceed?";
 
 		public static void Create(string inputCancelString) 
 		{
@@ -40,6 +41,30 @@ namespace HospitalIS.Frontend.CLI.Model
 			foreach (var ing in IngredientController.GetIngredients())
 			{
 				Console.WriteLine(ing);
+			}
+		}
+
+		public static void Delete(string inputCancelString)
+		{
+			var ingredientsToRemove = EasyInput<Ingredient>.SelectMultiple(IngredientController.GetIngredients(), inputCancelString);
+			var dependentMedicine = MedicationController.GetMedications().Where(med => med.Ingredients.Intersect(ingredientsToRemove).Count() != 0);
+
+			if (dependentMedicine.Count() != 0)
+			{
+				foreach (var med in dependentMedicine)
+				{
+					Console.WriteLine(med);
+				}
+				Console.WriteLine(warningDependantMedicine);
+				if (!EasyInput<bool>.YesNo(inputCancelString))
+				{
+					return;
+				}
+			}
+
+			foreach (var ingredient in ingredientsToRemove)
+			{
+				IS.Instance.IngredientRepo.Remove(ingredient);
 			}
 		}
 

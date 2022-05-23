@@ -74,10 +74,10 @@ namespace HospitalIS.Frontend.CLI
             new Command("renovation-schedule", () => RenovationModel.NewRenovation(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
 
 			new Command("medication-create", () => MedicationModel.CreateNewMedicine(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
-
 			new Command("ingredient-create", () => IngredientModel.Create(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
 			new Command("ingredient-read", () => IngredientModel.Read(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
 			new Command("ingredient-update", () => IngredientModel.Update(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
+			new Command("ingredient-delete", () => IngredientModel.Delete(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
         };
 
         static List<Command> GetCommands(UserAccount user)
