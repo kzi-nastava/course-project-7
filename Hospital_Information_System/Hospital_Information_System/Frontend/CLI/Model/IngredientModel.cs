@@ -15,13 +15,32 @@ namespace HospitalIS.Frontend.CLI.Model
 		private static readonly List<IngredientProperty> ingredientPropertiesAll = Enum.GetValues(typeof(IngredientProperty)).Cast<IngredientProperty>().ToList();
 
 		private static readonly string hintNameExists = "Ingredient with this name already exists";
-
 		private static readonly string hintInputName = "Input name";
+		private static readonly string hintSelectIngredient = "Select ingredient by number";
+		private static readonly string hintSelectProperties = "Select properties, separated by whitespace. Input a blank line to finish selection";
 
 		public static void Create(string inputCancelString) 
 		{
 			var ingredient = InputIngredient(ingredientPropertiesAll, inputCancelString);
 			IS.Instance.IngredientRepo.Add(ingredient);
+		}
+
+		public static void Update(string inputCancelString)
+		{
+			Console.WriteLine(hintSelectIngredient);
+			var ingredient = EasyInput<Ingredient>.Select(IngredientController.GetIngredients(), inputCancelString);
+			Console.WriteLine(hintSelectProperties);
+			var properties = EasyInput<IngredientProperty>.SelectMultiple(ingredientPropertiesAll, inputCancelString).ToList();
+			var ingredientNew = InputIngredient(properties, inputCancelString);
+			Copy(ingredientNew, ingredient, properties);
+		}
+
+		public static void Read(string inputCancelString)
+		{
+			foreach (var ing in IngredientController.GetIngredients())
+			{
+				Console.WriteLine(ing);
+			}
 		}
 
 		private static Ingredient InputIngredient(List<IngredientProperty> whichProperties, string inputCancelString)
@@ -46,6 +65,12 @@ namespace HospitalIS.Frontend.CLI.Model
 				},
 				inputCancelString
 			);
+		}
+
+		private static void Copy(Ingredient source, Ingredient desitnation, List<IngredientProperty> whichProperties)
+		{
+			if (whichProperties.Contains(IngredientProperty.NAME))
+				desitnation.Name = source.Name;
 		}
 	}
 }
