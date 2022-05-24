@@ -8,11 +8,6 @@ namespace HospitalIS.Frontend.CLI.Model
 {
 	internal static class IngredientModel
 	{
-		private enum IngredientProperty {
-			NAME
-		}
-
-		private static readonly List<IngredientProperty> ingredientPropertiesAll = Enum.GetValues(typeof(IngredientProperty)).Cast<IngredientProperty>().ToList();
 
 		private static readonly string hintNameExists = "Ingredient with this name already exists";
 		private static readonly string hintInputName = "Input name";
@@ -22,7 +17,7 @@ namespace HospitalIS.Frontend.CLI.Model
 
 		public static void Create(string inputCancelString) 
 		{
-			var ingredient = InputIngredient(ingredientPropertiesAll, inputCancelString);
+			var ingredient = InputIngredient(IngredientController.ingredientPropertiesAll, inputCancelString);
 			IS.Instance.IngredientRepo.Add(ingredient);
 		}
 
@@ -31,7 +26,7 @@ namespace HospitalIS.Frontend.CLI.Model
 			Console.WriteLine(hintSelectIngredient);
 			var ingredient = EasyInput<Ingredient>.Select(IngredientController.GetIngredients(), inputCancelString);
 			Console.WriteLine(hintSelectProperties);
-			var properties = EasyInput<IngredientProperty>.SelectMultiple(ingredientPropertiesAll, inputCancelString).ToList();
+			var properties = EasyInput<IngredientController.IngredientProperty>.SelectMultiple(IngredientController.ingredientPropertiesAll, inputCancelString).ToList();
 			var ingredientNew = InputIngredient(properties, inputCancelString);
 			Copy(ingredientNew, ingredient, properties);
 		}
@@ -68,11 +63,11 @@ namespace HospitalIS.Frontend.CLI.Model
 			}
 		}
 
-		private static Ingredient InputIngredient(List<IngredientProperty> whichProperties, string inputCancelString)
+		private static Ingredient InputIngredient(List<IngredientController.IngredientProperty> whichProperties, string inputCancelString)
 		{
 			Ingredient ingredient = new Ingredient();
 
-			if (whichProperties.Contains(IngredientProperty.NAME)) {
+			if (whichProperties.Contains(IngredientController.IngredientProperty.NAME)) {
 				Console.WriteLine(hintInputName);
 				ingredient.Name = InputIngredientName(inputCancelString);
 			}
@@ -92,9 +87,9 @@ namespace HospitalIS.Frontend.CLI.Model
 			);
 		}
 
-		private static void Copy(Ingredient source, Ingredient desitnation, List<IngredientProperty> whichProperties)
+		private static void Copy(Ingredient source, Ingredient desitnation, List<IngredientController.IngredientProperty> whichProperties)
 		{
-			if (whichProperties.Contains(IngredientProperty.NAME))
+			if (whichProperties.Contains(IngredientController.IngredientProperty.NAME))
 				desitnation.Name = source.Name;
 		}
 	}
