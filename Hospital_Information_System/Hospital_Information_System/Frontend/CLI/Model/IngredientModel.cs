@@ -14,6 +14,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		private const string hintSelectIngredient = "Select ingredient by number";
 		private const string hintSelectProperties = "Select properties, separated by whitespace. Input a blank line to finish selection";
 		private const string warningDependantMedicine = "The following medicine will be removed. Do you wish to proceed?";
+		private const string errNoIngredients = "There are no ingredients at the current moment";
 
 		internal static void Create(string inputCancelString) 
 		{
@@ -41,9 +42,15 @@ namespace HospitalIS.Frontend.CLI.Model
 
 		internal static void Delete(string inputCancelString)
 		{
-			var ingredientsToRemove = EasyInput<Ingredient>.SelectMultiple(IngredientController.GetIngredients(), inputCancelString);
-			var dependentMedicine = MedicationController.GetMedications().Where(med => med.Ingredients.Intersect(ingredientsToRemove).Count() != 0);
+			var ingredientsToRemove = new List<Ingredient>();
+			try {
+				ingredientsToRemove = EasyInput<Ingredient>.SelectMultiple(IngredientController.GetIngredients(), inputCancelString).ToList();
+			} catch (NothingToSelectException) {
+				Console.WriteLine(errNoIngredients);
+				return;
+			}
 
+			var dependentMedicine = MedicationController.GetMedications().Where(med => med.Ingredients.Intersect(ingredientsToRemove).Count() != 0);
 			if (dependentMedicine.Count() != 0)
 			{
 				foreach (var med in dependentMedicine)
