@@ -8,33 +8,28 @@ namespace HospitalIS.Frontend.CLI.Model
 {
 	internal abstract class MedicationModel
 	{
-		private enum MedicationProperty
-		{
-			NAME, INGREDIENTS
-		}
-		private static readonly List<MedicationProperty> medicationPropertiesAll = Enum.GetValues(typeof(MedicationProperty)).Cast<MedicationProperty>().ToList();
 		private static readonly string errMedicationExists = "Medication with that name already exists";
 		private static readonly string hintInputName = "Input medication name";
 		private static readonly string hintInputIngredients = "Select ingredients for this medication by number, separated by whitespace. Input an empty line to finish";
 
 		public static void CreateNewMedicine(string inputCancelString)
 		{
-			Medication medication = InputMedication(medicationPropertiesAll, inputCancelString);
+			Medication medication = InputMedication(MedicationController.medicationPropertiesAll, inputCancelString);
 
 			MedicationRequest medicationRequest = new MedicationRequest(medication);
 			IS.Instance.MedicationRequestRepo.Add(medicationRequest);
 		}
 
-		private static Medication InputMedication(List<MedicationProperty> whichProperties, string inputCancelString) 
+		private static Medication InputMedication(List<MedicationController.MedicationProperty> whichProperties, string inputCancelString) 
 		{
 			Medication medication = new Medication();
 
-			if (whichProperties.Contains(MedicationProperty.NAME))
+			if (whichProperties.Contains(MedicationController.MedicationProperty.NAME))
 			{
 				Console.WriteLine(hintInputName);
 				medication.Name = InputMedicationName(inputCancelString);
 			}
-			if (whichProperties.Contains(MedicationProperty.INGREDIENTS))
+			if (whichProperties.Contains(MedicationController.MedicationProperty.INGREDIENTS))
 			{
 				Console.WriteLine(hintInputIngredients);
 				medication.Ingredients = InputMedicationIngredients(inputCancelString);
