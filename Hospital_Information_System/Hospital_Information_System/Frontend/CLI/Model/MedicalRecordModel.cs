@@ -58,7 +58,7 @@ namespace HospitalIS.Frontend.CLI.Model
                 medicalRecord.OtherAllergies = inputAllergies();
                 medicalRecord.Prescriptions = new List<Prescription>();
 
-                medicalRecord.Examinations = GetAllPatientsAppointments(patient);
+                medicalRecord.Examinations = GetAppointments(patient);
 
                 IS.Instance.MedicalRecordRepo.Add(medicalRecord);
             }
