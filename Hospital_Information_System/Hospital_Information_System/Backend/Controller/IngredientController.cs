@@ -7,7 +7,8 @@ namespace HospitalIS.Backend.Controller
 {
 	internal static class IngredientController
 	{
-		internal enum IngredientProperty {
+		internal enum IngredientProperty
+		{
 			NAME
 		}
 

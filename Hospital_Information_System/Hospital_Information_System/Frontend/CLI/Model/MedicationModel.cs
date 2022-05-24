@@ -11,6 +11,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		private const string errMedicationExists = "Medication with that name already exists";
 		private const string hintInputName = "Input medication name";
 		private const string hintInputIngredients = "Select ingredients for this medication by number, separated by whitespace. Input an empty line to finish";
+		private const string errNoIngredients = "There are no ingredients registered in the system. Medication will be empty";
 
 		internal static void CreateNewMedicine(string inputCancelString)
 		{
@@ -32,7 +33,14 @@ namespace HospitalIS.Frontend.CLI.Model
 			if (whichProperties.Contains(MedicationController.MedicationProperty.INGREDIENTS))
 			{
 				Console.WriteLine(hintInputIngredients);
-				medication.Ingredients = InputMedicationIngredients(inputCancelString);
+
+				try {
+					medication.Ingredients = InputMedicationIngredients(inputCancelString);
+				}
+				catch (NothingToSelectException) {
+					Console.WriteLine(errNoIngredients);
+					medication.Ingredients = new List<Ingredient>();
+				}
 			}
 
 			return medication;
