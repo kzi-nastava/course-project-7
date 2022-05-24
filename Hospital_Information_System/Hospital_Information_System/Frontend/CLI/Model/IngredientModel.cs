@@ -9,11 +9,11 @@ namespace HospitalIS.Frontend.CLI.Model
 	internal static class IngredientModel
 	{
 
-		private static readonly string hintNameExists = "Ingredient with this name already exists";
-		private static readonly string hintInputName = "Input name";
-		private static readonly string hintSelectIngredient = "Select ingredient by number";
-		private static readonly string hintSelectProperties = "Select properties, separated by whitespace. Input a blank line to finish selection";
-		private static readonly string warningDependantMedicine = "The following medicine will be removed. Do you wish to proceed?";
+		private const string hintNameExists = "Ingredient with this name already exists";
+		private const string hintInputName = "Input name";
+		private const string hintSelectIngredient = "Select ingredient by number";
+		private const string hintSelectProperties = "Select properties, separated by whitespace. Input a blank line to finish selection";
+		private const string warningDependantMedicine = "The following medicine will be removed. Do you wish to proceed?";
 
 		public static void Create(string inputCancelString) 
 		{

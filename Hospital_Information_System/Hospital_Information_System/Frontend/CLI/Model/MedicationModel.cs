@@ -8,9 +8,9 @@ namespace HospitalIS.Frontend.CLI.Model
 {
 	internal abstract class MedicationModel
 	{
-		private static readonly string errMedicationExists = "Medication with that name already exists";
-		private static readonly string hintInputName = "Input medication name";
-		private static readonly string hintInputIngredients = "Select ingredients for this medication by number, separated by whitespace. Input an empty line to finish";
+		private const string errMedicationExists = "Medication with that name already exists";
+		private const string hintInputName = "Input medication name";
+		private const string hintInputIngredients = "Select ingredients for this medication by number, separated by whitespace. Input an empty line to finish";
 
 		public static void CreateNewMedicine(string inputCancelString)
 		{
