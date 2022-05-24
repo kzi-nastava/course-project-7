@@ -15,13 +15,13 @@ namespace HospitalIS.Frontend.CLI.Model
 		private const string hintSelectProperties = "Select properties, separated by whitespace. Input a blank line to finish selection";
 		private const string warningDependantMedicine = "The following medicine will be removed. Do you wish to proceed?";
 
-		public static void Create(string inputCancelString) 
+		internal static void Create(string inputCancelString) 
 		{
 			var ingredient = InputIngredient(IngredientController.ingredientPropertiesAll, inputCancelString);
 			IS.Instance.IngredientRepo.Add(ingredient);
 		}
 
-		public static void Update(string inputCancelString)
+		internal static void Update(string inputCancelString)
 		{
 			Console.WriteLine(hintSelectIngredient);
 			var ingredient = EasyInput<Ingredient>.Select(IngredientController.GetIngredients(), inputCancelString);
@@ -31,7 +31,7 @@ namespace HospitalIS.Frontend.CLI.Model
 			Copy(ingredientNew, ingredient, properties);
 		}
 
-		public static void Read(string inputCancelString)
+		internal static void Read(string inputCancelString)
 		{
 			foreach (var ing in IngredientController.GetIngredients())
 			{
@@ -39,7 +39,7 @@ namespace HospitalIS.Frontend.CLI.Model
 			}
 		}
 
-		public static void Delete(string inputCancelString)
+		internal static void Delete(string inputCancelString)
 		{
 			var ingredientsToRemove = EasyInput<Ingredient>.SelectMultiple(IngredientController.GetIngredients(), inputCancelString);
 			var dependentMedicine = MedicationController.GetMedications().Where(med => med.Ingredients.Intersect(ingredientsToRemove).Count() != 0);

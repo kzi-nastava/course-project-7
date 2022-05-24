@@ -12,7 +12,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		private const string hintInputName = "Input medication name";
 		private const string hintInputIngredients = "Select ingredients for this medication by number, separated by whitespace. Input an empty line to finish";
 
-		public static void CreateNewMedicine(string inputCancelString)
+		internal static void CreateNewMedicine(string inputCancelString)
 		{
 			Medication medication = InputMedication(MedicationController.medicationPropertiesAll, inputCancelString);
 
