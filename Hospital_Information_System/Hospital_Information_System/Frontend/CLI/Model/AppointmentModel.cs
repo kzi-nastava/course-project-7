@@ -73,12 +73,12 @@ namespace HospitalIS.Frontend.CLI.Model
             List<Appointment> allAppointments = new List<Appointment>();
             if (user.Type == UserAccount.AccountType.PATIENT)
             {
-                allAppointments = AppointmentController.GetPatientsAppointments(PatientController.GetPatientFromPerson(user.Person));
+                allAppointments = AppointmentController.GetAppointments(PatientController.GetPatientFromPerson(user.Person));
             }
             
             if (user.Type == UserAccount.AccountType.DOCTOR)
             {
-                allAppointments = AppointmentController.GetDoctorsAppointments(DoctorController.GetDoctorFromPerson(user.Person));
+                allAppointments = AppointmentController.GetAppointments(DoctorController.GetDoctorFromPerson(user.Person));
             }
 
             

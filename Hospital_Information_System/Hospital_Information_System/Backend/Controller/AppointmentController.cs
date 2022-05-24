@@ -101,12 +101,12 @@ namespace HospitalIS.Backend.Controller
             return GetProperties().FindAll(ap => ap == AppointmentProperty.DOCTOR || ap == AppointmentProperty.SCHEDULED_FOR);
         }
         
-        public static List<Appointment> GetPatientsAppointments(Patient patient)
+        public static List<Appointment> GetAppointments(Patient patient)
         {
             return GetAppointments().FindAll(a => a.Patient == patient);
         }
 
-        public static List<Appointment> GetDoctorsAppointments(Doctor doctor)
+        public static List<Appointment> GetAppointments(Doctor doctor)
         {
             return GetAppointments().FindAll(a => a.Doctor == doctor);
         }
@@ -126,7 +126,7 @@ namespace HospitalIS.Backend.Controller
                 },
                 inputCancelString);
             var lastRelevantDay = firstRelevantDay.AddDays(3);
-            List<Appointment> allAppointments = GetDoctorsAppointments(DoctorController.GetDoctorFromPerson(user.Person));
+            List<Appointment> allAppointments = GetAppointments(DoctorController.GetDoctorFromPerson(user.Person));
             List<Appointment> nextAppointments = new List<Appointment>();
             foreach (var appointment in allAppointments)
             {
