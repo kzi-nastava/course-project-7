@@ -32,6 +32,7 @@ namespace HospitalIS.Backend
 		public IngredientRepository IngredientRepo = new IngredientRepository();
 		public MedicationRepository MedicationRepo = new MedicationRepository();
 		public PrescriptionRepository PrescriptionRepo = new PrescriptionRepository();
+		public MedicationRequestRepository MedicationRequestRepo = new MedicationRequestRepository();
 
 		private readonly JsonSerializerSettings settings;
 		private const string fnameRooms = "rooms.json";
@@ -50,6 +51,7 @@ namespace HospitalIS.Backend
 		private const string fnameIngredients = "ingredients.json";
 		private const string fnameMedications = "medications.json";
 		private const string fnamePrescriptions = "prescriptions.json";
+		private const string fnameMedicationRequests = "medicationRequests.json";
 
 		public IS()
 		{
@@ -74,6 +76,7 @@ namespace HospitalIS.Backend
 			MedicationRepo.Save(Path.Combine(directory, fnameMedications), settings);
 			PrescriptionRepo.Save(Path.Combine(directory, fnamePrescriptions), settings);
 			MedicalRecordRepo.Save(Path.Combine(directory, fnameMedicalRecords), settings);
+			MedicationRequestRepo.Save(Path.Combine(directory, fnameMedicationRequests), settings);
 		}
 
 		public void Load(string directory)
@@ -94,7 +97,7 @@ namespace HospitalIS.Backend
 			MedicationRepo.Load(Path.Combine(directory, fnameMedications), settings);
 			PrescriptionRepo.Load(Path.Combine(directory, fnamePrescriptions), settings);
 			MedicalRecordRepo.Load(Path.Combine(directory, fnameMedicalRecords), settings);
-
+			MedicationRequestRepo.Load(Path.Combine(directory, fnameMedicationRequests), settings);
 
 			foreach (var relocation in Hospital.EquipmentRelocations)
 			{
