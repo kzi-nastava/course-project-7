@@ -42,7 +42,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		{
 			return EasyInput<string>.Get(
 				new List<Func<string, bool>>() {
-					s => MedicationController.GetMedications().Count(med => med.Name.ToLower().Equals(s.ToLower())) == 0
+					s => !MedicationController.GetMedications().Any(med => med.Name.ToLower().Equals(s.ToLower()))
 				},
 				new[] {
 					errMedicationExists

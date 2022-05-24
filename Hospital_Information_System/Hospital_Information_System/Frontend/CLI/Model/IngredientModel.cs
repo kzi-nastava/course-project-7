@@ -78,7 +78,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		private static string InputIngredientName(string inputCancelString) {
 			return EasyInput<string>.Get(
 				new List<Func<string, bool>>() {
-					s => IngredientController.GetIngredients().Count(ing => ing.Name.ToLower().Equals(s.ToLower())) == 0
+					s => !IngredientController.GetIngredients().Any(ing => ing.Name.ToLower().Equals(s.ToLower()))
 				},
 				new[] {
 					hintNameExists
