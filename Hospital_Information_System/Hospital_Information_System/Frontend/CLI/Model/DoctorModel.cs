@@ -26,7 +26,7 @@ namespace HospitalIS.Frontend.CLI.Model
             }
             foreach (Doctor d in doctors)
             {
-                d.VerboseToString();
+                Console.WriteLine(d.VerboseToString());
             }
         }
 
@@ -75,6 +75,7 @@ namespace HospitalIS.Frontend.CLI.Model
                 ["Sort by first name"] = new Doctor.CompareByFirstName(),
                 ["Sort by last name"] = new Doctor.CompareByLastName(),
                 ["Sort by specialty"] = new Doctor.CompareBySpecialty(),
+                ["Sort by rating"] = new Doctor.CompareByRatingDesc(),
             };
             Console.WriteLine(hintSortBy);
             var sortChoice = EasyInput<string>.Select(sortBy.Keys.ToList(), inputCancelString);

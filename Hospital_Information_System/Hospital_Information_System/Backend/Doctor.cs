@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using HospitalIS.Backend.Controller;
 using Newtonsoft.Json;
 
 namespace HospitalIS.Backend
@@ -25,7 +26,7 @@ namespace HospitalIS.Backend
 
         public string VerboseToString()
         {
-            return $"Doctor{{Id = {Id}, First name = {Person.FirstName}, Last name = {Person.LastName}, Specialty = {Specialty}}}";
+            return $"Doctor{{Id = {Id}, First name = {Person.FirstName}, Last name = {Person.LastName}, Specialty = {Specialty}, Rating = {Math.Round(DoctorController.CalculateRating(this), 2)}}}";
         }
 
         public abstract class Comparer : Comparer<Doctor>
@@ -54,6 +55,14 @@ namespace HospitalIS.Backend
             public override int Compare([AllowNull] Doctor x, [AllowNull] Doctor y)
             {
                 return x.Specialty.CompareTo(y.Specialty);
+            }
+        }
+
+        public class CompareByRatingDesc : Comparer
+        {
+            public override int Compare([AllowNull] Doctor x, [AllowNull] Doctor y)
+            {
+                return -DoctorController.CalculateRating(x).CompareTo(DoctorController.CalculateRating(y));
             }
         }
     }

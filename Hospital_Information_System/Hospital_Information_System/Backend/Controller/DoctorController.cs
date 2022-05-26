@@ -82,5 +82,10 @@ namespace HospitalIS.Backend.Controller
         {
             return MatchByString(query, comparer, d => d.Specialty.ToString());
         }
+
+        public static double CalculateRating(Doctor doctor)
+        {
+            return AppointmentRatingController.GetAppointmentRatings(doctor).Average(r => r.Rating);
+        }
     }
 }
