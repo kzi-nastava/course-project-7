@@ -60,5 +60,27 @@ namespace HospitalIS.Backend.Controller
         {
             return GetDoctors().First(d => IsAvailable(d, scheduledFor) && d.Specialty == speciality);
         }
+
+        private static List<Doctor> MatchByString(string query, Doctor.Comparer comparer, Func<Doctor, string> toStr)
+        {
+            var matches = GetDoctors().FindAll(d => toStr(d).Contains(query.Trim(), StringComparison.OrdinalIgnoreCase));
+            matches.Sort(comparer);
+            return matches;
+        }
+
+        public static List<Doctor> MatchByFirstName(string query, Doctor.Comparer comparer)
+        {
+            return MatchByString(query, comparer, d => d.Person.FirstName);
+        }
+
+        public static List<Doctor> MatchByLastName(string query, Doctor.Comparer comparer)
+        {
+            return MatchByString(query, comparer, d => d.Person.LastName);
+        }
+
+        public static List<Doctor> MatchBySpecialty(string query, Doctor.Comparer comparer)
+        {
+            return MatchByString(query, comparer, d => d.Specialty.ToString());
+        }
     }
 }

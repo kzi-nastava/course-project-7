@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -20,6 +21,40 @@ namespace HospitalIS.Backend
         public override string ToString()
         {
             return $"Doctor{{Id = {Id}, Person = {Person.Id}, Specialty = {Specialty}}}";
+        }
+
+        public string VerboseToString()
+        {
+            return $"Doctor{{Id = {Id}, First name = {Person.FirstName}, Last name = {Person.LastName}, Specialty = {Specialty}}}";
+        }
+
+        public abstract class Comparer : Comparer<Doctor>
+        {
+
+        }
+
+        public class CompareByFirstName : Comparer
+        {
+            public override int Compare([AllowNull] Doctor x, [AllowNull] Doctor y)
+            {
+                return x.Person.FirstName.CompareTo(y.Person.FirstName);
+            }
+        }
+
+        public class CompareByLastName : Comparer
+        {
+            public override int Compare([AllowNull] Doctor x, [AllowNull] Doctor y)
+            {
+                return x.Person.LastName.CompareTo(y.Person.LastName);
+            }
+        }
+
+        public class CompareBySpecialty : Comparer
+        {
+            public override int Compare([AllowNull] Doctor x, [AllowNull] Doctor y)
+            {
+                return x.Specialty.CompareTo(y.Specialty);
+            }
         }
     }
 }
