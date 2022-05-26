@@ -1,0 +1,92 @@
+[
+  {
+    "Appointment": 0,
+    "Rating": 5.0,
+    "Id": 0,
+    "Deleted": false
+  },
+  {
+    "Appointment": 1,
+    "Rating": 4.5,
+    "Id": 1,
+    "Deleted": false
+  },
+  {
+    "Appointment": 2,
+    "Rating": 4.5,
+    "Id": 2,
+    "Deleted": false
+  },
+  {
+    "Appointment": 3,
+    "Rating": 4.5,
+    "Id": 3,
+    "Deleted": false
+  },
+  {
+    "Appointment": 4,
+    "Rating": 3.5,
+    "Id": 4,
+    "Deleted": false
+  },
+  {
+    "Appointment": 6,
+    "Rating": 5.0,
+    "Id": 5,
+    "Deleted": false
+  },
+  {
+    "Appointment": 8,
+    "Rating": 4.8,
+    "Id": 6,
+    "Deleted": false
+  },
+  {
+    "Appointment": 9,
+    "Rating": 4.1,
+    "Id": 7,
+    "Deleted": false
+  },
+  {
+    "Appointment": 10,
+    "Rating": 4.4,
+    "Id": 8,
+    "Deleted": false
+  },
+  {
+    "Appointment": 11,
+    "Rating": 3.9,
+    "Id": 9,
+    "Deleted": false
+  },
+  {
+    "Appointment": 13,
+    "Rating": 3.8,
+    "Id": 10,
+    "Deleted": false
+  },
+  {
+    "Appointment": 14,
+    "Rating": 2.8,
+    "Id": 11,
+    "Deleted": false
+  },
+  {
+    "Appointment": 15,
+    "Rating": 5.0,
+    "Id": 12,
+    "Deleted": false
+  },
+  {
+    "Appointment": 16,
+    "Rating": 4.9,
+    "Id": 13,
+    "Deleted": false
+  },
+  {
+    "Appointment": 17,
+    "Rating": 4.9,
+    "Id": 14,
+    "Deleted": false
+  }
+]
