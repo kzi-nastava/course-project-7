@@ -12,13 +12,52 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintSearchQuery = "Enter search query";
         private const string hintSortBy = "Select sorting criteria";
 
-        internal static void Search(UserAccount user, string inputCancelString)
+        private const string hintNoDoctorMatches = "No doctors matching search criteria.";
+
+        private const string hintSelectDoctor = "Select doctor";
+
+        internal static void Search(string inputCancelString)
+        {
+            List<Doctor> doctors = SearchImpl(inputCancelString);
+            if (doctors == null)
+            {
+                Console.WriteLine(hintNoDoctorMatches);
+                return;
+            }
+            foreach (Doctor d in doctors)
+            {
+                d.VerboseToString();
+            }
+        }
+
+        internal static void AppointFromSearch(UserAccount user, string inputCancelString)
         {
             if (user.Type != UserAccount.AccountType.PATIENT)
             {
                 return;
             }
 
+            try
+            {
+                List<Doctor> doctors = SearchImpl(inputCancelString);
+                Console.WriteLine(hintSelectDoctor);
+                Doctor doctor = EasyInput<Doctor>.Select(doctors, d => d.VerboseToString(), inputCancelString);
+
+                var refAppointment = new Appointment()
+                {
+                    Doctor = doctor
+                };
+                var properties = new List<AppointmentController.AppointmentProperty> { AppointmentController.AppointmentProperty.DOCTOR };
+                AppointmentModel.CreateWithPredefinedProperties(inputCancelString, user, properties, refAppointment);
+            }
+            catch (InputFailedException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        private static List<Doctor> SearchImpl(string inputCancelString)
+        {
             var matchBy = new Dictionary<string, Func<string, Doctor.Comparer, List<Doctor>>>
             {
                 ["Match by first name"] = DoctorController.MatchByFirstName,
@@ -40,12 +79,7 @@ namespace HospitalIS.Frontend.CLI.Model
             Console.WriteLine(hintSortBy);
             var sortChoice = EasyInput<string>.Select(sortBy.Keys.ToList(), inputCancelString);
 
-            List<Doctor> matches = matchBy[matchChoice](query, sortBy[sortChoice]);
-
-            foreach (Doctor d in matches)
-            {
-                Console.WriteLine(d.VerboseToString());
-            }
+            return matchBy[matchChoice](query, sortBy[sortChoice]);
         }
     }
 }
