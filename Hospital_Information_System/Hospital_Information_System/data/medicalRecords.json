@@ -79,8 +79,12 @@
     "Illnesses": [],
     "IngredientAllergies": [],
     "OtherAllergies": [],
-    "Prescriptions": [],
-    "Examinations": [],
+    "Prescriptions": [
+      6
+    ],
+    "Examinations": [
+      18
+    ],
     "Id": 3,
     "Deleted": false
   }
