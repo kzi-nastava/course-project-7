@@ -1,44 +1,61 @@
 [
   {
     "Medication": 1,
-    "Frequency": 0,
     "Usage": 0,
+    "Frequency": 0,
+    "TimesOfUsage": [],
     "Id": 0,
     "Deleted": false
   },
   {
     "Medication": 1,
-    "Frequency": 2,
     "Usage": 0,
+    "Frequency": 0,
+    "TimesOfUsage": [],
     "Id": 1,
     "Deleted": false
   },
   {
     "Medication": 1,
-    "Frequency": 4,
-    "Usage": 2,
+    "Usage": 0,
+    "Frequency": 0,
+    "TimesOfUsage": [],
     "Id": 2,
     "Deleted": false
   },
   {
     "Medication": 0,
-    "Frequency": 2,
-    "Usage": 3,
+    "Usage": 0,
+    "Frequency": 0,
+    "TimesOfUsage": [],
     "Id": 3,
     "Deleted": false
   },
   {
     "Medication": 1,
-    "Frequency": 4,
-    "Usage": 2,
+    "Usage": 0,
+    "Frequency": 0,
+    "TimesOfUsage": [],
     "Id": 4,
     "Deleted": false
   },
   {
     "Medication": 0,
-    "Frequency": 2,
-    "Usage": 3,
+    "Usage": 0,
+    "Frequency": 0,
+    "TimesOfUsage": [],
     "Id": 5,
+    "Deleted": false
+  },
+  {
+    "Medication": 2,
+    "Usage": 0,
+    "Frequency": 2,
+    "TimesOfUsage": [
+      "15:00:00",
+      "19:00:00"
+    ],
+    "Id": 6,
     "Deleted": false
   }
 ]

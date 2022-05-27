@@ -9,6 +9,7 @@ namespace HospitalIS.Frontend.CLI.Model
     internal abstract class PrescriptionModel
     {
         private static string hintInputMedication = "Select medication for the prescription";
+        private static string hintInputTimeOfUsage = "Input one time of usage [HH:mm]";
 
         private static string hintDangerousMedication =
             "You've selected an medication that contains the ingredients the patient is allergic to. Try again!";
@@ -18,7 +19,7 @@ namespace HospitalIS.Frontend.CLI.Model
         private static string errFrequencyPositive = "Frequency of usage must be a positive number";
         private static string errFrequencyTooHigh = "Patient must not use the medication more than 5 times a day!";
         private static string hintPrescriptionCreated = "You've successfully created a prescription";
-        
+
         internal static Prescription CreatePrescription(string inputCancelString, MedicalRecord oldMedicalRecord)
         {
             Prescription newPrescription = new Prescription();
@@ -27,6 +28,12 @@ namespace HospitalIS.Frontend.CLI.Model
                 newPrescription.Medication = InputMedication(inputCancelString, oldMedicalRecord);
                 newPrescription.Usage = InputUsage(inputCancelString);
                 newPrescription.Frequency = InputFrequencyOfUsage(inputCancelString);
+                newPrescription.TimesOfUsage = new List<TimeSpan>();
+                for (int i = 0; i < newPrescription.Frequency; i++)
+                {
+                    TimeSpan timeOfUsage = InputTimeOfUsage(inputCancelString);
+                    newPrescription.TimesOfUsage.Add(timeOfUsage);
+                }
                 IS.Instance.PrescriptionRepo.Add(newPrescription);
             }
             catch (InputFailedException e)
@@ -115,6 +122,24 @@ namespace HospitalIS.Frontend.CLI.Model
                 },
                 inputCancelString
             );
+        }
+
+        internal static TimeSpan InputTimeOfUsage(String inputCancelString)
+        {
+            Console.WriteLine(hintInputTimeOfUsage);
+            return EasyInput<TimeSpan>.Get(
+                new List<Func<TimeSpan, bool>>()
+                {
+                    ts => AppointmentSearchBundle.TsInDay(ts),
+                    ts => AppointmentSearchBundle.TsZeroSeconds(ts),
+                },
+                new string[]
+                {
+                    AppointmentSearchBundle.ErrTimeSpanNotInDay,
+                    AppointmentSearchBundle.ErrTimeSpanHasSeconds,
+                },
+                inputCancelString,
+                TimeSpan.Parse);
         }
     }
 }

@@ -160,5 +160,14 @@
     "Anamnesis": "",
     "Id": 17,
     "Deleted": false
+  },
+  {
+    "Doctor": 1,
+    "Patient": 3,
+    "Room": 11,
+    "ScheduledFor": "2022-05-30T00:00:00",
+    "Anamnesis": "",
+    "Id": 18,
+    "Deleted": false
   }
 ]
