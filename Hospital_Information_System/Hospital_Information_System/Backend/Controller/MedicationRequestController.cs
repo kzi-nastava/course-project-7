@@ -14,7 +14,7 @@ namespace HospitalIS.Backend.Controller
 
 		public static List<MedicationRequest> GetMedicationRequests(Doctor doctor)
 		{
-			return GetMedicationRequests().Where(req => req.Feedback.Count() == 0 || req.Feedback[0].Reviewer == doctor).ToList();
+			return GetMedicationRequests().Where(req => req.Reviews.Count() == 0 || req.Reviews[0].Reviewer == doctor).ToList();
 		}
 	}
 }
