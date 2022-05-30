@@ -78,5 +78,14 @@ namespace HospitalIS.Backend.Controller
             matches.Sort(comparer);
             return matches;
         }
+        public static void AddNotifsIfNecessary(UserAccount ua)
+        {
+            if (ua.Type == UserAccount.AccountType.PATIENT)
+            {
+                Patient p = PatientController.GetPatientFromPerson(ua.Person);
+                MedicalRecord mr = MedicalRecordController.GetPatientsMedicalRecord(p);
+                IS.Instance.MedicalRecordRepo.AddTask(mr);
+            }
+        }
     }
 }

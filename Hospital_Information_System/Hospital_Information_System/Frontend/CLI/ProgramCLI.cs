@@ -78,6 +78,8 @@ namespace HospitalIS.Frontend.CLI
 			new Command("ingredient-read", () => IngredientModel.Read(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
 			new Command("ingredient-update", () => IngredientModel.Update(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
 			new Command("ingredient-delete", () => IngredientModel.Delete(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
+
+            new Command("account-notif-time", () => MedicalRecordModel.ChangeMinutesBeforeNotification(user, inputCancelString), new [] {UserAccount.AccountType.PATIENT}),
         };
 
         static List<Command> GetCommands(UserAccount user)

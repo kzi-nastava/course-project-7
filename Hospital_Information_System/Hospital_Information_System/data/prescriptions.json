@@ -10,8 +10,11 @@
   {
     "Medication": 1,
     "Usage": 0,
-    "Frequency": 0,
-    "TimesOfUsage": [],
+    "Frequency": 2,
+    "TimesOfUsage": [
+      "15:55:00",
+      "19:00:00"
+    ],
     "Id": 1,
     "Deleted": false
   },
@@ -56,6 +59,17 @@
       "19:00:00"
     ],
     "Id": 6,
+    "Deleted": false
+  },
+  {
+    "Medication": 3,
+    "Usage": 0,
+    "Frequency": 2,
+    "TimesOfUsage": [
+      "15:56:00",
+      "19:00:00"
+    ],
+    "Id": 7,
     "Deleted": false
   }
 ]
