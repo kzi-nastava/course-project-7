@@ -12,6 +12,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		private const string hintInputName = "Input medication name";
 		private const string hintInputIngredients = "Select ingredients for this medication by number, separated by whitespace. Input an empty line to finish";
 		private const string errNoIngredients = "There are no ingredients registered in the system. Medication will be empty";
+		private const string errNoMedicationsForRevision = "There are no medications sent for revision";
 
 		internal static void CreateNewMedicine(string inputCancelString)
 		{
@@ -19,6 +20,29 @@ namespace HospitalIS.Frontend.CLI.Model
 
 			MedicationRequest medicationRequest = new MedicationRequest(medication);
 			IS.Instance.MedicationRequestRepo.Add(medicationRequest);
+		}
+
+		internal static void ReviseMedicine(string inputCancelString)
+		{
+			MedicationRequest medRequest = null;
+			try {
+				medRequest = EasyInput<MedicationRequest>.Select(MedicationRequestController.GetRequestsForRevision(), r => r.Medication.Name, inputCancelString);
+
+				// TODO @magley: Remove if check in production.  
+				if (medRequest.Reviews.Count() > 0) {
+					Console.WriteLine($"@{medRequest.Reviews.Last().Timestamp}, {medRequest.Reviews.Last().Reviewer.ToString()}:");
+					Console.WriteLine(medRequest.Reviews.Last().Message);
+				}
+			}
+			catch (NothingToSelectException) {
+				Console.WriteLine(errNoMedicationsForRevision);
+				return;
+			}
+
+			var whichProperties = EasyInput<MedicationController.MedicationProperty>.SelectMultiple(MedicationController.medicationPropertiesAll, inputCancelString).ToList();
+			var modifiedMedication = InputMedication(whichProperties, inputCancelString);
+			MedicationController.Copy(modifiedMedication, medRequest.Medication, whichProperties);
+			medRequest.State = MedicationRequestState.SENT;
 		}
 
 		private static Medication InputMedication(List<MedicationController.MedicationProperty> whichProperties, string inputCancelString) 

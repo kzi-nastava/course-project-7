@@ -17,5 +17,14 @@ namespace HospitalIS.Backend.Controller
 		{
 			return IS.Instance.Hospital.Medications.Where(meds => !meds.Deleted).ToList();
 		}
+
+		public static void Copy(Medication src, Medication dest, List<MedicationProperty> whichProperties)
+		{
+			if (whichProperties.Contains(MedicationProperty.NAME)) dest.Name = src.Name;
+			if (whichProperties.Contains(MedicationProperty.INGREDIENTS)) {
+				dest.Ingredients.Clear();
+				dest.Ingredients.AddRange(src.Ingredients);
+			}
+		}
 	}
 }
