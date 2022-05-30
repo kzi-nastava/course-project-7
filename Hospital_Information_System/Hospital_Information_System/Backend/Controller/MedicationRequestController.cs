@@ -21,5 +21,10 @@ namespace HospitalIS.Backend.Controller
 		{
 			return GetMedicationRequests().Where(req => req.State == MedicationRequestState.RETURNED).ToList();
 		}
+
+		public static List<MedicationRequest> GetPendingRequests()
+		{
+			return GetMedicationRequests().Where(req => req.State == MedicationRequestState.SENT || req.State == MedicationRequestState.RETURNED).ToList();
+		}
 	}
 }
