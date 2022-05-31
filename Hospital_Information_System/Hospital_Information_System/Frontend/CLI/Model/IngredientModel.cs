@@ -13,7 +13,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		private const string hintInputName = "Input name";
 		private const string hintSelectIngredient = "Select ingredient by number";
 		private const string hintSelectProperties = "Select properties, separated by whitespace. Input a blank line to finish selection";
-		private const string warningDependantMedicine = "The following medicine will be removed. Do you wish to proceed?";
+		private const string warningDependantMedicine = "The following medicine (and medicine requests) will be removed. Do you wish to proceed?";
 		private const string errNoIngredients = "There are no ingredients at the current moment";
 
 		internal static void Create(string inputCancelString) 
@@ -51,11 +51,16 @@ namespace HospitalIS.Frontend.CLI.Model
 			}
 
 			var dependentMedicine = MedicationController.GetMedications().Where(med => med.Ingredients.Intersect(ingredientsToRemove).Count() != 0);
+			var dependentMedicineRequests = MedicationRequestController.GetPendingRequests().Where(req => req.Medication.Ingredients.Intersect(ingredientsToRemove).Count() != 0);
 			if (dependentMedicine.Count() != 0)
 			{
 				foreach (var med in dependentMedicine)
 				{
-					Console.WriteLine(med);
+					Console.WriteLine("+" + med);
+				}
+				foreach (var req in dependentMedicineRequests)
+				{
+					Console.WriteLine("-" + req.Medication);
 				}
 				Console.WriteLine(warningDependantMedicine);
 				if (!EasyInput<bool>.YesNo(inputCancelString))

@@ -35,6 +35,12 @@ namespace HospitalIS.Backend.Repository
 			{
 				IS.Instance.MedicationRepo.Remove(medicine);
 			}
+			
+			var dependentMedicineRequests = MedicationRequestController.GetPendingRequests().Where(r => r.Medication.Ingredients.Contains(entity));
+			foreach (var request in dependentMedicineRequests)
+			{
+				IS.Instance.MedicationRequestRepo.Remove(request);
+			}
 
             entity.Deleted = true;
         }
