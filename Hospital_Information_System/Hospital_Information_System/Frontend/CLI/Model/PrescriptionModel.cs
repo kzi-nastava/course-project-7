@@ -52,7 +52,7 @@ namespace HospitalIS.Frontend.CLI.Model
             return newPrescription;
         }
 
-        private static Medication InputMedication(string inputCancelString, MedicalRecord patientsMedicalRecord)
+        internal static Medication InputMedication(string inputCancelString, MedicalRecord patientsMedicalRecord)
         {
             List<Medication> medications = GetAllMedications();
             while (true)
@@ -72,13 +72,13 @@ namespace HospitalIS.Frontend.CLI.Model
             }
         }
 
-        private static List<Medication> GetAllMedications()
+        internal static List<Medication> GetAllMedications()
         {
             return IS.Instance.Hospital.Medications.Where(
                 a => !a.Deleted).ToList();
         }
 
-        private static bool IsMedicationSafe(List<Ingredient> medicationIngredients,
+        internal static bool IsMedicationSafe(List<Ingredient> medicationIngredients,
             List<Ingredient> patientsAllergies)
         {
             for (int i = 0; i < medicationIngredients.Count(); i++)
@@ -94,19 +94,19 @@ namespace HospitalIS.Frontend.CLI.Model
             return true;
         }
 
-        private static Prescription.UsageTypes InputUsage(string inputCancelString)
+        internal static Prescription.UsageTypes InputUsage(string inputCancelString)
         {
             Console.WriteLine(hintInputUsage);
             var selectedUsage = EasyInput<Prescription.UsageTypes>.Select(GetAllMedicationUsages(), inputCancelString);
             return selectedUsage;
         }
         
-        private static List<Prescription.UsageTypes> GetAllMedicationUsages()
+        internal static List<Prescription.UsageTypes> GetAllMedicationUsages()
         {
             return Enum.GetValues(typeof(Prescription.UsageTypes)).Cast<Prescription.UsageTypes>().ToList();
         }
 
-        private static int InputFrequencyOfUsage(string inputCancelString)
+        internal static int InputFrequencyOfUsage(string inputCancelString)
         {
             Console.WriteLine(hintInputFrequencyOfUsage);
             return EasyInput<int>.Get(
@@ -124,7 +124,7 @@ namespace HospitalIS.Frontend.CLI.Model
             );
         }
 
-        private static TimeSpan InputTimeOfUsage(String inputCancelString)
+        internal static TimeSpan InputTimeOfUsage(String inputCancelString)
         {
             Console.WriteLine(hintInputTimeOfUsage);
             return EasyInput<TimeSpan>.Get(

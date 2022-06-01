@@ -57,26 +57,5 @@
     ],
     "Id": 6,
     "Deleted": false
-  },
-  {
-    "Medication": 0,
-    "Usage": 0,
-    "Frequency": 2,
-    "TimesOfUsage": [
-      "15:00:00",
-      "17:00:00"
-    ],
-    "Id": 7,
-    "Deleted": false
-  },
-  {
-    "Medication": 1,
-    "Usage": 3,
-    "Frequency": 1,
-    "TimesOfUsage": [
-      "12:00:00"
-    ],
-    "Id": 8,
-    "Deleted": false
   }
 ]

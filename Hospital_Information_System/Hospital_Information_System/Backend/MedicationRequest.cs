@@ -36,7 +36,7 @@ namespace HospitalIS.Backend
 
 		public override string ToString()
 		{
-			return $"RequestFeedback{{Timestamp={Timestamp}, Message={Message}, Verdict={Verdict}, Reviewer={Reviewer.ToString()}}}";
+			return $"RequestFeedback{{Timestamp={Timestamp}, Message={Message}, Verdict={Verdict}, Reveiwer={Reviewer.ToString()}}}";
 		}
 	}
 

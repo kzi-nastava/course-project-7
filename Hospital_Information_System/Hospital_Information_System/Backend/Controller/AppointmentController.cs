@@ -11,6 +11,8 @@ namespace HospitalIS.Backend.Controller
         public const int DaysBeforeAppointmentUnmodifiable = 1;
         public const int DaysBeforeModificationNeedsRequest = 2;
         private const string hintRequestSent = "Request for modification sent.";
+        private const string hintDateTimeNotInFuture = "Date and time must be in the future, try something else";
+        private const string hintInputDate = "Input the date for which you want to be given scheduled appointments";
         private const string hintSelectAppointment = "Select appointment";
         
         public enum AppointmentProperty
@@ -109,8 +111,20 @@ namespace HospitalIS.Backend.Controller
             return GetAppointments().FindAll(a => a.Doctor == doctor);
         }
         
-        public static List<Appointment> GetNextDoctorsAppointments(UserAccount user, string inputCancelString, DateTime firstRelevantDay)
+        public static List<Appointment> GetNextDoctorsAppointments(UserAccount user, string inputCancelString)
         {
+            Console.WriteLine(hintInputDate);
+            
+            DateTime firstRelevantDay = EasyInput<DateTime>.Get(
+                new List<Func<DateTime, bool>>()
+                {
+                    newSchedule => newSchedule.CompareTo(DateTime.Now) > 0,
+                },
+                new string[]
+                {
+                    hintDateTimeNotInFuture,
+                },
+                inputCancelString);
             var lastRelevantDay = firstRelevantDay.AddDays(3);
             List<Appointment> allAppointments = GetAppointments(DoctorController.GetDoctorFromPerson(user.Person));
             List<Appointment> nextAppointments = new List<Appointment>();

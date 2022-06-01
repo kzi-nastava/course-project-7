@@ -22,7 +22,7 @@ namespace HospitalIS.Backend.Controller
         {
             return Enum.GetName(typeof(MedicalRecordProperty), ap);
         }
-        private static List<MedicalRecordProperty> GetAllMedicalRecordProperties()
+        public static List<MedicalRecordProperty> GetAllMedicalRecordProperties()
         {
             return Enum.GetValues(typeof(MedicalRecordProperty)).Cast<MedicalRecordProperty>().ToList();
         }
@@ -33,7 +33,7 @@ namespace HospitalIS.Backend.Controller
             modifiableProperties.Remove(MedicalRecordProperty.PRESCRIPTIONS);
             return modifiableProperties;
         }
-        private static List<MedicalRecord> GetAllMedicalRecords()
+        public static List<MedicalRecord> GetAllMedicalRedords()
         {
             return IS.Instance.Hospital.MedicalRecords.Where(
                 a => !a.Deleted).ToList();
@@ -41,7 +41,7 @@ namespace HospitalIS.Backend.Controller
 
         public static MedicalRecord GetPatientsMedicalRecord(Patient patient)
         {
-            var allMedicalRecords = GetAllMedicalRecords();
+            var allMedicalRecords = GetAllMedicalRedords();
             foreach (var medicalRecord in allMedicalRecords)
             {
                 if (patient.Id == medicalRecord.Patient.Id)

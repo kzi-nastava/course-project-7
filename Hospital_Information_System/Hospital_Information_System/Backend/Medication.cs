@@ -23,10 +23,10 @@ namespace HospitalIS.Backend
         
         public override string ToString()
         {
-            return $"Medication{{Id = {Id}, Name ={Name}, Ingredients = {ConvertIngredientListToString(Ingredients)}}}";
+            return $"Medication{{Id = {Id}, Name ={Name} Ingredients = {ConvertIngredientListToString(Ingredients)}}}";
         }
         
-        internal static string ConvertIngredientListToString(List<Ingredient> entry)
+        public static string ConvertIngredientListToString(List<Ingredient> entry)
         {
             string result = "";
             for (int i = 0; i <= entry.Count - 1; i++)
