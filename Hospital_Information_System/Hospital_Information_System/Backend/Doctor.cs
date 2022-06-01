@@ -12,7 +12,7 @@ namespace HospitalIS.Backend
 
         public enum MedicineSpeciality
         {
-            GENERAL_PRACTICE, UROLOGY, SURGERY, PSYCHIATRY, PEDIATRICS, OPHTHAMOLOGY, NEUROLOGY, ANESTHESIOLOGY, DERMATOLOGY, PATHOLOGY, GENETICS, EMERGENCY_MEDICINE, GYNAECOLOGY
+            GENERAL_PRACTICE, SURGERY, PSYCHIATRY
         }
 
         public MedicineSpeciality Specialty { get; set; }
