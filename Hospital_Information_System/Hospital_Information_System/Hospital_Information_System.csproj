@@ -7,10 +7,42 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Backend\Controller\**" />
+    <Compile Remove="Backend\Repository\**" />
+    <Compile Remove="Frontend\CLI\Model\**" />
+    <EmbeddedResource Remove="Backend\Controller\**" />
+    <EmbeddedResource Remove="Backend\Repository\**" />
+    <EmbeddedResource Remove="Frontend\CLI\Model\**" />
+    <None Remove="Backend\Controller\**" />
+    <None Remove="Backend\Repository\**" />
+    <None Remove="Frontend\CLI\Model\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Backend\Appointment.cs" />
+    <Compile Remove="Backend\DeleteRequest.cs" />
+    <Compile Remove="Backend\Doctor.cs" />
+    <Compile Remove="Backend\EquipmentRelocation.cs" />
+    <Compile Remove="Backend\Hospital.cs" />
+    <Compile Remove="Backend\HospitalIS.cs" />
+    <Compile Remove="Backend\Ingredient.cs" />
+    <Compile Remove="Backend\IRepository.cs" />
+    <Compile Remove="Backend\MedicalRecord.cs" />
+    <Compile Remove="Backend\Medication.cs" />
+    <Compile Remove="Backend\MedicationRequest.cs" />
+    <Compile Remove="Backend\Patient.cs" />
+    <Compile Remove="Backend\Person.cs" />
+    <Compile Remove="Backend\Prescription.cs" />
+    <Compile Remove="Backend\Referral.cs" />
+    <Compile Remove="Backend\Renovation.cs" />
+    <Compile Remove="Backend\Request.cs" />
+    <Compile Remove="Backend\UpdateRequest.cs" />
+    <Compile Remove="Backend\UserAccount.cs" />
+    <Compile Remove="Backend\Util\AppointmentSearchBundle.cs" />
     <Compile Remove="data\Ingredients.cs" />
   </ItemGroup>
 

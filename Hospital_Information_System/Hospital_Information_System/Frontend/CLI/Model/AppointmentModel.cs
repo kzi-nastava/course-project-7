@@ -5,10 +5,11 @@ using System.IO;
 using System.Linq;
 using HospitalIS.Backend.Controller;
 using HospitalIS.Backend.Repository;
+using HospitalIS.Frontend.CLI.View;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
-    internal abstract class AppointmentModel
+	internal abstract class AppointmentModel
     {
         private const string hintSelectAppointments = "Select appointments by their number, separated by whitespace.\nEnter a newline to finish";
         private const string hintSelectAppointment = "Select appointment";

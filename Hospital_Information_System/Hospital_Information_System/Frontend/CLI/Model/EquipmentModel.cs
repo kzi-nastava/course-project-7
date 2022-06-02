@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using HospitalIS.Backend;
 using System.Linq;
 using HospitalIS.Backend.Controller;
+using HospitalIS.Frontend.CLI.View;
 
 namespace HospitalIS.Frontend.CLI.Model
 {

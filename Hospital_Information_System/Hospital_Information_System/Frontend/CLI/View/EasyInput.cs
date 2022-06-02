@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace HospitalIS.Frontend.CLI
+namespace HospitalIS.Frontend.CLI.View
 {
 	/// <summary>
 	/// This exception does not imply that an error happened but rather that the user cancelled his input.
@@ -36,11 +36,11 @@ namespace HospitalIS.Frontend.CLI
 	/// </summary>
 	internal abstract class EasyInput<T>
 	{
-		private static void WriteLineError(string err) 
+		private static void WriteLineError(string err)
 		{
 			Console.ForegroundColor = ConsoleColor.Red;
 			Console.WriteLine(err);
-			Console.ForegroundColor = ConsoleColor.Gray;
+			Console.ResetColor();
 		}
 
 		/// <summary>
@@ -52,9 +52,9 @@ namespace HospitalIS.Frontend.CLI
 		}
 
 		public static T Get(string cancel)
-        {
+		{
 			return Get(new List<Func<T, bool>>(), new string[] { }, cancel);
-        }
+		}
 
 		public static T Get(IList<Func<T, bool>> rules, IList<string> errorMsg, string cancel, Func<string, T> conversionFunction)
 		{
@@ -109,9 +109,9 @@ namespace HospitalIS.Frontend.CLI
 		public static T Select(IList<T> elements, IList<Func<T, bool>> rules, IList<string> errorMsg, Func<T, string> toStrFunc, string cancel)
 		{
 			if (elements.Count == 0)
-            {
+			{
 				throw new NothingToSelectException();
-            }
+			}
 
 			for (int i = 0; i < elements.Count; i++)
 			{
@@ -160,19 +160,20 @@ namespace HospitalIS.Frontend.CLI
 
 		public static T Select(IList<T> elements, Func<T, string> toStrFunc, string cancel)
 		{
-			return Select(elements, new List<Func<T, bool>>(), new string[] {}, toStrFunc, cancel);
+			return Select(elements, new List<Func<T, bool>>(), new string[] { }, toStrFunc, cancel);
 		}
 
 		public static T Select(IList<T> elements, string cancel)
 		{
-			return Select(elements, (elem => elem.ToString()), cancel);
+			return Select(elements, elem => elem.ToString(), cancel);
 		}
 
-		public static bool YesNo(string cancel) {
+		public static bool YesNo(string cancel)
+		{
 			Console.WriteLine("[Y/N]");
 			string s = EasyInput<string>.Get(
-				new List<Func<string, bool>> {s => (s.ToLower() == "y" || s.ToLower() == "n")},
-				new [] { "Must be [Y]es or [N]o." },
+				new List<Func<string, bool>> { s => s.ToLower() == "y" || s.ToLower() == "n" },
+				new[] { "Must be [Y]es or [N]o." },
 				cancel
 			);
 
@@ -197,7 +198,7 @@ namespace HospitalIS.Frontend.CLI
 			// TODO @magley: Find a way to not print all the elements at once, for the sake of brievity (idea: ranges, pages, ...)
 
 			bool[] isSelected = new bool[elements.Count];
-			
+
 			while (true)
 			{
 				printWithSelection(elements, toStrFunc, isSelected);
@@ -221,11 +222,11 @@ namespace HospitalIS.Frontend.CLI
 					.ForEach(i => { isSelected[i] ^= true; });
 			}
 
-			return (from e 
-					in elements 
-					where isSelected[elements.IndexOf(e)] 
+			return (from e
+					in elements
+					where isSelected[elements.IndexOf(e)]
 					select e
-			).ToList(); 
+			).ToList();
 		}
 		private static void printWithSelection(IList<T> elements, Func<T, string> toStrFunc, IList<bool> isSelected)
 		{

@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace HospitalIS.Backend
+﻿namespace HospitalIS.Backend.Room
 {
 	public class Equipment : Entity
 	{

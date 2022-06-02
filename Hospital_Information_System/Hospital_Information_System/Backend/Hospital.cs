@@ -19,8 +19,34 @@ namespace HospitalIS.Backend
 		}
 	}
 
+	// startup
 	internal class Hospital : Entity
 	{
+		public Room.IRoomRepository roomRepo;
+		public Room.IEquipmentRepository equipmentRepo;
+		// ...
+
+		public Room.RoomService roomService;
+		public Room.EquipmentService equipmentService;
+		// ...
+
+		public Hospital()
+		{
+			roomRepo = new Room.RoomJSONRepository("rooms.json", new Newtonsoft.Json.JsonSerializerSettings());
+			equipmentRepo = new Room.EquipmentJSONRepository("equipment.json", new Newtonsoft.Json.JsonSerializerSettings());
+
+			roomService = new Room.RoomService(roomRepo);
+			equipmentService = new Room.EquipmentService(equipmentRepo);
+		}
+
+
+
+
+
+
+
+
+
 		internal List<Room> Rooms = new List<Room>();
 		internal List<Equipment> Equipment = new List<Equipment>();
 		internal List<EquipmentRelocation> EquipmentRelocations = new List<EquipmentRelocation>();

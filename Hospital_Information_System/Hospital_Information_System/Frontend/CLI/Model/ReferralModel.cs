@@ -1,11 +1,12 @@
 ﻿using HospitalIS.Backend;
+using HospitalIS.Frontend.CLI.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
-    internal abstract class ReferralModel
+	internal abstract class ReferralModel
     {
         private const string hintSelectProperties = "Select whether you want to make referral based on exact doctor or specialty: ";
         private const string hintSelectDoctor = "Select a doctor for the referral: ";

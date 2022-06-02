@@ -4,10 +4,11 @@ using System.Linq;
 using static HospitalIS.Backend.Controller.MedicalRecordController;
 using static HospitalIS.Backend.Controller.AppointmentController;
 using HospitalIS.Backend;
+using HospitalIS.Frontend.CLI.View;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
-    internal abstract class MedicalRecordModel
+	internal abstract class MedicalRecordModel
     {
         private const string hintInputWeight = "Input patient's weight [kg]";
         private const string hintInputHeight = "Input patient's height [cm]";

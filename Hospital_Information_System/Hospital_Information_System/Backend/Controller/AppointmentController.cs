@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HospitalIS.Frontend.CLI;
+using HospitalIS.Frontend.CLI.View;
 
 namespace HospitalIS.Backend.Controller
 {
-    internal class AppointmentController
+	internal class AppointmentController
     {
         public const int LengthOfAppointmentInMinutes = 15;
         public const int DaysBeforeAppointmentUnmodifiable = 1;

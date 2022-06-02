@@ -7,6 +7,7 @@ using HospitalIS.Backend.Controller;
 
 using System.Diagnostics;
 using HospitalIS.Backend.Util;
+using HospitalIS.Frontend.CLI.View;
 
 namespace HospitalIS.Frontend.CLI.Model
 {

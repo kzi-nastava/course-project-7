@@ -4,6 +4,7 @@ using HospitalIS.Backend;
 using System.Linq;
 using System.Diagnostics;
 using HospitalIS.Backend.Controller;
+using HospitalIS.Frontend.CLI.View;
 
 namespace HospitalIS.Frontend.CLI.Model
 {

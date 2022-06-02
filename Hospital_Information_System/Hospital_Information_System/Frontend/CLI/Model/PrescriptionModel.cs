@@ -3,10 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using HospitalIS.Backend.Controller;
+using HospitalIS.Frontend.CLI.View;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
-    internal abstract class PrescriptionModel
+	internal abstract class PrescriptionModel
     {
         private static string hintInputMedication = "Select medication for the prescription";
         private static string hintInputTimeOfUsage = "Input one time of usage [HH:mm]";

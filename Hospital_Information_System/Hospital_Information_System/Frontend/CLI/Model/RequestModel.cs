@@ -4,10 +4,11 @@ using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using HospitalIS.Backend;
 using HospitalIS.Backend.Controller;
+using HospitalIS.Frontend.CLI.View;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
-    public class RequestModel
+	public class RequestModel
     {
         private const string hintSelectRequests = "Select requests by their number, separated by whitespace.\nEnter a newline to finish";
         private const string hintSelectAction = "Select action over requests";
