@@ -1,7 +1,6 @@
 ﻿using HospitalIS.Backend;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using HospitalIS.Backend.Controller;
 using HospitalIS.Backend.Repository;
@@ -29,7 +28,7 @@ namespace HospitalIS.Frontend.CLI.Model
             "You don't have any scheduled appointments for the time given.";
 
         private const string hintCheckStartingAppointment =
-            "If you want to start any appointment - press 1, if not press anything else";
+            "Do you want to start appointment?";
 
         private const string hintAppointmentIsOver = "Appointment is over.";
 
@@ -50,9 +49,9 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string askCreateAppointment = "Are you sure you want to create this appointment?";
 
         private const string hintMakeReferral =
-            "If you want to make a referral - press 1, if not press anything else";
+            "Do you want to make a referral?";
         private const string hintWritePrescription =
-            "If you want to write a prescription - press 1, if not press anything else";
+            "Do you want to write a prescription?";
         private const string hintInputDate = "Input the date for which you want to be given scheduled appointments";
 
         internal static void CreateAppointment(string inputCancelString, UserAccount user)
@@ -470,7 +469,7 @@ namespace HospitalIS.Frontend.CLI.Model
             Print(nextAppointments, inputCancelString);
             if (nextAppointments.Count == 0) return;
             Console.WriteLine(hintCheckStartingAppointment);
-            if (WantsToContinue()) //wants to start appointment
+            if (EasyInput<bool>.YesNo(inputCancelString)) //wants to start appointment
             {
                 StartAppointment(inputCancelString, nextAppointments);
             }
@@ -510,12 +509,6 @@ namespace HospitalIS.Frontend.CLI.Model
                 }
             }
         }
-        
-        private static bool WantsToContinue()
-        {
-            string doctorsWill = Console.ReadLine();
-            return doctorsWill == "1";
-        }
 
         private static void StartAppointment(string inputCancelString, List<Appointment> startableAppointments)
         {
@@ -525,13 +518,13 @@ namespace HospitalIS.Frontend.CLI.Model
             MedicalRecordModel.UpdateMedicalRecordAndAnamnesis(appointmentToStart, inputCancelString);
             
             Console.WriteLine(hintMakeReferral);
-            if (WantsToContinue()) //wants to create a referral
+            if (EasyInput<bool>.YesNo(inputCancelString)) //wants to create a referral
             {
                 ReferralModel.CreateReferral(appointmentToStart, inputCancelString);
             }
             
             Console.WriteLine(hintWritePrescription);
-            if (WantsToContinue()) //wants to create a prescription
+            if (EasyInput<bool>.YesNo(inputCancelString)) //wants to create a prescription
             {
                 PrescriptionModel.CreatePrescription(inputCancelString, MedicalRecordController.GetPatientsMedicalRecord(appointmentToStart.Patient));
             }
@@ -539,6 +532,8 @@ namespace HospitalIS.Frontend.CLI.Model
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(hintAppointmentIsOver);
             Console.ForegroundColor = ConsoleColor.Gray;
+            
+            EquipmentController.DeleteEquipment(appointmentToStart.Room, inputCancelString);
         }
         
         internal static void CreateAppointmentWithReferral(Referral referral, string inputCancelString, UserAccount user)
