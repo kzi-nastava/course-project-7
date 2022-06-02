@@ -14,6 +14,11 @@ namespace HospitalIS.Frontend.CLI.Model
 		private const string hintFilter = "Select criteria to filer by, separated by whitespace.\nEnter a newline to finish";
 		private const string hintFilterByType = "Select type of equipment";
 		private const string hintFilterByUse = "Select use of equipment";
+		private const string errNotEnoughEquipment = "This room does not have that much equipment";
+		private const string showCurrentState = "Current state in the room [Equipment: Quantity]:";
+		private const string errNoEquipmentInRoom = "There's no equipment in this room";
+		private const string errPositiveNumber = "You must input a positive number (or 0)";
+		
 		private static readonly Dictionary<string, Func<string, List<Equipment>>> matchBy = new Dictionary<string, Func<string, List<Equipment>>>
 		{
 			["Type"] = (string query) => EquipmentController.MatchByType(query),
@@ -94,6 +99,40 @@ namespace HospitalIS.Frontend.CLI.Model
 					Console.WriteLine($"{toStringFunc(eq)}");
 				}
 			}
+		}
+
+		public static void Print(Dictionary<Equipment, int> currentEquipmentQuantity)
+		{
+			Console.WriteLine(showCurrentState);
+			foreach (KeyValuePair<Equipment, int> entry in currentEquipmentQuantity)
+			{
+				Console.WriteLine(entry.Key + ": " + entry.Value);
+			}
+			
+		}
+
+		public static void PrintNoEquipment()
+		{
+			Console.ForegroundColor = ConsoleColor.Red;
+			Console.WriteLine(errNoEquipmentInRoom);
+			Console.ForegroundColor = ConsoleColor.Gray;
+		}
+
+		public static int GetUsedEquipmentQuantity(string inputCancelString, int currentQuantity)
+		{
+			return EasyInput<int>.Get(
+				new List<Func<int, bool>>
+				{
+					s => s <= currentQuantity,
+					s => s >= 0,
+				},
+				new[]
+				{
+					errNotEnoughEquipment,
+					errPositiveNumber,
+				},
+				inputCancelString
+			);
 		}
 	}
 }
