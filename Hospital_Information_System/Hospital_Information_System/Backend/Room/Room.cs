@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
-using System;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace HospitalIS.Backend.Room
@@ -22,7 +21,7 @@ namespace HospitalIS.Backend.Room
 		public int Floor { get; set; }
 		public RoomType Type { get; set; }
 
-		[JsonConverter(typeof(EquipmentDictionaryIntConverter))]
+		[JsonConverter(typeof(EquipmentDictionaryConverter<int>))]
 		public Dictionary<Equipment, int> Equipment = new Dictionary<Equipment, int>();
 
 		public Room()
@@ -48,7 +47,7 @@ namespace HospitalIS.Backend.Room
 
 		public override string ToString()
 		{
-			return $"Room{{Id = {Id}, Name = {Name}, Floor = {Floor}, Type = {Type}}}";
+			return $"Room{{Id = {Id}, Name = {Name}, Floor = {Floor}, Type = {Type}, EquipmentCount = {Equipment.Count()} }}";
 		}
 	}
 }

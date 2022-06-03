@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -15,6 +15,7 @@ namespace HospitalIS.Backend.Room
 		{
 			_fname = fname;
 			_settings = settings;
+			EquipmentDictionaryConverter<int>.repo = this;
 			_equipment = JsonConvert.DeserializeObject<List<Equipment>>(File.ReadAllText(fname), _settings);
 		}
 

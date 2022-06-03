@@ -1,8 +1,8 @@
-﻿using System;
+﻿using HospitalIS.Backend;
+using HospitalIS.Backend.Room;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using HospitalIS.Backend;
-using HospitalIS.Backend.Room;
 
 namespace HospitalIS.Frontend.CLI.View
 {
@@ -21,7 +21,7 @@ namespace HospitalIS.Frontend.CLI.View
 			_properties = Utility.GetEnumValues<Room.RoomProperty>();
 		}
 
-#region commands
+		#region commands
 		internal void CmdRoomCreate()
 		{
 			Room r = InputRoom(Utility.GetEnumValues<Room.RoomProperty>());
@@ -47,10 +47,9 @@ namespace HospitalIS.Frontend.CLI.View
 			Room room = SelectModifiable();
 			_service.Remove(room);
 		}
-#endregion
+		#endregion
 
-#region helper
-
+		#region helper
 		private Room Select()
 		{
 			return EasyInput<Room>.Select(_service.Get(), r => r.Name, _cancel);
@@ -110,6 +109,6 @@ namespace HospitalIS.Frontend.CLI.View
 		{
 			return EasyInput<Room.RoomType>.Select(_types.Where(t => t != Room.RoomType.WAREHOUSE).ToList(), _cancel);
 		}
-#endregion
+		#endregion
 	}
 }

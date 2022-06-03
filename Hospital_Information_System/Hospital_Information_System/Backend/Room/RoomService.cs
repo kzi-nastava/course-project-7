@@ -6,7 +6,7 @@ namespace HospitalIS.Backend.Room
 {
 	internal class RoomService
 	{
-		private IRoomRepository _repo;
+		private readonly IRoomRepository _repo;
 		public RoomService(IRoomRepository repo)
 		{
 			_repo = repo;

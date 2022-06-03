@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace HospitalIS.Backend.Room
+﻿namespace HospitalIS.Backend.Room
 {
 	internal class EquipmentService
 	{

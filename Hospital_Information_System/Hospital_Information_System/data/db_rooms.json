@@ -1,6 +1,8 @@
 [
   {
-    "Equipment": {},
+    "Equipment": {
+      "0": 1
+    },
     "Name": "room01",
     "Floor": 1,
     "Type": 1,
@@ -13,6 +15,14 @@
     "Floor": 0,
     "Type": 2,
     "Id": 1,
+    "Deleted": false
+  },
+  {
+    "Equipment": {},
+    "Name": "abc",
+    "Floor": 12,
+    "Type": 5,
+    "Id": 2,
     "Deleted": false
   }
 ]

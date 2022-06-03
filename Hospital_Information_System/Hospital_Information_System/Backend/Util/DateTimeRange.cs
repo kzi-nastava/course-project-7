@@ -1,4 +1,3 @@
-
 using System;
 using System.Diagnostics;
 
@@ -21,7 +20,8 @@ namespace HospitalIS.Backend.Util
 			return Start <= dt && dt <= End;
 		}
 
-		public bool Intersects(DateTimeRange other) {
+		public bool Intersects(DateTimeRange other)
+		{
 			return (Start >= other.Start && Start <= other.End
 			|| End >= other.Start && End <= other.End
 			|| other.Start >= Start && other.Start <= End

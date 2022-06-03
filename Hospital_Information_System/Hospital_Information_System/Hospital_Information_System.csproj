@@ -46,4 +46,23 @@
     <Compile Remove="data\Ingredients.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="data\appointments.json" />
+    <None Remove="data\deleteRequests.json" />
+    <None Remove="data\doctors.json" />
+    <None Remove="data\equipment.json" />
+    <None Remove="data\equipmentRelocation.json" />
+    <None Remove="data\ingredients.json" />
+    <None Remove="data\medicalRecords.json" />
+    <None Remove="data\medicationRequests.json" />
+    <None Remove="data\medications.json" />
+    <None Remove="data\patients.json" />
+    <None Remove="data\persons.json" />
+    <None Remove="data\prescriptions.json" />
+    <None Remove="data\referrals.json" />
+    <None Remove="data\renovations.json" />
+    <None Remove="data\updateRequests.json" />
+    <None Remove="data\userAccounts.json" />
+  </ItemGroup>
+
 </Project>
