@@ -533,7 +533,7 @@ namespace HospitalIS.Frontend.CLI.Model
             Console.WriteLine(hintAppointmentIsOver);
             Console.ForegroundColor = ConsoleColor.Gray;
             
-            EquipmentController.DeleteEquipment(appointmentToStart.Room, inputCancelString);
+            EquipmentModel.DeleteEquipmentAfterAppointment(appointmentToStart.Room, inputCancelString);
         }
         
         internal static void CreateAppointmentWithReferral(Referral referral, string inputCancelString, UserAccount user)
