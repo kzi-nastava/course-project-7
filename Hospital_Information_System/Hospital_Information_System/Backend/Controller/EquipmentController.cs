@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HospitalIS.Frontend.CLI.Model;
 
 namespace HospitalIS.Backend.Controller
 {
 	internal class EquipmentController
 	{
-		
-		private const string hintInputUsedEquipment = "For each equipment, input how many you have used: ";
-		
+
 		private static bool StringMatch(string s1, string s2)
 		{
 			s1 = s1.Trim().ToLower();
@@ -77,40 +74,6 @@ namespace HospitalIS.Backend.Controller
 			int numberOfContainingRooms = 0;
 			RoomController.GetRooms().ForEach(r => { if (r.Equipment.ContainsKey(equipment)) numberOfContainingRooms++; });
 			return numberOfContainingRooms;
-		}
-		
-		public static void DeleteEquipment(Room room, string inputCancelString)
-		{
-			Dictionary<Equipment, int> currentEquipmentQuantity = room.Equipment;
-			if (currentEquipmentQuantity.Count == 0)
-			{
-				EquipmentModel.PrintNoEquipment();
-				return;
-			}
-			EquipmentModel.Print(currentEquipmentQuantity);
-			var newEquipmentQuantity = GetNewEquipmentQuantity(inputCancelString, currentEquipmentQuantity);
-			room.Equipment = newEquipmentQuantity;
-		}
-		
-		private static Dictionary<Equipment, int> GetNewEquipmentQuantity(string inputCancelString,
-			Dictionary<Equipment, int> oldEquipmentQuantity)
-		{
-			Dictionary<Equipment, int> newEquipmentQuantity = new Dictionary<Equipment, int>();
-			Console.WriteLine(hintInputUsedEquipment);
-			foreach (KeyValuePair<Equipment, int> entry in oldEquipmentQuantity)
-			{
-				var equipment = entry.Key;
-				Console.Write(equipment + ": ");
-				int currentQuantity = entry.Value;
-				int usedQuantity = EquipmentModel.GetUsedEquipmentQuantity(inputCancelString, currentQuantity);
-				int newQuantity = currentQuantity - usedQuantity;
-				if (newQuantity != 0)
-				{
-					newEquipmentQuantity[equipment] = newQuantity;
-				}
-			}
-
-			return newEquipmentQuantity;
 		}
 
 	}
