@@ -8,6 +8,7 @@ namespace HospitalIS.Backend.RoomModel
 	internal class RoomService : IRoomService
 	{
 		private readonly IRoomRepository _repo;
+
 		public RoomService(IRoomRepository repo)
 		{
 			_repo = repo;
@@ -22,6 +23,11 @@ namespace HospitalIS.Backend.RoomModel
 		public IEnumerable<Room> Get()
 		{
 			return _repo.Get();
+		}
+
+		public IEnumerable<Room> GetModifiable()
+		{
+			return _repo.GetModifiable();
 		}
 
 		public void Remove(Room r)
@@ -49,11 +55,6 @@ namespace HospitalIS.Backend.RoomModel
 				dest.Equipment[equipment] = amount;
 			}
 			src.Equipment[equipment] -= amount;
-		}
-
-		public IEnumerable<Room> GetModifiable()
-		{
-			return _repo.GetModifiable();
 		}
 
 		public void Copy(Room src, Room dest, IEnumerable<RoomProperty> properties)

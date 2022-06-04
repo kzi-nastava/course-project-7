@@ -8,7 +8,7 @@ namespace HospitalIS.Backend
 	{
 		public static IEnumerable<T> GetEnumValues<T>() where T : Enum
 		{
-			return Enum.GetValues(typeof(T)).Cast<T>().ToList();
+			return Enum.GetValues(typeof(T)).Cast<T>();
 		}
 	}
 

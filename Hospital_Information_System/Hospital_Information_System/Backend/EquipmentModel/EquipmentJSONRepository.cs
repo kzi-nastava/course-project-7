@@ -16,7 +16,7 @@ namespace HospitalIS.Backend.EquipmentModel
 		{
 			_fname = fname;
 			_settings = settings;
-			EquipmentJSONDictionaryConverter<int>.repo = this;
+			EquipmentJSONDictionaryConverter<int>.Repo = this;
 			_equipment = JsonConvert.DeserializeObject<List<Equipment>>(File.ReadAllText(fname), _settings);
 		}
 

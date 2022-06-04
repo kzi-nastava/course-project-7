@@ -6,7 +6,7 @@ using System.IO;
 
 namespace HospitalIS.Frontend.CLI
 {
-	internal static class CLIProgram
+	internal static class Startup
 	{
 		private static readonly string dataDir = Path.Combine("..", "..", "..", "data") + Path.DirectorySeparatorChar;
 		private static readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.None };
@@ -22,12 +22,6 @@ namespace HospitalIS.Frontend.CLI
 
 			RoomView roomView = new RoomView(roomService);
 			EquipmentView equipmentView = new EquipmentView(roomEquipmentServiceFacade);
-
-
-			//roomView.CmdRoomView();
-			//equipmentView.CmdSearch();
-			equipmentView.CmdFilter();
-
 
 			roomRepo.Save();
 		}

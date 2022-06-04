@@ -6,11 +6,11 @@ namespace HospitalIS.Backend.EquipmentModel
 {
 	internal class EquipmentJSONDictionaryConverter<T> : JsonConverter
 	{
-		internal static IEquipmentRepository repo { get; set; }
+		internal static IEquipmentRepository Repo { get; set; }
 
 		public EquipmentJSONDictionaryConverter()
 		{
-			if (repo == null) throw new JSONRepoReferenceNullException();
+			if (Repo == null) throw new JSONRepoReferenceNullException();
 		}
 
 		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -30,7 +30,7 @@ namespace HospitalIS.Backend.EquipmentModel
 			var result = new Dictionary<Equipment, T>();
 			foreach (var kv in readableDict)
 			{
-				Equipment eq = repo.Get().First(eq => eq.Id == kv.Key);
+				Equipment eq = Repo.Get().First(eq => eq.Id == kv.Key);
 				result[eq] = kv.Value;
 			}
 			return result;
