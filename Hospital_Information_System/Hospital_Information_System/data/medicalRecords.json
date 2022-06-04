@@ -7,13 +7,15 @@
       "Diabetes"
     ],
     "IngredientAllergies": [
-      1
+      4
     ],
     "OtherAllergies": [
       "Dust"
     ],
     "Prescriptions": [
-      1
+      1,
+      7,
+      8
     ],
     "Examinations": [
       1,
@@ -23,7 +25,9 @@
       13,
       15,
       16,
-      17
+      17,
+      19,
+      20
     ],
     "Id": 0,
     "Deleted": false
@@ -79,8 +83,12 @@
     "Illnesses": [],
     "IngredientAllergies": [],
     "OtherAllergies": [],
-    "Prescriptions": [],
-    "Examinations": [],
+    "Prescriptions": [
+      6
+    ],
+    "Examinations": [
+      18
+    ],
     "Id": 3,
     "Deleted": false
   }

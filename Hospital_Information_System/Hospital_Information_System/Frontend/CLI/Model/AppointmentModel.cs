@@ -1,7 +1,6 @@
 ﻿using HospitalIS.Backend;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using HospitalIS.Backend.Controller;
 using HospitalIS.Backend.Repository;
@@ -29,7 +28,7 @@ namespace HospitalIS.Frontend.CLI.Model
             "You don't have any scheduled appointments for the time given.";
 
         private const string hintCheckStartingAppointment =
-            "If you want to start any appointment - press 1, if not press anything else";
+            "Do you want to start appointment?";
 
         private const string hintAppointmentIsOver = "Appointment is over.";
 
@@ -50,9 +49,10 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string askCreateAppointment = "Are you sure you want to create this appointment?";
 
         private const string hintMakeReferral =
-            "If you want to make a referral - press 1, if not press anything else";
+            "Do you want to make a referral?";
         private const string hintWritePrescription =
-            "If you want to write a prescription - press 1, if not press anything else";
+            "Do you want to write a prescription?";
+        private const string hintInputDate = "Input the date for which you want to be given scheduled appointments";
 
         internal static void CreateWithPredefinedProperties(string inputCancelString, UserAccount user, List<AppointmentController.AppointmentProperty> predefProperties, Appointment appointment)
         {
@@ -155,7 +155,7 @@ namespace HospitalIS.Frontend.CLI.Model
         {
             try
             {
-                Doctor.MedicineSpeciality speciality = ReferralModel.inputSpecialty(inputCancelString);
+                Doctor.MedicineSpeciality speciality = ReferralModel.InputSpecialty(inputCancelString);
                 if (!DoctorController.DoctorExistForSpecialty(speciality))
                     throw new NothingToSelectException();
                 
@@ -466,55 +466,77 @@ namespace HospitalIS.Frontend.CLI.Model
                 AppointmentController.GetPrioritizableProperties(), inputCancelString);
         }
 
-        public static void ShowNextAppointments(UserAccount user, string inputCancelString)
+        internal static void ViewAndStartAppointments(UserAccount user, string inputCancelString)
         {
-            List <Appointment> nextAppointments = AppointmentController.GetNextDoctorsAppointments(user, inputCancelString);
-            if (nextAppointments.Count == 0)
+            List<Appointment> nextAppointments = ShowNextAppointments(user, inputCancelString);
+            Print(nextAppointments, inputCancelString);
+            if (nextAppointments.Count == 0) return;
+            Console.WriteLine(hintCheckStartingAppointment);
+            if (EasyInput<bool>.YesNo(inputCancelString)) //wants to start appointment
+            {
+                StartAppointment(inputCancelString, nextAppointments);
+            }
+        }
+
+        private static List<Appointment> ShowNextAppointments(UserAccount user, string inputCancelString)
+        {
+            Console.WriteLine(hintInputDate);
+            
+            DateTime firstRelevantDay = EasyInput<DateTime>.Get(
+                new List<Func<DateTime, bool>>()
+                {
+                    newSchedule => newSchedule.CompareTo(DateTime.Now) > 0,
+                },
+                new string[]
+                {
+                    hintDateTimeNotInFuture,
+                },
+                inputCancelString);
+            List <Appointment> nextAppointments = AppointmentController.GetNextDoctorsAppointments(user, inputCancelString, firstRelevantDay);
+            return nextAppointments;
+        }
+
+        private static void Print(List<Appointment> appointments, string inputCancelString)
+        {
+            if (appointments.Count == 0)
             {
                 Console.WriteLine(hintNoScheduledAppoinments);
             }
             else
             {
-                for (int i = 0; i < nextAppointments.Count; i++)
+                foreach (var appointment in appointments)
                 {
-                    var appointment = nextAppointments[i];
-
                     Console.WriteLine(appointment.ToString());
                     MedicalRecordModel.ReadMedicalRecord(appointment, inputCancelString);
                     Console.WriteLine("=====================================");
                 }
-                CheckIfDoctorWantsToStartAppointment(user, inputCancelString, nextAppointments);
-            }
-        }
-        
-        public static void CheckIfDoctorWantsToStartAppointment(UserAccount user, string inputCancelString, List<Appointment> startableAppointments)
-        {
-            Console.WriteLine(hintCheckStartingAppointment);
-            string doctorsWill = Console.ReadLine();
-            if (doctorsWill == "1")
-            {
-                StartAppointment(user, inputCancelString, startableAppointments);
             }
         }
 
-        private static void StartAppointment(UserAccount user, string inputCancelString, List<Appointment> startableAppointments)
+        private static void StartAppointment(string inputCancelString, List<Appointment> startableAppointments)
         {
             Console.WriteLine(hintSelectAppointment);
             var appointmentToStart = EasyInput<Appointment>.Select(startableAppointments, inputCancelString);
+            
             MedicalRecordModel.UpdateMedicalRecordAndAnamnesis(appointmentToStart, inputCancelString);
+            
             Console.WriteLine(hintMakeReferral);
-            var option = Console.ReadLine();
-            if (option == "1")
+            if (EasyInput<bool>.YesNo(inputCancelString)) //wants to create a referral
             {
                 ReferralModel.CreateReferral(appointmentToStart, inputCancelString);
             }
+            
             Console.WriteLine(hintWritePrescription);
-            option = Console.ReadLine();
-            if (option == "1")
+            if (EasyInput<bool>.YesNo(inputCancelString)) //wants to create a prescription
             {
                 PrescriptionModel.CreatePrescription(inputCancelString, MedicalRecordController.GetPatientsMedicalRecord(appointmentToStart.Patient));
             }
+            
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(hintAppointmentIsOver);
+            Console.ForegroundColor = ConsoleColor.Gray;
+            
+            EquipmentModel.DeleteEquipmentAfterAppointment(appointmentToStart.Room, inputCancelString);
         }
         
         internal static void CreateAppointmentWithReferral(Referral referral, string inputCancelString, UserAccount user)

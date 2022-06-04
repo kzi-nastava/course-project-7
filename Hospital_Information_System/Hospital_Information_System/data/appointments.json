@@ -160,5 +160,32 @@
     "Anamnesis": "",
     "Id": 17,
     "Deleted": false
+  },
+  {
+    "Doctor": 1,
+    "Patient": 3,
+    "Room": 11,
+    "ScheduledFor": "2022-05-30T00:00:00",
+    "Anamnesis": "",
+    "Id": 18,
+    "Deleted": false
+  },
+  {
+    "Doctor": 1,
+    "Patient": 1,
+    "Room": 18,
+    "ScheduledFor": "2022-06-02T09:00:00",
+    "Anamnesis": "",
+    "Id": 19,
+    "Deleted": false
+  },
+  {
+    "Doctor": 1,
+    "Patient": 1,
+    "Room": 18,
+    "ScheduledFor": "2022-06-03T00:00:00",
+    "Anamnesis": "",
+    "Id": 20,
+    "Deleted": false
   }
 ]

@@ -6,6 +6,7 @@ namespace HospitalIS.Backend.Controller
 {
 	internal class EquipmentController
 	{
+
 		private static bool StringMatch(string s1, string s2)
 		{
 			s1 = s1.Trim().ToLower();
@@ -74,5 +75,6 @@ namespace HospitalIS.Backend.Controller
 			RoomController.GetRooms().ForEach(r => { if (r.Equipment.ContainsKey(equipment)) numberOfContainingRooms++; });
 			return numberOfContainingRooms;
 		}
+
 	}
 }

@@ -54,7 +54,7 @@ namespace HospitalIS.Frontend.CLI
             new Command("appointment-read", () => AppointmentModel.ReadAppointments(user), new[] {UserAccount.AccountType.DOCTOR, UserAccount.AccountType.PATIENT}),
             new Command("appointment-update", () => AppointmentModel.UpdateAppointment(inputCancelString, user), new[] {UserAccount.AccountType.DOCTOR, UserAccount.AccountType.PATIENT}),
             new Command("appointment-delete", () => AppointmentModel.DeleteAppointment(inputCancelString, user), new[] {UserAccount.AccountType.DOCTOR, UserAccount.AccountType.PATIENT}),
-            new Command("appointment-view-start", () => AppointmentModel.ShowNextAppointments(user, inputCancelString), new[] {UserAccount.AccountType.DOCTOR}),
+            new Command("appointment-view-start", () => AppointmentModel.ViewAndStartAppointments(user, inputCancelString), new[] {UserAccount.AccountType.DOCTOR}),
             new Command("appointment-create-rec", () => AppointmentModel.CreateRecommendedAppointment(inputCancelString, user), new[] {UserAccount.AccountType.PATIENT}),
 
             new Command("anamnesis-search", () => MedicalRecordModel.Search(user, inputCancelString), new[] {UserAccount.AccountType.PATIENT}),
@@ -74,6 +74,7 @@ namespace HospitalIS.Frontend.CLI
             new Command("renovation-schedule", () => RenovationModel.NewRenovation(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
 
 			new Command("medication-create", () => MedicationModel.CreateNewMedicine(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
+			new Command("medication-revision", () => MedicationModel.ReviseMedicine(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
 			new Command("ingredient-create", () => IngredientModel.Create(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
 			new Command("ingredient-read", () => IngredientModel.Read(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
 			new Command("ingredient-update", () => IngredientModel.Update(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
@@ -81,6 +82,8 @@ namespace HospitalIS.Frontend.CLI
 
             new Command("doctor-search", () => DoctorModel.Search(inputCancelString), new [] {UserAccount.AccountType.PATIENT}),
             new Command("doctor-search-and-appoint", () => DoctorModel.AppointFromSearch(user, inputCancelString), new [] {UserAccount.AccountType.PATIENT}),
+			
+			new Command("medication-request-review", () => MedicationModel.ReviewMedicationRequests(user, inputCancelString), new [] {UserAccount.AccountType.DOCTOR}),
         };
 
         static List<Command> GetCommands(UserAccount user)
