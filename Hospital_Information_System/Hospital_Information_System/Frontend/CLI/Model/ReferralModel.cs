@@ -57,7 +57,7 @@ namespace HospitalIS.Frontend.CLI.Model
 
         private static Doctor InputDoctor(Appointment appointment, string inputCancelString)
         {
-            var availableDoctors = DoctorController.GetAvailableDoctors();
+            var availableDoctors = DoctorController.GetDoctors();
             availableDoctors.Remove(appointment.Doctor);
             Console.WriteLine(hintSelectDoctor);
             var chosenDoctor = EasyInput<Doctor>.Select(availableDoctors, inputCancelString);
