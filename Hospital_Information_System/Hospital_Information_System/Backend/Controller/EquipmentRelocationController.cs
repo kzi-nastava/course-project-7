@@ -68,22 +68,6 @@ namespace HospitalIS.Backend.Controller
 			return (room.Type == Room.RoomType.OPERATION || room.Type == Room.RoomType.EXAMINATION ||
 			        room.Type == Room.RoomType.WAREHOUSE);
 		}
-		// public static bool CanBeOldRoomWithDynamicEquipment(Room room, EquipmentRelocation reference)
-		// {
-		// 	if (reference.RoomNew == room)
-		// 		return false;
-		// 	
-		// 	if (reference.RoomOld == null)
-		// 	{
-		// 		return room.Equipment.Count > 0 && IsRoomWithDynamicEquipment(room);
-		// 	}
-		//
-		// 	if (reference.Equipment == null)
-		// 	{
-		// 		return true;
-		// 	}
-		//
-		// 	return RoomController.HasEquipmentAfterRelocations(room, reference.Equipment);
-		// }
+		
 	}
 }

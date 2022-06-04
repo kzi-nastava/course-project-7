@@ -116,19 +116,30 @@ namespace HospitalIS.Backend.Controller
 			return IS.Instance.Hospital.Rooms.Where(room => room.Type == Room.RoomType.EXAMINATION || room.Type == Room.RoomType.OPERATION).ToList();
 		}
 		
-		public static bool HasSomeEquipmentRightNow(Room room, Equipment equipment)
+		public static bool HasEquipmentLessThanFive(Room room, Equipment equipment)
 		{
-			return room.Equipment.ContainsKey(equipment) && room.Equipment[equipment] > 5 && EquipmentController.IsDynamicEquipment(equipment);
+			return room.Equipment.ContainsKey(equipment) && room.Equipment[equipment] < 5;
 		}
 		
 		public static bool DoesNotHaveEquipmentRightNow(Room room, Equipment equipment)
 		{
-			return room.Equipment.ContainsKey(equipment) && room.Equipment[equipment] == 5 && EquipmentController.IsDynamicEquipment(equipment);
+			return room.Equipment.ContainsKey(equipment) && room.Equipment[equipment] == 0;
 		}
 		
 		public static List<Equipment> GetDynamicEquipment(Room room)
 		{
+			return EquipmentController.GetEquipment().Where(eq => EquipmentController.IsDynamicEquipment(eq)).ToList();
+		}
+		
+		public static List<Equipment> GetDynamicEquipmentForRelocation(Room room)
+		{
 			return EquipmentController.GetEquipment().Where(eq => HasEquipmentAfterRelocations(room, eq) && EquipmentController.IsDynamicEquipment(eq)).ToList();
+		}
+
+		private static bool MatchingRoomAndEquipment(Room room, Equipment equipment)
+		{
+			return (equipment.Use == Equipment.EquipmentUse.Examination && room.Type == Room.RoomType.EXAMINATION) || 
+			       (equipment.Use == Equipment.EquipmentUse.Operation && room.Type == Room.RoomType.OPERATION);
 		}
 	}
 }

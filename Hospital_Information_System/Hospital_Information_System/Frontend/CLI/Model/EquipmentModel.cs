@@ -22,6 +22,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		private const string hintSearchSelectEquipment = "Select equipment";
 		private const string hintInputAmountOfEquipment = "Input amount of equipment";
 		private const string errNotZero = "Input amount must be greater than 0!";
+		private const string errNoEquipmentNeeded = "All equipment is in stock";
 		
 		private static readonly Dictionary<string, Func<string, List<Equipment>>> matchBy = new Dictionary<string, Func<string, List<Equipment>>>
 		{
@@ -180,15 +181,24 @@ namespace HospitalIS.Frontend.CLI.Model
 		
 		internal static void RequestNewEquipment(string inputCancelString)
 		{
-			List<Equipment> equipmentNotInStock = EquipmentController.GetDynamicEquipmentNotInStock();
-			
-			Console.WriteLine(hintSearchSelectEquipment);
-			var selectedEquipment = EasyInput<Equipment>.SelectMultiple(equipmentNotInStock, inputCancelString).ToList();
+			try
+			{
+				List<Equipment> equipmentNotInStock = EquipmentController.GetDynamicEquipmentNotInStock();
 
-			var newRequest = CreateRequestEquipment(selectedEquipment, inputCancelString);
+				Console.WriteLine(hintSearchSelectEquipment);
+				var selectedEquipment = EasyInput<Equipment>.SelectMultiple(equipmentNotInStock, inputCancelString)
+					.ToList();
+
+				var newRequest = CreateRequestEquipment(selectedEquipment, inputCancelString);
+
+				newRequest.OrderTime = DateTime.Now;
+				IS.Instance.RequestEquipmentRepo.Add(newRequest);
+			}
+			catch (NothingToSelectException)
+			{
+				Console.WriteLine(errNoEquipmentNeeded);
+			}
 			
-			newRequest.OrderTime = DateTime.Now;
-			IS.Instance.RequestEquipmentRepo.Add(newRequest);
 		}
 
 		private static RequestEquipment CreateRequestEquipment(List<Equipment> equipments, string inputCancelString)

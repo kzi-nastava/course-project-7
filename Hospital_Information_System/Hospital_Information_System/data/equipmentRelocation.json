@@ -222,5 +222,29 @@
     "ScheduledFor": "2022-06-04T19:31:14.0286608+02:00",
     "Id": 27,
     "Deleted": true
+  },
+  {
+    "Equipment": 25,
+    "RoomNew": 6,
+    "RoomOld": 0,
+    "ScheduledFor": "2022-06-04T22:43:14.6047353+02:00",
+    "Id": 28,
+    "Deleted": true
+  },
+  {
+    "Equipment": 0,
+    "RoomNew": 23,
+    "RoomOld": 0,
+    "ScheduledFor": "2022-06-04T23:10:46.0309444+02:00",
+    "Id": 29,
+    "Deleted": true
+  },
+  {
+    "Equipment": 31,
+    "RoomNew": 23,
+    "RoomOld": 0,
+    "ScheduledFor": "2022-06-04T23:11:46.1930566+02:00",
+    "Id": 30,
+    "Deleted": true
   }
 ]
