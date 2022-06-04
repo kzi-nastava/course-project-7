@@ -110,5 +110,25 @@ namespace HospitalIS.Backend.Controller
 		{
 			return GetExaminationRooms().First(r => IsAvailable(r, scheduledFor));
 		}
+
+		public static List<Room> GetExeminationAndOperationRooms()
+		{
+			return IS.Instance.Hospital.Rooms.Where(room => room.Type == Room.RoomType.EXAMINATION || room.Type == Room.RoomType.OPERATION).ToList();
+		}
+		
+		public static bool HasSomeEquipmentRightNow(Room room, Equipment equipment)
+		{
+			return room.Equipment.ContainsKey(equipment) && room.Equipment[equipment] > 5 && EquipmentController.IsDynamicEquipment(equipment);
+		}
+		
+		public static bool DoesNotHaveEquipmentRightNow(Room room, Equipment equipment)
+		{
+			return room.Equipment.ContainsKey(equipment) && room.Equipment[equipment] == 5 && EquipmentController.IsDynamicEquipment(equipment);
+		}
+		
+		public static List<Equipment> GetDynamicEquipment(Room room)
+		{
+			return EquipmentController.GetEquipment().Where(eq => HasEquipmentAfterRelocations(room, eq) && EquipmentController.IsDynamicEquipment(eq)).ToList();
+		}
 	}
 }

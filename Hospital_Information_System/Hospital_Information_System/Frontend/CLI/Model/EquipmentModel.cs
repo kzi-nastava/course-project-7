@@ -124,7 +124,10 @@ namespace HospitalIS.Frontend.CLI.Model
 			Console.WriteLine(showCurrentState);
 			foreach (KeyValuePair<Equipment, int> entry in currentEquipmentQuantity)
 			{
-				Console.WriteLine(entry.Key + ": " + entry.Value);
+				if (EquipmentController.IsDynamicEquipment(entry.Key))
+				{
+					Console.WriteLine(entry.Key + ": " + entry.Value);
+				}
 			}
 			
 		}
@@ -137,13 +140,20 @@ namespace HospitalIS.Frontend.CLI.Model
 			foreach (KeyValuePair<Equipment, int> entry in oldEquipmentQuantity)
 			{
 				var equipment = entry.Key;
-				Console.Write(equipment + ": ");
-				int currentQuantity = entry.Value;
-				int usedQuantity = GetUsedEquipmentQuantity(inputCancelString, currentQuantity);
-				int newQuantity = currentQuantity - usedQuantity;
-				if (newQuantity != 0)
+				var currentQuantity = entry.Value;
+				if (EquipmentController.IsDynamicEquipment(equipment))
 				{
-					newEquipmentQuantity[equipment] = newQuantity;
+					Console.Write(equipment + ": ");
+					int usedQuantity = GetUsedEquipmentQuantity(inputCancelString, currentQuantity);
+					int newQuantity = currentQuantity - usedQuantity;
+					if (newQuantity != 0)
+					{
+						newEquipmentQuantity[equipment] = newQuantity;
+					}
+				}
+				else
+				{
+					newEquipmentQuantity[equipment] = currentQuantity;
 				}
 			}
 

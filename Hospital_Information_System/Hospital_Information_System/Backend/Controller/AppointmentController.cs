@@ -26,6 +26,7 @@ namespace HospitalIS.Backend.Controller
         {
             UserAccountController.AddCreatedAppointmentTimestamp(user, DateTime.Now);
             MedicalRecord patientsRecord = MedicalRecordController.GetPatientsMedicalRecord(appointment.Patient);
+            appointment.Anamnesis = "";
             patientsRecord.Examinations.Add(appointment);
             IS.Instance.AppointmentRepo.Add(appointment);
         }
