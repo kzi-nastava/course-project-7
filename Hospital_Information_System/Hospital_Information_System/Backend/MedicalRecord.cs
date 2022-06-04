@@ -27,6 +27,8 @@ namespace HospitalIS.Backend
         [JsonConverter(typeof(Repository.AppointmentRepository.AppointmentListConverter))]
         public List<Appointment> Examinations { get; set; }
 
+        public int MinutesBeforeNotification { get; set; }
+
         public MedicalRecord()
         {
         }

@@ -29,6 +29,7 @@
       19,
       20
     ],
+    "MinutesBeforeNotification": 20,
     "Id": 0,
     "Deleted": false
   },
@@ -52,6 +53,7 @@
       10,
       11
     ],
+    "MinutesBeforeNotification": 15,
     "Id": 1,
     "Deleted": false
   },
@@ -73,6 +75,7 @@
       12,
       14
     ],
+    "MinutesBeforeNotification": 5,
     "Id": 2,
     "Deleted": false
   },
@@ -89,6 +92,7 @@
     "Examinations": [
       18
     ],
+    "MinutesBeforeNotification": 10,
     "Id": 3,
     "Deleted": false
   }
