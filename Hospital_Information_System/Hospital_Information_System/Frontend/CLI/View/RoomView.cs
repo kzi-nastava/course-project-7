@@ -1,5 +1,5 @@
 ﻿using HospitalIS.Backend;
-using HospitalIS.Backend.Room;
+using HospitalIS.Backend.RoomModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,21 +10,21 @@ namespace HospitalIS.Frontend.CLI.View
 	{
 		private const string errFloorNonNegative = "Room floor must be a non-negative integer!";
 		private const string errNameIsEmpty = "Name cannot be empty!";
-		private readonly RoomService _service;
-		private readonly IEnumerable<Room.RoomType> _types;
-		private readonly IEnumerable<Room.RoomProperty> _properties;
+		private readonly IRoomService _service;
+		private readonly IEnumerable<RoomType> _types;
+		private readonly IEnumerable<RoomProperty> _properties;
 
-		internal RoomView(RoomService roomService)
+		internal RoomView(IRoomService roomService)
 		{
 			_service = roomService;
-			_types = Utility.GetEnumValues<Room.RoomType>();
-			_properties = Utility.GetEnumValues<Room.RoomProperty>();
+			_types = Utility.GetEnumValues<RoomType>();
+			_properties = Utility.GetEnumValues<RoomProperty>();
 		}
 
 		#region commands
 		internal void CmdRoomCreate()
 		{
-			Room r = InputRoom(Utility.GetEnumValues<Room.RoomProperty>());
+			Room r = InputRoom(Utility.GetEnumValues<RoomProperty>());
 			_service.Add(r);
 		}
 
@@ -52,34 +52,34 @@ namespace HospitalIS.Frontend.CLI.View
 		#region helper
 		private Room Select()
 		{
-			return EasyInput<Room>.Select(_service.Get(), r => r.Name, _cancel);
+			return EasyInput<Room>.Select(_service.Get().ToList(), r => r.Name, _cancel);
 		}
 
 		private Room SelectModifiable()
 		{
-			return EasyInput<Room>.Select(_service.GetModifiable(), r => r.Name, _cancel);
+			return EasyInput<Room>.Select(_service.GetModifiable().ToList(), r => r.Name, _cancel);
 		}
 
-		private IList<Room.RoomProperty> SelectProperties()
+		private IList<RoomProperty> SelectProperties()
 		{
-			return EasyInput<Room.RoomProperty>.SelectMultiple(_properties.ToList(), _cancel);
+			return EasyInput<RoomProperty>.SelectMultiple(_properties.ToList(), _cancel);
 		}
 
-		private Room InputRoom(IList<Room.RoomProperty> whichProperties)
+		private Room InputRoom(IEnumerable<RoomProperty> whichProperties)
 		{
 			Room r = new Room();
 
-			if (whichProperties.Contains(Room.RoomProperty.NAME))
+			if (whichProperties.Contains(RoomProperty.NAME))
 			{
 				r.Name = InputName();
 			}
 
-			if (whichProperties.Contains(Room.RoomProperty.TYPE))
+			if (whichProperties.Contains(RoomProperty.TYPE))
 			{
 				r.Type = InputType();
 			}
 
-			if (whichProperties.Contains(Room.RoomProperty.FLOOR))
+			if (whichProperties.Contains(RoomProperty.FLOOR))
 			{
 				r.Floor = InputFloor();
 			}
@@ -105,9 +105,9 @@ namespace HospitalIS.Frontend.CLI.View
 			);
 		}
 
-		private Room.RoomType InputType()
+		private RoomType InputType()
 		{
-			return EasyInput<Room.RoomType>.Select(_types.Where(t => t != Room.RoomType.WAREHOUSE).ToList(), _cancel);
+			return EasyInput<RoomType>.Select(_types.Where(t => t != RoomType.WAREHOUSE).ToList(), _cancel);
 		}
 		#endregion
 	}

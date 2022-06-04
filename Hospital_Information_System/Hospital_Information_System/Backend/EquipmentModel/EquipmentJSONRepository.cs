@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace HospitalIS.Backend.Room
+namespace HospitalIS.Backend.EquipmentModel
 {
 	public class EquipmentJSONRepository : IEquipmentRepository
 	{
-		private List<Equipment> _equipment;
-		private string _fname;
-		private JsonSerializerSettings _settings;
+		private readonly IList<Equipment> _equipment;
+		private readonly string _fname;
+		private readonly JsonSerializerSettings _settings;
 
 		public EquipmentJSONRepository(string fname, JsonSerializerSettings settings)
 		{
 			_fname = fname;
 			_settings = settings;
-			EquipmentDictionaryConverter<int>.repo = this;
+			EquipmentJSONDictionaryConverter<int>.repo = this;
 			_equipment = JsonConvert.DeserializeObject<List<Equipment>>(File.ReadAllText(fname), _settings);
 		}
 

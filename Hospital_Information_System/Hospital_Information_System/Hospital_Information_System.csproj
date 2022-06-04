@@ -42,7 +42,6 @@
     <Compile Remove="Backend\Request.cs" />
     <Compile Remove="Backend\UpdateRequest.cs" />
     <Compile Remove="Backend\UserAccount.cs" />
-    <Compile Remove="Backend\Util\AppointmentSearchBundle.cs" />
     <Compile Remove="data\Ingredients.cs" />
   </ItemGroup>
 

@@ -1,24 +1,24 @@
-﻿namespace HospitalIS.Backend.Room
+﻿using HospitalIS.Backend.Foundation;
+
+namespace HospitalIS.Backend.EquipmentModel
 {
+	public enum EquipmentType
+	{
+		Unknown, Chair, Table, Bed, Cabinet
+	}
+
+	public enum EquipmentUse
+	{
+		Unknown, Examination, Operation, Furniture, Hallway
+	}
+
 	public class Equipment : Entity
 	{
-		public enum EquipmentType
-		{
-			Unknown, Chair, Table, Bed, Cabinet
-		}
-
-		public enum EquipmentUse
-		{
-			Unknown, Examination, Operation, Furniture, Hallway
-		}
-
 		public EquipmentType Type { get; set; }
 		public EquipmentUse Use { get; set; }
 
 		public Equipment()
 		{
-			Type = EquipmentType.Unknown;
-			Use = EquipmentUse.Unknown;
 		}
 
 		public Equipment(EquipmentType type, EquipmentUse use)

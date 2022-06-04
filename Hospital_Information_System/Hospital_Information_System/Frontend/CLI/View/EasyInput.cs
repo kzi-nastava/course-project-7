@@ -93,29 +93,27 @@ namespace HospitalIS.Frontend.CLI.View
 			return result;
 		}
 
-		private static int GetBrokenRuleIndex(IList<Func<T, bool>> rules, T input)
+		private static int GetBrokenRuleIndex(IEnumerable<Func<T, bool>> rules, T input)
 		{
-			for (int i = 0; i < rules.Count; i++)
+			for (int i = 0; i < rules.Count(); i++)
 			{
-				if (rules[i].Invoke(input) == false)
+				
+				if (rules.ElementAt(i).Invoke(input) == false)
 					return i;
 			}
 			return -1;
 		}
 
-		/// <summary>
-		/// Select one element from the given list.
-		/// </summary>
-		public static T Select(IList<T> elements, IList<Func<T, bool>> rules, IList<string> errorMsg, Func<T, string> toStrFunc, string cancel)
+		public static T Select(IEnumerable<T> elements, IEnumerable<Func<T, bool>> rules, IEnumerable<string> errorMsg, Func<T, string> toStrFunc, string cancel)
 		{
-			if (elements.Count == 0)
+			if (elements.Count() == 0)
 			{
 				throw new NothingToSelectException();
 			}
 
-			for (int i = 0; i < elements.Count; i++)
+			for (int i = 0; i < elements.Count(); i++)
 			{
-				Console.WriteLine(i + ". " + toStrFunc.Invoke(elements[i]));
+				Console.WriteLine(i + ". " + toStrFunc.Invoke(elements.ElementAt(i)));
 			}
 
 			int selection = -1;
@@ -128,20 +126,20 @@ namespace HospitalIS.Frontend.CLI.View
 						new List<Func<int, bool>>
 						{
 						n => n >= 0,
-						n => n < elements.Count,
+						n => n < elements.Count(),
 						},
 						new[]
 						{
 						"Selection must be greater than 0.",
-						"Selection must be less than " + elements.Count + ".",
+						"Selection must be less than " + elements.Count() + ".",
 						},
 						cancel
 					);
 
-					int brokenRuleIndex = GetBrokenRuleIndex(rules, elements[selection]);
+					int brokenRuleIndex = GetBrokenRuleIndex(rules, elements.ElementAt(selection));
 					if (brokenRuleIndex != -1)
 					{
-						WriteLineError(errorMsg[brokenRuleIndex]);
+						WriteLineError(errorMsg.ElementAt(brokenRuleIndex));
 						continue;
 					}
 					else
@@ -150,12 +148,12 @@ namespace HospitalIS.Frontend.CLI.View
 					}
 				}
 			}
-			catch (Exception ex)
+			catch
 			{
-				throw ex;
+				throw;
 			}
 
-			return elements[selection];
+			return elements.ElementAt(selection);
 		}
 
 		public static T Select(IList<T> elements, Func<T, string> toStrFunc, string cancel)

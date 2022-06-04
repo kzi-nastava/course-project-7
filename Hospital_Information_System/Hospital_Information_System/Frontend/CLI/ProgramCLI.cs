@@ -1,4 +1,5 @@
-﻿using HospitalIS.Backend.Room;
+﻿using HospitalIS.Backend.RoomModel;
+using HospitalIS.Backend.EquipmentModel;
 using HospitalIS.Frontend.CLI.View;
 using Newtonsoft.Json;
 using System.IO;
@@ -15,7 +16,9 @@ namespace HospitalIS.Frontend.CLI
 			IEquipmentRepository equipmentRepo = new EquipmentJSONRepository(dataDir + "db_equipment.json", jsonSettings);
 			IRoomRepository roomRepo = new RoomJSONRepository(dataDir + "db_rooms.json", jsonSettings);
 
-			RoomService roomService = new RoomService(roomRepo);
+			IRoomService roomService = new RoomService(roomRepo);
+			IEquipmentService equipment = new EquipmentService(equipmentRepo);
+
 			RoomView roomView = new RoomView(roomService);
 
 			roomView.CmdRoomView();

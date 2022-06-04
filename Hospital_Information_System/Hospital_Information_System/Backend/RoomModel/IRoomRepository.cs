@@ -2,7 +2,7 @@ using HospitalIS.Backend.Util;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace HospitalIS.Backend.Room
+namespace HospitalIS.Backend.RoomModel
 {
 	public interface IRoomRepository
 	{
@@ -14,12 +14,12 @@ namespace HospitalIS.Backend.Room
 
 		public IEnumerable<Room> GetModifiable()
 		{
-			return Get().Where(r => r.Type != Room.RoomType.WAREHOUSE);
+			return Get().Where(r => r.Type != RoomType.WAREHOUSE);
 		}
 
 		public Room GetWarehouse()
 		{
-			return Get().FirstOrException(r => r.Type == Room.RoomType.WAREHOUSE);
+			return Get().FirstOrException(r => r.Type == RoomType.WAREHOUSE);
 		}
 	}
 }

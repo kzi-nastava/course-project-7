@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace HospitalIS.Backend.Room
+namespace HospitalIS.Backend.EquipmentModel
 {
 	public interface IEquipmentRepository
 	{

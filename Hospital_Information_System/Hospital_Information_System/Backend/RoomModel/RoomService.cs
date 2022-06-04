@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HospitalIS.Backend.EquipmentModel;
 
-namespace HospitalIS.Backend.Room
+namespace HospitalIS.Backend.RoomModel
 {
-	internal class RoomService
+	internal class RoomService : IRoomService
 	{
 		private readonly IRoomRepository _repo;
 		public RoomService(IRoomRepository repo)
@@ -18,9 +19,9 @@ namespace HospitalIS.Backend.Room
 			_repo.Add(r);
 		}
 
-		public List<Room> Get()
+		public IEnumerable<Room> Get()
 		{
-			return _repo.Get().ToList();
+			return _repo.Get();
 		}
 
 		public void Remove(Room r)
@@ -31,8 +32,8 @@ namespace HospitalIS.Backend.Room
 				Move(eq.Key, eq.Value, r, warehouse);
 			}
 
-			// Cancel relocations that would go here
-			// Remove all renovations for that room
+			// todo Cancel relocations that would go here
+			// todo Remove all renovations for that room
 
 			r.Deleted = true;
 		}
@@ -50,16 +51,17 @@ namespace HospitalIS.Backend.Room
 			src.Equipment[equipment] -= amount;
 		}
 
-		public List<Room> GetModifiable()
+		public IEnumerable<Room> GetModifiable()
 		{
-			return _repo.GetModifiable().ToList();
+			return _repo.GetModifiable();
 		}
 
-		public void Copy(Room src, Room dest, IEnumerable<Room.RoomProperty> properties)
+		public void Copy(Room src, Room dest, IEnumerable<RoomProperty> properties)
 		{
-			if (properties.Contains(Room.RoomProperty.NAME)) dest.Name = src.Name;
-			if (properties.Contains(Room.RoomProperty.FLOOR)) dest.Floor = src.Floor;
-			if (properties.Contains(Room.RoomProperty.TYPE)) dest.Type = src.Type;
+			if (properties.Contains(RoomProperty.NAME)) dest.Name = src.Name;
+			if (properties.Contains(RoomProperty.FLOOR)) dest.Floor = src.Floor;
+			if (properties.Contains(RoomProperty.TYPE)) dest.Type = src.Type;
+			if (properties.Contains(RoomProperty.EQUIPMENT)) dest.Equipment = src.Equipment.ToDictionary(e => e.Key, e => e.Value);
 		}
 	}
 }

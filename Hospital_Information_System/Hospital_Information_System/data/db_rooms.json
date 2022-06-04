@@ -1,27 +1,27 @@
 [
   {
-    "Equipment": {
-      "0": 1
-    },
     "Name": "room01",
     "Floor": 1,
     "Type": 1,
+    "Equipment": {
+      "0": 1
+    },
     "Id": 0,
     "Deleted": false
   },
   {
-    "Equipment": {},
     "Name": "room02",
     "Floor": 0,
     "Type": 2,
+    "Equipment": {},
     "Id": 1,
     "Deleted": false
   },
   {
-    "Equipment": {},
     "Name": "abc",
     "Floor": 12,
     "Type": 5,
+    "Equipment": {},
     "Id": 2,
     "Deleted": false
   }

@@ -6,7 +6,7 @@ namespace HospitalIS.Backend
 {
 	static class Utility
 	{
-		public static List<T> GetEnumValues<T>() where T : Enum
+		public static IEnumerable<T> GetEnumValues<T>() where T : Enum
 		{
 			return Enum.GetValues(typeof(T)).Cast<T>().ToList();
 		}
