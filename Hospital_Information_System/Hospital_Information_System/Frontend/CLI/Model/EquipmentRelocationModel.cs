@@ -119,7 +119,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		{
 			Debug.Assert(editingRelocation.RoomOld != null);
 
-			return EasyInput<Equipment>.Select( !dynamicRoom ? RoomController.GetEquipment(editingRelocation.RoomOld) : RoomController.GetDynamicEquipment(editingRelocation.RoomOld),
+			return EasyInput<Equipment>.Select( !dynamicRoom ? RoomController.GetEquipment(editingRelocation.RoomOld) : RoomController.GetDynamicEquipmentForRelocation(editingRelocation.RoomOld),
 				new List<Func<Equipment, bool>>(),
 				new string[] { },
 				eq => eq.ToString(),
@@ -199,12 +199,13 @@ namespace HospitalIS.Frontend.CLI.Model
 				if (RoomController.DoesNotHaveEquipmentRightNow(room, equipment))
 				{
 					Console.ForegroundColor = ConsoleColor.Red;
-					Console.WriteLine(equipment);
+					Console.WriteLine(equipment + " Amount: " + room.Equipment[equipment]);
 					Console.ResetColor();
 					continue;
 				}
-				if (!RoomController.HasSomeEquipmentRightNow(room, equipment))
-					Console.WriteLine(equipment);
+				if (RoomController.HasEquipmentLessThanFive(room, equipment))
+					Console.WriteLine(equipment + " Amount: " + room.Equipment[equipment]);
+				
 			}
 		}
 
@@ -215,10 +216,10 @@ namespace HospitalIS.Frontend.CLI.Model
 			
 			Console.WriteLine(hintInputOldRoom);
 			result.RoomOld = InputChangeRoomOld(inputCancelString, result, true);
-			
+
 			Console.WriteLine(hintInputEquipment);
 			result.Equipment = InputChangeEquipment(inputCancelString, result, true);
-
+			
 			result.ScheduledFor = DateTime.Now;
 
 			return result;
