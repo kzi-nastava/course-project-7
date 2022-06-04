@@ -39,6 +39,7 @@ namespace HospitalIS.Backend.Controller
                 if (ua.Username == username && ua.Password == password)
                 {
                     if (ua.Blocked != UserAccount.BlockedBy.NONE) throw new InvalidLoginAttemptException("Account is blocked");
+                    MedicalRecordController.AddNotifsIfNecessary(ua);
                     return ua;
                 }
             }

@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HospitalIS.Backend.Repository
 {
@@ -39,6 +41,37 @@ namespace HospitalIS.Backend.Repository
         public void Save(string fullFilename, JsonSerializerSettings settings)
         {
             File.WriteAllText(fullFilename, JsonConvert.SerializeObject(IS.Instance.Hospital.MedicalRecords, Formatting.Indented, settings));
+        }
+
+        public void Execute(MedicalRecord record, Prescription prescription)
+        {
+            prescription.TimesOfUsage.Sort();
+            foreach (TimeSpan time in prescription.TimesOfUsage)
+            {
+                TimeSpan timeUntilPrescription = time - DateTime.Now.TimeOfDay;
+                if (timeUntilPrescription.TotalMinutes < 0) continue;
+                TimeSpan timeToSleep = timeUntilPrescription - TimeSpan.FromMinutes(record.MinutesBeforeNotification);
+                timeToSleep = timeToSleep.TotalMinutes > 0 ? timeToSleep : TimeSpan.FromMinutes(0);
+
+                Thread.Sleep(timeToSleep);
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Don't forget to take {prescription.Medication.Name} at {time}!");
+                Console.ForegroundColor = ConsoleColor.Gray;
+            }
+        }
+
+        public void AddTask(MedicalRecord record)
+        {
+            var tasks = new List<Task>();
+            foreach (Prescription p in record.Prescriptions)
+            {
+                tasks.Add(new Task(() => Execute(record, p)));
+            }
+            foreach (Task t in tasks)
+            {
+                t.Start();
+            }
         }
 
         internal class MedicalRecordReferenceConverter : JsonConverter

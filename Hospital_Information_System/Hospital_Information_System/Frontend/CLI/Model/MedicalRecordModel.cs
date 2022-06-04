@@ -4,6 +4,8 @@ using System.Linq;
 using static HospitalIS.Backend.Controller.MedicalRecordController;
 using static HospitalIS.Backend.Controller.AppointmentController;
 using HospitalIS.Backend;
+using System.Diagnostics;
+using HospitalIS.Backend.Controller;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
@@ -44,6 +46,9 @@ namespace HospitalIS.Frontend.CLI.Model
 
         private const string hintSearchSortBy = "Enter sorting criteria";
         private const string hintSearchQuery = "Enter search query";
+
+        private const string hintGetMinutes = "Enter how many minutes before the scheduled medication time you want to receive a notification.";
+        private const string errMinutesMustBePositiveNumber = "Minutes must be a positive number!";
 
         private static void CreateMedicalRecord(Patient patient, string inputCancelString)
         {
@@ -339,6 +344,27 @@ namespace HospitalIS.Frontend.CLI.Model
             {
                 Console.WriteLine(match.AnamnesisFocusedToString());
             }
+        }
+
+        internal static void ChangeMinutesBeforeNotification(UserAccount user, string inputCancelString)
+        {
+            if (user.Type != UserAccount.AccountType.PATIENT)
+            {
+                return;
+            }
+
+            Patient patient = PatientController.GetPatientFromPerson(user.Person);
+            Debug.Assert(patient != null);
+            MedicalRecord record = GetPatientsMedicalRecord(patient);
+            Debug.Assert(record != null);
+
+            Console.WriteLine(hintGetMinutes);
+            int newMinutes = EasyInput<int>.Get(
+                new List<Func<int, bool>> { m => m > 0 },
+                new string[] { errMinutesMustBePositiveNumber, },
+                inputCancelString);
+
+            record.MinutesBeforeNotification = newMinutes;
         }
     }
 }
