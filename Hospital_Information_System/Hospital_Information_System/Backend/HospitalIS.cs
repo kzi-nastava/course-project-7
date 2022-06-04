@@ -33,6 +33,7 @@ namespace HospitalIS.Backend
 		public MedicationRepository MedicationRepo = new MedicationRepository();
 		public PrescriptionRepository PrescriptionRepo = new PrescriptionRepository();
 		public MedicationRequestRepository MedicationRequestRepo = new MedicationRequestRepository();
+		public RequestEquipmentRepository RequestEquipmentRepo = new RequestEquipmentRepository();
 		public AppointmentRatingRepository AppointmentRatingRepo = new AppointmentRatingRepository();
 
 		private readonly JsonSerializerSettings settings;
@@ -53,6 +54,7 @@ namespace HospitalIS.Backend
 		private const string fnameMedications = "medications.json";
 		private const string fnamePrescriptions = "prescriptions.json";
 		private const string fnameMedicationRequests = "medicationRequests.json";
+		private const string fnameRequestEquipment = "requestEquipment.json";
 		private const string fnameAppointmentRatings = "appointmentRatings.json";
 
 		public IS()
@@ -79,6 +81,8 @@ namespace HospitalIS.Backend
 			PrescriptionRepo.Save(Path.Combine(directory, fnamePrescriptions), settings);
 			MedicalRecordRepo.Save(Path.Combine(directory, fnameMedicalRecords), settings);
 			MedicationRequestRepo.Save(Path.Combine(directory, fnameMedicationRequests), settings);
+
+			RequestEquipmentRepo.Save(Path.Combine(directory, fnameRequestEquipment), settings);
 			AppointmentRatingRepo.Save(Path.Combine(directory, fnameAppointmentRatings), settings);
 		}
 
@@ -101,6 +105,7 @@ namespace HospitalIS.Backend
 			PrescriptionRepo.Load(Path.Combine(directory, fnamePrescriptions), settings);
 			MedicalRecordRepo.Load(Path.Combine(directory, fnameMedicalRecords), settings);
 			MedicationRequestRepo.Load(Path.Combine(directory, fnameMedicationRequests), settings);
+			RequestEquipmentRepo.Load(Path.Combine(directory, fnameRequestEquipment), settings);
 			AppointmentRatingRepo.Load(Path.Combine(directory, fnameAppointmentRatings), settings);
 
 			foreach (var relocation in Hospital.EquipmentRelocations)
@@ -110,6 +115,11 @@ namespace HospitalIS.Backend
 			foreach (var renovation in Hospital.Renovations)
 			{
 				RenovationRepo.AddTask(renovation);
+			}
+
+			foreach (var request in Hospital.RequestsEquipment)
+			{
+				RequestEquipmentRepo.AddTask(request);
 			}
 		}
 	}

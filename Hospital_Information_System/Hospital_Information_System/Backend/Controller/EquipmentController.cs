@@ -76,5 +76,27 @@ namespace HospitalIS.Backend.Controller
 			return numberOfContainingRooms;
 		}
 
+		private static List<Equipment> GetDynamicEquipment()
+		{
+			return GetEquipment().Where(IsDynamicEquipment).ToList();
+		}
+
+		public static List<Equipment> GetDynamicEquipmentNotInStock()
+		{
+			return GetDynamicEquipment().Where(eq => GetTotalSupplyCount(eq) == 0).ToList();
+		}
+
+		public static bool IsDynamicEquipment(Equipment equipment)
+		{
+			return (equipment.Use == Equipment.EquipmentUse.Examination || 
+					equipment.Use == Equipment.EquipmentUse.Operation ||
+					equipment.Use == Equipment.EquipmentUse.Unknown) && 
+			       (equipment.Type == Equipment.EquipmentType.Gauze ||
+                   equipment.Type == Equipment.EquipmentType.Injection ||
+                   equipment.Type == Equipment.EquipmentType.BandAid ||
+                   equipment.Type == Equipment.EquipmentType.Pen ||
+                   equipment.Type == Equipment.EquipmentType.Paper ||
+                   equipment.Type == Equipment.EquipmentType.Unknown);
+		}
 	}
 }

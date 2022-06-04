@@ -19,6 +19,9 @@ namespace HospitalIS.Frontend.CLI.Model
 		private const string errNoEquipmentInRoom = "There's no equipment in this room";
 		private const string errPositiveNumber = "You must input a positive number (or 0)";
 		private const string hintInputUsedEquipment = "For each equipment, input how many you have used: ";
+		private const string hintSearchSelectEquipment = "Select equipment";
+		private const string hintInputAmountOfEquipment = "Input amount of equipment";
+		private const string errNotZero = "Input amount must be greater than 0!";
 		
 		private static readonly Dictionary<string, Func<string, List<Equipment>>> matchBy = new Dictionary<string, Func<string, List<Equipment>>>
 		{
@@ -102,7 +105,6 @@ namespace HospitalIS.Frontend.CLI.Model
 			}
 		}
 		
-
 		public static void DeleteEquipmentAfterAppointment(Room room, string inputCancelString)
 		{
 			Dictionary<Equipment, int> currentEquipmentQuantity = room.Equipment;
@@ -164,6 +166,39 @@ namespace HospitalIS.Frontend.CLI.Model
 				},
 				inputCancelString
 			);
+		}
+		
+		internal static void RequestNewEquipment(string inputCancelString)
+		{
+			List<Equipment> equipmentNotInStock = EquipmentController.GetDynamicEquipmentNotInStock();
+			
+			Console.WriteLine(hintSearchSelectEquipment);
+			var selectedEquipment = EasyInput<Equipment>.SelectMultiple(equipmentNotInStock, inputCancelString).ToList();
+
+			var newRequest = CreateRequestEquipment(selectedEquipment, inputCancelString);
+			
+			newRequest.OrderTime = DateTime.Now;
+			IS.Instance.RequestEquipmentRepo.Add(newRequest);
+		}
+
+		private static RequestEquipment CreateRequestEquipment(List<Equipment> equipments, string inputCancelString)
+		{
+			RequestEquipment request = new RequestEquipment();
+			
+			foreach (var equipment in equipments)
+			{
+				int amountOfEquipment = InputAmountOfEquipment(equipment, inputCancelString);
+				request.Equipment.Add(equipment, amountOfEquipment);
+			}
+			return request;
+		}
+
+		private static int InputAmountOfEquipment(Equipment equipment, string inputCancelString)
+		{
+			Console.WriteLine(equipment);
+			Console.WriteLine(hintInputAmountOfEquipment);
+			return EasyInput<int>.Get(new List<Func<int, bool>> {s => s > 0}, new[]
+				{errNotZero}, inputCancelString);
 		}
 	}
 }
