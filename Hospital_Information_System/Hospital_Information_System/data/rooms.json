@@ -261,5 +261,13 @@
     "Floor": 1,
     "Id": 23,
     "Deleted": false
+  },
+  {
+    "Equipment": {},
+    "Type": 5,
+    "Name": "prazna-soba",
+    "Floor": 1,
+    "Id": 24,
+    "Deleted": false
   }
 ]
