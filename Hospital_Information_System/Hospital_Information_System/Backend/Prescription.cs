@@ -35,5 +35,20 @@ namespace HospitalIS.Backend
         {
             return $"Prescription{{Id = {Id}, Medicine = {Medication.Name}, Usage = {Usage}, FrequencyOfUsage = {Frequency}, TimesOfUsage = {TimesOfUsage}}}";
         }
+        
+        public static string PrescriptionsToString(List<Prescription> entry)
+        {
+            string result = "";
+            for (int i = 0; i <= entry.Count - 1; i++)
+            {
+                result += entry[i].Medication.Name;
+                if (i < entry.Count - 1)
+                {
+                    result += ", ";
+                }
+            }
+
+            return result;
+        }
     }
 }
