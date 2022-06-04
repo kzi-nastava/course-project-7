@@ -120,7 +120,7 @@ namespace HospitalIS.Frontend.CLI.Model
         
         private static List<UserAccount> SelectBlockableAccounts(string inputCancelString)
         {
-            return EasyInput<UserAccount>.SelectMultiple(UserAccountController.GetNotBlockedAccounts(), r => r.Username, inputCancelString).ToList();
+            return EasyInput<UserAccount>.SelectMultiple(UserAccountController.GetNotBlockedPatientAccounts(), r => r.Username, inputCancelString).ToList();
         }
         
         private static List<UserAccount> SelectUnblockableAccounts(string inputCancelString)

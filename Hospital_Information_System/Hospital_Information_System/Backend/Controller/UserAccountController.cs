@@ -119,9 +119,9 @@ namespace HospitalIS.Backend.Controller
             return IS.Instance.Hospital.UserAccounts.Where(account => !account.Deleted && IsBlocked(account)).ToList();
         }
         
-        public static List<UserAccount> GetNotBlockedAccounts()
+        public static List<UserAccount> GetNotBlockedPatientAccounts()
         {
-            return IS.Instance.Hospital.UserAccounts.Where(account => !account.Deleted && !IsBlocked(account)).ToList();
+            return IS.Instance.Hospital.UserAccounts.Where(account => !account.Deleted && !IsBlocked(account) && account.Type == UserAccount.AccountType.PATIENT).ToList();
         }
 
         internal static bool IsBlocked(UserAccount account)
