@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using HospitalIS.Backend.Controller;
 
 namespace HospitalIS.Backend.Repository
 {
@@ -29,6 +30,18 @@ namespace HospitalIS.Backend.Repository
 
         public void Remove(Ingredient entity)
         {
+			var dependentMedicine = MedicationController.GetMedications().Where(m => m.Ingredients.Contains(entity));
+			foreach (var medicine in dependentMedicine)
+			{
+				IS.Instance.MedicationRepo.Remove(medicine);
+			}
+			
+			var dependentMedicineRequests = MedicationRequestController.GetPendingRequests().Where(r => r.Medication.Ingredients.Contains(entity));
+			foreach (var request in dependentMedicineRequests)
+			{
+				IS.Instance.MedicationRequestRepo.Remove(request);
+			}
+
             entity.Deleted = true;
         }
 

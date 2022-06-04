@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HospitalIS.Backend.Controller
 {
-	internal class EquipmentRelocationController
+	internal static class EquipmentRelocationController
 	{
-
 		public enum Property
 		{
 			EQUIPMENT,
@@ -43,9 +44,15 @@ namespace HospitalIS.Backend.Controller
 			return IS.Instance.Hospital.EquipmentRelocations.Where(r => r.RoomNew == room && r.Equipment == equipment).ToList();
 		}
 
-		public static bool CanBeOldRoom(Room room, EquipmentRelocation reference)
+		public static bool CanBeOldRoom(Room room, EquipmentRelocation reference, bool dynamicRoom = false)
 		{
-			if (reference.RoomOld == null)
+			if (dynamicRoom && reference.RoomNew == room)
+				return false;
+			
+			if (dynamicRoom && reference.RoomOld == null)
+				return room.Equipment.Count > 0 && IsRoomWithDynamicEquipment(room);
+			
+			if (reference.RoomOld == null && !dynamicRoom)
 			{
 				return room.Equipment.Count > 0;
 			}
@@ -57,5 +64,36 @@ namespace HospitalIS.Backend.Controller
 
 			return RoomController.HasEquipmentAfterRelocations(room, reference.Equipment);
 		}
+
+		public static void Execute(EquipmentRelocation relocation)
+		{
+			Thread.Sleep(Math.Max(relocation.GetTimeToLive(), 0));
+
+			if (relocation.Deleted)
+				return;
+
+			if (!IS.Instance.Hospital.EquipmentRelocations.Contains(relocation))
+				throw new EntityNotFoundException();
+
+			Console.WriteLine($"Performed relocation {relocation}.");
+
+			IS.Instance.RoomRepo.Add(relocation.RoomNew, relocation.Equipment);
+			IS.Instance.RoomRepo.Remove(relocation.RoomOld, relocation.Equipment);
+			IS.Instance.EquipmentRelocationRepo.Remove(relocation);
+		}
+
+		public static void AddTask(EquipmentRelocation equipmentRelocation)
+		{
+			Task t = new Task(() => Execute(equipmentRelocation));
+			IS.Instance.Hospital.EquipmentRelocationTasks.Add(t);
+			t.Start();
+		}
+
+		private static bool IsRoomWithDynamicEquipment(Room room)
+		{
+			return (room.Type == Room.RoomType.OPERATION || room.Type == Room.RoomType.EXAMINATION ||
+			        room.Type == Room.RoomType.WAREHOUSE);
+		}
+		
 	}
 }

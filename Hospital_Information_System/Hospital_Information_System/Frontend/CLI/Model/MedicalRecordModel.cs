@@ -4,6 +4,8 @@ using System.Linq;
 using static HospitalIS.Backend.Controller.MedicalRecordController;
 using static HospitalIS.Backend.Controller.AppointmentController;
 using HospitalIS.Backend;
+using System.Diagnostics;
+using HospitalIS.Backend.Controller;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
@@ -22,7 +24,6 @@ namespace HospitalIS.Frontend.CLI.Model
 
         private const string hintInputAllergy = "Input allegie:";
         private const string hintInputIngredients = "Input ingredients: ";
-        private const string hintInputAnamnesis = "Input anamnesis (newLine to finish)";
 
         private const string hintSelectProperties =
             "Select properties by their number, separated by whitespace.\nEnter a newline to finish";
@@ -35,7 +36,6 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string errHeightTooLow = "Height must be higher than 50cm!";
         private const string hintNoMedicalRecord = "This patient doesn't have a medical record yet.";
         private const string hintMedicalRecordUpdated = "You've successfully updated patient's medical record!";
-        private const string hintAnamensisUpdated = "You've successfully updated appointment's anamnesis";
         private const string hintSelectAction = "Select the action that you want to perform";
         private const string hintInputNew = "Input the item you want to add, or newLine to finish";
         private const string hintSelectToRemove = "Select items you want removed";
@@ -45,20 +45,23 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintSearchSortBy = "Enter sorting criteria";
         private const string hintSearchQuery = "Enter search query";
 
-        internal static void CreateMedicalRecord(Patient patient, string inputCancelString)
+        private const string hintGetMinutes = "Enter how many minutes before the scheduled medication time you want to receive a notification.";
+        private const string errMinutesMustBePositiveNumber = "Minutes must be a positive number!";
+
+        private static void CreateMedicalRecord(Patient patient, string inputCancelString)
         {
             try
             {
                 MedicalRecord medicalRecord = new MedicalRecord();
                 medicalRecord.Patient = patient;
-                medicalRecord.Weight = inputWeight(inputCancelString);
-                medicalRecord.Height = inputHeight(inputCancelString);
-                medicalRecord.Illnesses = inputIllnesses();
-                medicalRecord.IngredientAllergies = inputIngredients(inputCancelString);
-                medicalRecord.OtherAllergies = inputAllergies();
+                medicalRecord.Weight = InputWeight(inputCancelString);
+                medicalRecord.Height = InputHeight(inputCancelString);
+                medicalRecord.Illnesses = InputIllnesses();
+                medicalRecord.IngredientAllergies = InputIngredients(inputCancelString);
+                medicalRecord.OtherAllergies = InputAllergies();
                 medicalRecord.Prescriptions = new List<Prescription>();
 
-                medicalRecord.Examinations = GetAllPatientsAppointments(patient);
+                medicalRecord.Examinations = GetAppointments(patient);
 
                 IS.Instance.MedicalRecordRepo.Add(medicalRecord);
             }
@@ -82,46 +85,44 @@ namespace HospitalIS.Frontend.CLI.Model
             }
         }
 
-        internal static void UpdateMedicalRecordAndAnamnesis(Appointment appointment, string inputCancelString)
+        internal static void UpdateMedicalRecord(Patient patient, string inputCancelString)
         {
-            MedicalRecord medicalRecord = GetPatientsMedicalRecord(appointment.Patient);
+            MedicalRecord medicalRecord = GetPatientsMedicalRecord(patient);
             if (medicalRecord is null)
             {
-                CreateMedicalRecord(appointment.Patient, inputCancelString);
+                CreateMedicalRecord(patient, inputCancelString);
             }
             else
             {
-                Console.WriteLine(hintSelectProperties);
-                try
-                {
-                    List<MedicalRecordProperty> modifiableProperties = GetModifiableProperties();
-                    var propertiesToUpdate = EasyInput<MedicalRecordProperty>.SelectMultiple(
-                        modifiableProperties,
-                        ap => GetAppointmentPropertyName(ap),
-                        inputCancelString
-                    ).ToList();
-                    var updatedMedialRecord =
-                        GetUpdatedMedicalRecord(inputCancelString, propertiesToUpdate, medicalRecord);
-                    CopyMedicalRecord(medicalRecord, updatedMedialRecord, propertiesToUpdate);
-                    Console.WriteLine(hintMedicalRecordUpdated);
-                }
-                
-                catch (InputFailedException e)
-                {
-                    Console.WriteLine(e.Message);
-                }
+                UpdateMedicalRecord(medicalRecord, inputCancelString);
             }
-
-            var propertyToUpdate = new List<AppointmentProperty>();
-            propertyToUpdate.Add(AppointmentProperty.ANAMNESIS);
-            Appointment updatedAppointment = appointment;
-            updatedAppointment.Anamnesis = InputAnamnesis();
-            CopyAppointment(appointment, updatedAppointment, propertyToUpdate);
-            Console.WriteLine(hintAnamensisUpdated);
 
         }
 
-        internal static float inputWeight(string inputCancelString)
+        private static void UpdateMedicalRecord(MedicalRecord medicalRecord, string inputCancelString)
+        {
+            Console.WriteLine(hintSelectProperties);
+            try
+            {
+                List<MedicalRecordProperty> modifiableProperties = GetModifiableProperties();
+                var propertiesToUpdate = EasyInput<MedicalRecordProperty>.SelectMultiple(
+                    modifiableProperties,
+                    ap => GetAppointmentPropertyName(ap),
+                    inputCancelString
+                ).ToList();
+                var updatedMedialRecord =
+                    GetUpdatedMedicalRecord(inputCancelString, propertiesToUpdate, medicalRecord);
+                CopyMedicalRecord(medicalRecord, updatedMedialRecord, propertiesToUpdate);
+                Console.WriteLine(hintMedicalRecordUpdated);
+            }
+                
+            catch (InputFailedException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        private static float InputWeight(string inputCancelString)
         {
             Console.WriteLine(hintInputWeight);
             return EasyInput<float>.Get(
@@ -141,7 +142,7 @@ namespace HospitalIS.Frontend.CLI.Model
             );
         }
 
-        internal static float inputHeight(string inputCancelString)
+        private static float InputHeight(string inputCancelString)
         {
             Console.WriteLine(hintInputHeight);
             return EasyInput<float>.Get(
@@ -161,7 +162,7 @@ namespace HospitalIS.Frontend.CLI.Model
             );
         }
 
-        internal static List<String> inputIllnesses()
+        private static List<String> InputIllnesses()
         {
             List<String> illnesses = new List<string>();
             Console.WriteLine(hintInputIllnesses);
@@ -181,7 +182,7 @@ namespace HospitalIS.Frontend.CLI.Model
         }
 
 
-        internal static List<String> inputAllergies()
+        private static List<String> InputAllergies()
         {
             List<String> allergies = new List<string>();
             Console.WriteLine(hintInputAllergies);
@@ -200,39 +201,32 @@ namespace HospitalIS.Frontend.CLI.Model
             return allergies;
         }
         
-        internal static List<Ingredient> inputIngredients(string inputCancelString)
+        private static List<Ingredient> InputIngredients(string inputCancelString)
         {
             Console.WriteLine(hintInputIngredients);
-            List<Ingredient> ingredients = getAllIngredients();
+            List<Ingredient> ingredients = GetAllIngredients();
             var selectedIngredients = EasyInput<Ingredient>.SelectMultiple(ingredients, inputCancelString).ToList();
             return selectedIngredients;
         }
 
-        internal static List<Ingredient> getAllIngredients()
+        private static List<Ingredient> GetAllIngredients()
         {
             return IS.Instance.Hospital.Ingredients.Where(
                 a => !a.Deleted).ToList();
         }
 
-        internal static string InputAnamnesis()
-        {
-            Console.WriteLine(hintInputAnamnesis);
-            return Console.ReadLine();
-
-        }
-
-        internal static MedicalRecord GetUpdatedMedicalRecord(string inputCancelString,
+        private static MedicalRecord GetUpdatedMedicalRecord(string inputCancelString,
             List<MedicalRecordProperty> propertiesToUpdate, MedicalRecord oldMedicalRecord)
         {
             MedicalRecord updatedMedicalRecord = oldMedicalRecord;
             if (propertiesToUpdate.Contains(MedicalRecordProperty.HEIGHT))
             {
-                updatedMedicalRecord.Height = inputHeight(inputCancelString);
+                updatedMedicalRecord.Height = InputHeight(inputCancelString);
             }
 
             if (propertiesToUpdate.Contains(MedicalRecordProperty.WEIGHT))
             {
-                updatedMedicalRecord.Weight = inputWeight(inputCancelString);
+                updatedMedicalRecord.Weight = InputWeight(inputCancelString);
             }
 
             if (propertiesToUpdate.Contains(MedicalRecordProperty.OTHER_ALLERGIES))
@@ -243,7 +237,7 @@ namespace HospitalIS.Frontend.CLI.Model
             if (propertiesToUpdate.Contains(MedicalRecordProperty.ALLERGIES_TO_INGREDIENTS))
             {
                 Console.WriteLine(hintUpdatingCurrentAllergies);
-                updatedMedicalRecord.IngredientAllergies = inputIngredients(inputCancelString);
+                updatedMedicalRecord.IngredientAllergies = InputIngredients(inputCancelString);
             }
 
             if (propertiesToUpdate.Contains(MedicalRecordProperty.ILLNESSES))
@@ -255,7 +249,7 @@ namespace HospitalIS.Frontend.CLI.Model
             return updatedMedicalRecord;
         }
 
-        public static List<String> PerformActionsOnList(List<String> properties, string inputCancelString)
+        private static List<String> PerformActionsOnList(List<String> properties, string inputCancelString)
         {
             Console.WriteLine(hintSelectAction);
             List<string> allActions = GetActionsPerformableOnList();
@@ -278,7 +272,7 @@ namespace HospitalIS.Frontend.CLI.Model
         }
 
 
-        public static List<String> Add(List<String> oldList)
+        private static List<String> Add(List<String> oldList)
         {
             List<String> updatedList = oldList;
             while (true)
@@ -299,7 +293,7 @@ namespace HospitalIS.Frontend.CLI.Model
             return updatedList;
         }
 
-        public static List<String> Remove(List<String> oldList, string inputCancelString)
+        private static List<String> Remove(List<String> oldList, string inputCancelString)
         {
             List<String> updatedList = oldList;
             Console.WriteLine(hintSelectToRemove);
@@ -339,6 +333,27 @@ namespace HospitalIS.Frontend.CLI.Model
             {
                 Console.WriteLine(match.AnamnesisFocusedToString());
             }
+        }
+
+        internal static void ChangeMinutesBeforeNotification(UserAccount user, string inputCancelString)
+        {
+            if (user.Type != UserAccount.AccountType.PATIENT)
+            {
+                return;
+            }
+
+            Patient patient = PatientController.GetPatientFromPerson(user.Person);
+            Debug.Assert(patient != null);
+            MedicalRecord record = GetPatientsMedicalRecord(patient);
+            Debug.Assert(record != null);
+
+            Console.WriteLine(hintGetMinutes);
+            int newMinutes = EasyInput<int>.Get(
+                new List<Func<int, bool>> { m => m > 0 },
+                new string[] { errMinutesMustBePositiveNumber, },
+                inputCancelString);
+
+            record.MinutesBeforeNotification = newMinutes;
         }
     }
 }

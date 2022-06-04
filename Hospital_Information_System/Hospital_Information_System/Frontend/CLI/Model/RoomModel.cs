@@ -50,7 +50,7 @@ namespace HospitalIS.Frontend.CLI.Model
 			foreach (var room in selectedRoomsForDeletion)
 			{
 				IS.Instance.RoomRepo.Remove(room);
-			}		
+			}
 		}
 
 		private static List<Room> SelectModifiableRooms(string inputCancelString)

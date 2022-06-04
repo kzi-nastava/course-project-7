@@ -1,7 +1,6 @@
 ﻿using HospitalIS.Backend;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using HospitalIS.Backend.Controller;
 using HospitalIS.Backend.Repository;
@@ -29,7 +28,7 @@ namespace HospitalIS.Frontend.CLI.Model
             "You don't have any scheduled appointments for the time given.";
 
         private const string hintCheckStartingAppointment =
-            "If you want to start any appointment - press 1, if not press anything else";
+            "Do you want to start appointment?";
 
         private const string hintAppointmentIsOver = "Appointment is over.";
 
@@ -50,16 +49,27 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string askCreateAppointment = "Are you sure you want to create this appointment?";
 
         private const string hintMakeReferral =
-            "If you want to make a referral - press 1, if not press anything else";
+            "Do you want to make a referral?";
         private const string hintWritePrescription =
-            "If you want to write a prescription - press 1, if not press anything else";
+            "Do you want to write a prescription?";
+        private const string hintInputDate = "Input the date for which you want to be given scheduled appointments";
+        
+        private const string hintAnamensisUpdated = "You've successfully updated appointment's anamnesis";
+        
+        private const string hintInputAnamnesis = "Input anamnesis (newLine to finish)";
+
+        internal static void CreateWithPredefinedProperties(string inputCancelString, UserAccount user, List<AppointmentController.AppointmentProperty> predefProperties, Appointment appointment)
+        {
+            var propertiesToInput = AppointmentController.GetProperties().FindAll(p => !predefProperties.Contains(p));
+            InputAppointment(inputCancelString, propertiesToInput, user, appointment);
+            AppointmentController.Create(appointment, user);
+        }
 
         internal static void CreateAppointment(string inputCancelString, UserAccount user)
         {
             try
             {
-                Appointment appointment = InputAppointment(inputCancelString, AppointmentController.GetAllAppointmentProperties(), user);
-                AppointmentController.Create(appointment, user);
+                CreateWithPredefinedProperties(inputCancelString, user, new List<AppointmentController.AppointmentProperty>(), new Appointment());
                 Console.WriteLine(hintAppointmentScheduled);
             }
             catch (InputFailedException e)
@@ -73,13 +83,12 @@ namespace HospitalIS.Frontend.CLI.Model
             List<Appointment> allAppointments = new List<Appointment>();
             if (user.Type == UserAccount.AccountType.PATIENT)
             {
-                var patient = IS.Instance.Hospital.Patients.First(p => p.Person.Id == user.Person.Id);
-                allAppointments = AppointmentController.GetAllPatientsAppointments(patient);
+                allAppointments = AppointmentController.GetAppointments(PatientController.GetPatientFromPerson(user.Person));
             }
             
             if (user.Type == UserAccount.AccountType.DOCTOR)
             {
-                allAppointments = AppointmentController.GetAllDoctorsAppointments(user);
+                allAppointments = AppointmentController.GetAppointments(DoctorController.GetDoctorFromPerson(user.Person));
             }
 
             
@@ -97,7 +106,8 @@ namespace HospitalIS.Frontend.CLI.Model
             {
                 Appointment appointment = SelectModifiableAppointment(inputCancelString, user);
                 var propertiesToUpdate = SelectModifiableProperties(inputCancelString, user);
-                Appointment updatedAppointment = InputAppointment(inputCancelString, propertiesToUpdate, user, appointment);
+                var updatedAppointment = new Appointment();
+                InputAppointment(inputCancelString, propertiesToUpdate, user, updatedAppointment, appointment);
                 AppointmentController.Update(appointment, updatedAppointment, propertiesToUpdate, user);
                 Console.WriteLine(hintAppointmentUpdated);
             }
@@ -149,8 +159,8 @@ namespace HospitalIS.Frontend.CLI.Model
         {
             try
             {
-                Doctor.MedicineSpeciality speciality = ReferralModel.inputSpecialty(inputCancelString);
-                if (!AppointmentController.DoctorExistForSpecialty(speciality))
+                Doctor.MedicineSpeciality speciality = ReferralModel.InputSpecialty(inputCancelString);
+                if (!DoctorController.DoctorExistForSpecialty(speciality))
                     throw new NothingToSelectException();
                 
                 AppointmentSearchBundle sb = InputSearchBundleUrgent(inputCancelString, user);
@@ -270,7 +280,7 @@ namespace HospitalIS.Frontend.CLI.Model
             Console.WriteLine(hintSelectProperties);
             return EasyInput<AppointmentController.AppointmentProperty>.SelectMultiple(
                 AppointmentController.GetModifiableProperties(user),
-                ap => AppointmentController.GetName(ap),
+                ap => ap.ToString(),
                 inputCancelString
             ).ToList();
         }
@@ -289,10 +299,8 @@ namespace HospitalIS.Frontend.CLI.Model
                 AppointmentController.GetModifiableAppointments(user), inputCancelString).ToList();
         }
 
-        private static Appointment InputAppointment(string inputCancelString, List<AppointmentController.AppointmentProperty> whichProperties, UserAccount user, Appointment refAppointment = null)
+        private static void InputAppointment(string inputCancelString, List<AppointmentController.AppointmentProperty> whichProperties, UserAccount user, Appointment appointment, Appointment refAppointment = null)
         {
-            var appointment = new Appointment();
-
             if (whichProperties.Contains(AppointmentController.AppointmentProperty.DOCTOR))
             {
                 appointment.Doctor = InputDoctor(inputCancelString, refAppointment, user);
@@ -312,8 +320,6 @@ namespace HospitalIS.Frontend.CLI.Model
             {
                 appointment.ScheduledFor = InputScheduledFor(inputCancelString, appointment, refAppointment);
             }
-
-            return appointment;
         }
 
         private static Doctor InputDoctor(string inputCancelString, Appointment referenceAppointment, UserAccount user)
@@ -325,7 +331,7 @@ namespace HospitalIS.Frontend.CLI.Model
             else
             {
                 Console.WriteLine(hintSelectDoctor);
-                return EasyInput<Doctor>.Select(AppointmentController.GetAvailableDoctors(referenceAppointment),
+                return EasyInput<Doctor>.Select(DoctorController.GetAvailableDoctors(referenceAppointment),
                     inputCancelString);
             }
         }
@@ -340,7 +346,7 @@ namespace HospitalIS.Frontend.CLI.Model
             else
             {
                 Console.WriteLine(hintSelectPatient);
-                return EasyInput<Patient>.Select(AppointmentController.GetAvailablePatients(referenceAppointment), inputCancelString);
+                return EasyInput<Patient>.Select(PatientController.GetAvailablePatients(referenceAppointment), inputCancelString);
             }
         }
 
@@ -349,12 +355,12 @@ namespace HospitalIS.Frontend.CLI.Model
             // Patient and doctor cannot modify the Room property, however when creating an Appointment we can reach here.
             if (user.Type != UserAccount.AccountType.MANAGER)
             {
-                return AppointmentController.GetRandomAvailableExaminationRoom(referenceAppointment);
+                return RoomController.GetRandomAvailableExaminationRoom(referenceAppointment);
             }
             else
             {
                 Console.WriteLine(hintSelectExaminationRoom);
-                return EasyInput<Room>.Select(AppointmentController.GetAvailableExaminationRooms(referenceAppointment), inputCancelString);
+                return EasyInput<Room>.Select(RoomController.GetAvailableExaminationRooms(referenceAppointment), inputCancelString);
             }
         }
 
@@ -390,9 +396,9 @@ namespace HospitalIS.Frontend.CLI.Model
                 new List<Func<DateTime, bool>>()
                 {
                     newSchedule => newSchedule.CompareTo(DateTime.Now) > 0,
-                    newSchedule => AppointmentController.IsAvailable(patient, newSchedule, patientReferenceAppointment),
-                    newSchedule => AppointmentController.IsAvailable(doctor, newSchedule, doctorReferenceAppointment),
-                    newSchedule => AppointmentController.IsAvailable(room, newSchedule, roomReferenceAppointment),
+                    newSchedule => PatientController.IsAvailable(patient, newSchedule, patientReferenceAppointment),
+                    newSchedule => DoctorController.IsAvailable(doctor, newSchedule, doctorReferenceAppointment),
+                    newSchedule => RoomController.IsAvailable(room, newSchedule, roomReferenceAppointment),
                 },
                 new string[]
                 {
@@ -464,55 +470,96 @@ namespace HospitalIS.Frontend.CLI.Model
                 AppointmentController.GetPrioritizableProperties(), inputCancelString);
         }
 
-        public static void ShowNextAppointments(UserAccount user, string inputCancelString)
+        internal static void ViewAndStartAppointments(UserAccount user, string inputCancelString)
         {
-            List <Appointment> nextAppointments = AppointmentController.GetNextDoctorsAppointments(user, inputCancelString);
-            if (nextAppointments.Count == 0)
+            DateTime firstRelevantDay = GetFirstRelevantDayOfAppointments(inputCancelString);
+            List <Appointment> nextAppointments = AppointmentController.GetNextDoctorsAppointments(user, inputCancelString, firstRelevantDay);
+            Print(nextAppointments, inputCancelString);
+            if (nextAppointments.Count == 0) return;
+            
+            Console.WriteLine(hintCheckStartingAppointment);
+            if (EasyInput<bool>.YesNo(inputCancelString)) //wants to start appointment
+            {
+                StartAppointment(inputCancelString, nextAppointments);
+            }
+        }
+
+        private static DateTime GetFirstRelevantDayOfAppointments(string inputCancelString)
+        {
+            Console.WriteLine(hintInputDate);
+            
+            DateTime firstRelevantDay = EasyInput<DateTime>.Get(
+                new List<Func<DateTime, bool>>()
+                {
+                    newSchedule => newSchedule.CompareTo(DateTime.Now) > 0,
+                },
+                new string[]
+                {
+                    hintDateTimeNotInFuture,
+                },
+                inputCancelString);
+            
+            return firstRelevantDay;
+        }
+
+        private static void Print(List<Appointment> appointments, string inputCancelString)
+        {
+            if (appointments.Count == 0)
             {
                 Console.WriteLine(hintNoScheduledAppoinments);
             }
             else
             {
-                for (int i = 0; i < nextAppointments.Count; i++)
+                foreach (var appointment in appointments)
                 {
-                    var appointment = nextAppointments[i];
-
                     Console.WriteLine(appointment.ToString());
                     MedicalRecordModel.ReadMedicalRecord(appointment, inputCancelString);
                     Console.WriteLine("=====================================");
                 }
-                CheckIfDoctorWantsToStartAppointment(user, inputCancelString, nextAppointments);
-            }
-        }
-        
-        public static void CheckIfDoctorWantsToStartAppointment(UserAccount user, string inputCancelString, List<Appointment> startableAppointments)
-        {
-            Console.WriteLine(hintCheckStartingAppointment);
-            string doctorsWill = Console.ReadLine();
-            if (doctorsWill == "1")
-            {
-                StartAppointment(user, inputCancelString, startableAppointments);
             }
         }
 
-        private static void StartAppointment(UserAccount user, string inputCancelString, List<Appointment> startableAppointments)
+        private static void StartAppointment(string inputCancelString, List<Appointment> startableAppointments)
         {
             Console.WriteLine(hintSelectAppointment);
             var appointmentToStart = EasyInput<Appointment>.Select(startableAppointments, inputCancelString);
-            MedicalRecordModel.UpdateMedicalRecordAndAnamnesis(appointmentToStart, inputCancelString);
+            
+            MedicalRecordModel.UpdateMedicalRecord(appointmentToStart.Patient, inputCancelString);
+            UpdateAnamnesis(appointmentToStart);
+            
             Console.WriteLine(hintMakeReferral);
-            var option = Console.ReadLine();
-            if (option == "1")
+            if (EasyInput<bool>.YesNo(inputCancelString)) //wants to create a referral
             {
                 ReferralModel.CreateReferral(appointmentToStart, inputCancelString);
             }
+            
             Console.WriteLine(hintWritePrescription);
-            option = Console.ReadLine();
-            if (option == "1")
+            if (EasyInput<bool>.YesNo(inputCancelString)) //wants to create a prescription
             {
                 PrescriptionModel.CreatePrescription(inputCancelString, MedicalRecordController.GetPatientsMedicalRecord(appointmentToStart.Patient));
             }
+            
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(hintAppointmentIsOver);
+            Console.ForegroundColor = ConsoleColor.Gray;
+            
+            EquipmentModel.DeleteEquipmentAfterAppointment(appointmentToStart.Room, inputCancelString);
+        }
+
+        private static void UpdateAnamnesis(Appointment appointment)
+        {
+            var propertyToUpdate = new List<AppointmentController.AppointmentProperty>();
+            propertyToUpdate.Add(AppointmentController.AppointmentProperty.ANAMNESIS);
+            Appointment updatedAppointment = appointment;
+            updatedAppointment.Anamnesis = InputAnamnesis();
+            AppointmentController.CopyAppointment(appointment, updatedAppointment, propertyToUpdate);
+            Console.WriteLine(hintAnamensisUpdated);
+        }
+        
+        private static string InputAnamnesis()
+        {
+            Console.WriteLine(hintInputAnamnesis);
+            return Console.ReadLine();
         }
         
         internal static void CreateAppointmentWithReferral(Referral referral, string inputCancelString, UserAccount user)
@@ -557,7 +604,7 @@ namespace HospitalIS.Frontend.CLI.Model
 
         private static Doctor SelectDoctorBySpecialty(string inputCancelString, Doctor.MedicineSpeciality speciality)
         {
-            return EasyInput<Doctor>.Select(AppointmentController.GetAvailableDoctorsBySpecialty(speciality),
+            return EasyInput<Doctor>.Select(DoctorController.GetDoctorsBySpecialty(speciality),
                 inputCancelString);
         }
     }

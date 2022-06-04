@@ -11,7 +11,7 @@ namespace HospitalIS.Frontend.CLI
     internal static class CLIProgram
     {
         private static string dataDirectory = Path.Combine("..", "..", "..", "data");
-        private const string inputCancelString = "-q";
+        private const string inputCancelString = "q";
         private static UserAccount user;
         private static bool isRunning = true;
 
@@ -38,40 +38,57 @@ namespace HospitalIS.Frontend.CLI
 
         private static List<Command> Commands =
         new List<Command>{
-            new Command("-quit", () => isRunning = false, Enum.GetValues(typeof(UserAccount.AccountType)).Cast<UserAccount.AccountType>()),
-            new Command("-help", () => ListCommands(user), Enum.GetValues(typeof(UserAccount.AccountType)).Cast<UserAccount.AccountType>()),
+            new Command("quit", () => isRunning = false, Enum.GetValues(typeof(UserAccount.AccountType)).Cast<UserAccount.AccountType>()),
+            new Command("help", () => ListCommands(user), Enum.GetValues(typeof(UserAccount.AccountType)).Cast<UserAccount.AccountType>()),
 
-            new Command("-room-create", () => RoomModel.CreateRoom(inputCancelString), new[] {UserAccount.AccountType.MANAGER}),
-            new Command("-room-view", () => RoomModel.ViewRoom(inputCancelString), new[] {UserAccount.AccountType.MANAGER}),
-            new Command("-room-update", () => RoomModel.UpdateRoom(inputCancelString), new[] {UserAccount.AccountType.MANAGER}),
-            new Command("-room-delete", () => RoomModel.DeleteRoom(inputCancelString), new[] {UserAccount.AccountType.MANAGER}),
+            new Command("room-create", () => RoomModel.CreateRoom(inputCancelString), new[] {UserAccount.AccountType.MANAGER}),
+            new Command("room-view", () => RoomModel.ViewRoom(inputCancelString), new[] {UserAccount.AccountType.MANAGER}),
+            new Command("room-update", () => RoomModel.UpdateRoom(inputCancelString), new[] {UserAccount.AccountType.MANAGER}),
+            new Command("room-delete", () => RoomModel.DeleteRoom(inputCancelString), new[] {UserAccount.AccountType.MANAGER}),
 
-            new Command("-equipment-search", () => EquipmentModel.Search(inputCancelString), new[] {UserAccount.AccountType.MANAGER}),
-            new Command("-equipment-filter", () => EquipmentModel.Filter(inputCancelString), new[] {UserAccount.AccountType.MANAGER}),
-            new Command("-equipment-relocate", () => EquipmentRelocationModel.Relocate(inputCancelString), new[] {UserAccount.AccountType.MANAGER}),
+            new Command("equipment-search", () => EquipmentModel.Search(inputCancelString), new[] {UserAccount.AccountType.MANAGER}),
+            new Command("equipment-filter", () => EquipmentModel.Filter(inputCancelString), new[] {UserAccount.AccountType.MANAGER}),
+            new Command("equipment-relocate", () => EquipmentRelocationModel.Relocate(inputCancelString), new[] {UserAccount.AccountType.MANAGER}),
 
-            new Command("-appointment-create", () => AppointmentModel.CreateAppointment(inputCancelString, user), new[] {UserAccount.AccountType.DOCTOR, UserAccount.AccountType.PATIENT}),
-            new Command("-appointment-read", () => AppointmentModel.ReadAppointments(user), new[] {UserAccount.AccountType.DOCTOR, UserAccount.AccountType.PATIENT}),
-            new Command("-appointment-update", () => AppointmentModel.UpdateAppointment(inputCancelString, user), new[] {UserAccount.AccountType.DOCTOR, UserAccount.AccountType.PATIENT}),
-            new Command("-appointment-delete", () => AppointmentModel.DeleteAppointment(inputCancelString, user), new[] {UserAccount.AccountType.DOCTOR, UserAccount.AccountType.PATIENT}),
-            new Command("-appointment-view-start", () => AppointmentModel.ShowNextAppointments(user, inputCancelString), new[] {UserAccount.AccountType.DOCTOR}),
-            new Command("-appointment-create-rec", () => AppointmentModel.CreateRecommendedAppointment(inputCancelString, user), new[] {UserAccount.AccountType.PATIENT}),
+            new Command("appointment-create", () => AppointmentModel.CreateAppointment(inputCancelString, user), new[] {UserAccount.AccountType.DOCTOR, UserAccount.AccountType.PATIENT}),
+            new Command("appointment-read", () => AppointmentModel.ReadAppointments(user), new[] {UserAccount.AccountType.DOCTOR, UserAccount.AccountType.PATIENT}),
+            new Command("appointment-update", () => AppointmentModel.UpdateAppointment(inputCancelString, user), new[] {UserAccount.AccountType.DOCTOR, UserAccount.AccountType.PATIENT}),
+            new Command("appointment-delete", () => AppointmentModel.DeleteAppointment(inputCancelString, user), new[] {UserAccount.AccountType.DOCTOR, UserAccount.AccountType.PATIENT}),
+            new Command("appointment-view-start", () => AppointmentModel.ViewAndStartAppointments(user, inputCancelString), new[] {UserAccount.AccountType.DOCTOR}),
+            new Command("appointment-create-rec", () => AppointmentModel.CreateRecommendedAppointment(inputCancelString, user), new[] {UserAccount.AccountType.PATIENT}),
 
-            new Command("-anamnesis-search", () => MedicalRecordModel.Search(user, inputCancelString), new[] {UserAccount.AccountType.PATIENT}),
+            new Command("anamnesis-search", () => MedicalRecordModel.Search(user, inputCancelString), new[] {UserAccount.AccountType.PATIENT}),
 
-            new Command("-patient-account-create", () => UserAccountModel.CreatePatientAccount(inputCancelString), new []{UserAccount.AccountType.SECRETARY}),
-            new Command("-patient-account-view", () => UserAccountModel.ViewPatientAccounts(), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-patient-account-update", () => UserAccountModel.UpdatePatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-patient-account-delete", () => UserAccountModel.DeleteAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-block-patient-account", () => UserAccountModel.BlockPatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-unblock-patient-account", () => UserAccountModel.UnblockPatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("patient-account-create", () => UserAccountModel.CreatePatientAccount(inputCancelString), new []{UserAccount.AccountType.SECRETARY}),
+            new Command("patient-account-view", () => UserAccountModel.ViewPatientAccounts(), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("patient-account-update", () => UserAccountModel.UpdatePatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("patient-account-delete", () => UserAccountModel.DeleteAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("block-patient-account", () => UserAccountModel.BlockPatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("unblock-patient-account", () => UserAccountModel.UnblockPatientAccount(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
 
-            new Command("-view-patient-requests", () => RequestModel.ViewRequests(), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-handle-patient-requests", () => RequestModel.HandleRequests(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-handle-referrals", () => ReferralModel.HandleReferrals(inputCancelString, user), new[] {UserAccount.AccountType.SECRETARY}),
-            new Command("-create-urgent-appointment", () => AppointmentModel.CreateUrgentAppointment(inputCancelString, user), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("view-patient-requests", () => RequestModel.ViewRequests(), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("handle-patient-requests", () => RequestModel.HandleRequests(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("handle-referrals", () => ReferralModel.HandleReferrals(inputCancelString, user), new[] {UserAccount.AccountType.SECRETARY}),
+            new Command("create-urgent-appointment", () => AppointmentModel.CreateUrgentAppointment(inputCancelString, user), new[] {UserAccount.AccountType.SECRETARY}),
+            
+            new Command("request-new-equipment", () => EquipmentModel.RequestNewEquipment(inputCancelString), new [] {UserAccount.AccountType.SECRETARY}),
+            new Command("move-dynamic-equipment", () => EquipmentRelocationModel.MoveDynamicEquipment(inputCancelString), new [] {UserAccount.AccountType.SECRETARY}),
 
-            new Command("-renovation-schedule", () => RenovationModel.NewRenovation(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
+            new Command("renovation-schedule", () => RenovationModel.NewRenovation(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
+
+			new Command("medication-create", () => MedicationModel.CreateNewMedicine(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
+			new Command("medication-revision", () => MedicationModel.ReviseMedicine(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
+			new Command("ingredient-create", () => IngredientModel.Create(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
+			new Command("ingredient-read", () => IngredientModel.Read(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
+			new Command("ingredient-update", () => IngredientModel.Update(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
+			new Command("ingredient-delete", () => IngredientModel.Delete(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
+
+            new Command("account-notif-time", () => MedicalRecordModel.ChangeMinutesBeforeNotification(user, inputCancelString), new [] {UserAccount.AccountType.PATIENT}),
+          
+            new Command("doctor-search", () => DoctorModel.Search(inputCancelString), new [] {UserAccount.AccountType.PATIENT}),
+            new Command("doctor-search-and-appoint", () => DoctorModel.AppointFromSearch(user, inputCancelString), new [] {UserAccount.AccountType.PATIENT}),
+			
+			new Command("medication-request-review", () => MedicationModel.ReviewMedicationRequests(user, inputCancelString), new [] {UserAccount.AccountType.DOCTOR}),
         };
 
         static List<Command> GetCommands(UserAccount user)
@@ -109,7 +126,7 @@ namespace HospitalIS.Frontend.CLI
 				},
 				new[]
 				{
-					"Command not found!\nType -help for a list of commands\n"
+					"Command not found!\nType help for a list of commands\n"
 				},
 				inputCancelString
 			);
@@ -133,8 +150,7 @@ namespace HospitalIS.Frontend.CLI
 
             // === Use program ===
 
-            
-            Console.WriteLine("Type -help for a list of commands\n\n");
+            Console.WriteLine("Type help for a list of commands\n\n");
       
             try
             {

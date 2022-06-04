@@ -2,6 +2,8 @@
 using System;
 using System.Linq;
 using HospitalIS.Backend.Repository;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace HospitalIS.Backend.Controller
 {
@@ -22,7 +24,7 @@ namespace HospitalIS.Backend.Controller
         {
             return Enum.GetName(typeof(MedicalRecordProperty), ap);
         }
-        public static List<MedicalRecordProperty> GetAllMedicalRecordProperties()
+        private static List<MedicalRecordProperty> GetAllMedicalRecordProperties()
         {
             return Enum.GetValues(typeof(MedicalRecordProperty)).Cast<MedicalRecordProperty>().ToList();
         }
@@ -33,15 +35,22 @@ namespace HospitalIS.Backend.Controller
             modifiableProperties.Remove(MedicalRecordProperty.PRESCRIPTIONS);
             return modifiableProperties;
         }
-        public static List<MedicalRecord> GetAllMedicalRedords()
+        private static List<MedicalRecord> GetAllMedicalRecords()
         {
             return IS.Instance.Hospital.MedicalRecords.Where(
                 a => !a.Deleted).ToList();
         }
 
+        internal static List<MedicalRecordProperty> GetPrescriptionProperty()
+        {
+            List<MedicalRecordProperty> prescriptionProperty = new List<MedicalRecordProperty>();
+            prescriptionProperty.Add(MedicalRecordProperty.PRESCRIPTIONS);
+            return prescriptionProperty;
+        }
+
         public static MedicalRecord GetPatientsMedicalRecord(Patient patient)
         {
-            var allMedicalRecords = GetAllMedicalRedords();
+            var allMedicalRecords = GetAllMedicalRecords();
             foreach (var medicalRecord in allMedicalRecords)
             {
                 if (patient.Id == medicalRecord.Patient.Id)
@@ -77,6 +86,47 @@ namespace HospitalIS.Backend.Controller
                 e => e.ScheduledFor < DateTime.Now && e.Anamnesis.Trim().ToLower().Contains(query.Trim().ToLower()));
             matches.Sort(comparer);
             return matches;
+        }
+
+        public static void AddNotifsIfNecessary(UserAccount ua)
+        {
+            if (ua.Type == UserAccount.AccountType.PATIENT)
+            {
+                Patient p = PatientController.GetPatientFromPerson(ua.Person);
+                MedicalRecord mr = GetPatientsMedicalRecord(p);
+                AddPrescriptionNotificationTasks(mr);
+            }
+        }
+
+        public static void ExecutePrescriptionNotification(MedicalRecord record, Prescription prescription)
+        {
+            prescription.TimesOfUsage.Sort();
+            foreach (TimeSpan time in prescription.TimesOfUsage)
+            {
+                TimeSpan timeUntilPrescription = time - DateTime.Now.TimeOfDay;
+                if (timeUntilPrescription.TotalMinutes < 0) continue;
+                TimeSpan timeToSleep = timeUntilPrescription - TimeSpan.FromMinutes(record.MinutesBeforeNotification);
+                timeToSleep = timeToSleep.TotalMinutes > 0 ? timeToSleep : TimeSpan.FromMinutes(0);
+
+                Thread.Sleep(timeToSleep);
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Don't forget to take {prescription.Medication.Name} at {time}!");
+                Console.ForegroundColor = ConsoleColor.Gray;
+            }
+        }
+
+        public static void AddPrescriptionNotificationTasks(MedicalRecord record)
+        {
+            var tasks = new List<Task>();
+            foreach (Prescription p in record.Prescriptions)
+            {
+                tasks.Add(new Task(() => ExecutePrescriptionNotification(record, p)));
+            }
+            foreach (Task t in tasks)
+            {
+                t.Start();
+            }
         }
     }
 }

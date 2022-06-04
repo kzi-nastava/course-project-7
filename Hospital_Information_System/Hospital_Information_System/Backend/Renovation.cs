@@ -9,7 +9,7 @@ namespace HospitalIS.Backend
 
 	internal class Renovation : Entity
 	{
-		[JsonConverter(typeof(Repository.RoomRepository.RoomReferenceConverter))]
+		[JsonConverter(typeof(Repository.RoomJSONReferenceConverter))]
 		public Room Room;
 		public DateTime Start;
 		public DateTime End;
@@ -28,13 +28,9 @@ namespace HospitalIS.Backend
 		[JsonIgnore]
 		public Room SplitRoomTarget1 {
 			get {
-				if (!IsSplitting())
-					throw new RenovationAccessorException("Renovation does not split the room.");
 				return _room1;
 			}
 			set {
-				if (!IsSplitting())
-					throw new RenovationAccessorException("Renovation does not split the room.");
 				_room1 = value;
 			}
 		}
@@ -45,13 +41,9 @@ namespace HospitalIS.Backend
 		[JsonIgnore]
 		public Room SplitRoomTarget2 {
 			get {
-				if (!IsSplitting())
-					throw new Exception("Renovation does not split the room.");
 				return _room2;
 			}
 			set {
-				if (!IsSplitting())
-					throw new Exception("Renovation does not split the room.");
 				_room2 = value;
 			}
 		}
@@ -62,13 +54,9 @@ namespace HospitalIS.Backend
 		[JsonIgnore]
 		public Room MergeRoomTarget {
 			get {
-				if (!IsMerging())
-					throw new Exception("Renovation does not merge the room.");
 				return _room1;
 			}
 			set {
-				if (!IsMerging())
-					throw new Exception("Renovation does not merge the room.");
 				_room1 = value;
 			}
 		}

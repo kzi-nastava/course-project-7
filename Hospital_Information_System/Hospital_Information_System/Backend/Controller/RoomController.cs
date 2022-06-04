@@ -62,5 +62,84 @@ namespace HospitalIS.Backend.Controller
 		{
 			return EquipmentController.GetEquipment().Where(eq => HasEquipmentAfterRelocations(room, eq)).ToList();
 		}
+
+		public static List<Room> GetExaminationRooms()
+		{
+			return GetModifiableRooms().FindAll(r => r.Type == Room.RoomType.EXAMINATION);
+		}
+
+		public static List<Room> GetAvailableExaminationRooms(Appointment refAppointment)
+		{
+			if (refAppointment == null)
+			{
+				return GetExaminationRooms();
+			}
+
+			return GetExaminationRooms().FindAll(d => IsAvailable(d, refAppointment.ScheduledFor, refAppointment));
+		}
+
+		public static Room GetRandomAvailableExaminationRoom(Appointment refAppointment)
+		{
+			var rnd = new Random();
+			var rooms = GetAvailableExaminationRooms(refAppointment);
+			return rooms[rnd.Next(rooms.Count)];
+		}
+
+		public static bool IsAvailable(Room room, DateTime newSchedule, Appointment refAppointment = null)
+		{
+			var relevantAppointments = AppointmentController.GetAppointments().Where(ap => ap != refAppointment && ap.Room == room);
+			foreach (var Appointment in relevantAppointments)
+			{
+				if (AppointmentController.AreColliding(Appointment.ScheduledFor, newSchedule))
+				{
+					return false;
+				}
+
+				// TODO @magley: This will have to change once appointments have a variable duration.
+
+				if (RenovationController.IsRenovating(room, newSchedule, newSchedule.AddMinutes(AppointmentController.LengthOfAppointmentInMinutes)))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		public static Room FindFirstAvailableExaminationRoom(DateTime scheduledFor)
+		{
+			return GetExaminationRooms().First(r => IsAvailable(r, scheduledFor));
+		}
+
+		public static List<Room> GetExeminationAndOperationRooms()
+		{
+			return IS.Instance.Hospital.Rooms.Where(room => room.Type == Room.RoomType.EXAMINATION || room.Type == Room.RoomType.OPERATION).ToList();
+		}
+		
+		public static bool HasEquipmentLessThanFive(Room room, Equipment equipment)
+		{
+			return room.Equipment.ContainsKey(equipment) && room.Equipment[equipment] < 5;
+		}
+		
+		public static bool DoesNotHaveEquipmentRightNow(Room room, Equipment equipment)
+		{
+			return room.Equipment.ContainsKey(equipment) && room.Equipment[equipment] == 0;
+		}
+		
+		public static List<Equipment> GetDynamicEquipment(Room room)
+		{
+			return EquipmentController.GetEquipment().Where(eq => EquipmentController.IsDynamicEquipment(eq)).ToList();
+		}
+		
+		public static List<Equipment> GetDynamicEquipmentForRelocation(Room room)
+		{
+			return EquipmentController.GetEquipment().Where(eq => HasEquipmentAfterRelocations(room, eq) && EquipmentController.IsDynamicEquipment(eq)).ToList();
+		}
+
+		private static bool MatchingRoomAndEquipment(Room room, Equipment equipment)
+		{
+			return (equipment.Use == Equipment.EquipmentUse.Examination && room.Type == Room.RoomType.EXAMINATION) || 
+			       (equipment.Use == Equipment.EquipmentUse.Operation && room.Type == Room.RoomType.OPERATION);
+		}
 	}
 }

@@ -27,6 +27,8 @@ namespace HospitalIS.Backend
         [JsonConverter(typeof(Repository.AppointmentRepository.AppointmentListConverter))]
         public List<Appointment> Examinations { get; set; }
 
+        public int MinutesBeforeNotification { get; set; }
+
         public MedicalRecord()
         {
         }
@@ -58,29 +60,15 @@ namespace HospitalIS.Backend
         
         public override string ToString()
         {
-            return $"MedicalRecord{{Id = {Id}, Patient = {Patient.Id}, Weight = {Weight}, Height = {Height}, Illnesses = {ConvertStringListToString(Illnesses)}, AllergiesToIngredients = {Medication.ConvertIngredientListToString(IngredientAllergies)}, OtherAllergies = {ConvertStringListToString(OtherAllergies)}, Prescriptions = {ConvertPrescriptionListToString(Prescriptions)}}}";
+            return $"MedicalRecord{{Id = {Id}, Patient = {Patient.Id}, Weight = {Weight}, Height = {Height}, Illnesses = {ListToString(Illnesses)}, AllergiesToIngredients = {Ingredient.IngredientsToString(IngredientAllergies)}, OtherAllergies = {ListToString(OtherAllergies)}, Prescriptions = {Prescription.PrescriptionsToString(Prescriptions)}}}";
         }
 
-        public static string ConvertStringListToString(List<String> entry)
+        private static string ListToString(List<String> entry)
         {
             string result = "";
             for (int i = 0; i <= entry.Count - 1; i++)
             {
                 result += entry[i];
-                if (i < entry.Count - 1)
-                {
-                    result += ", ";
-                }
-            }
-
-            return result;
-        }
-        private static string ConvertPrescriptionListToString(List<Prescription> entry)
-        {
-            string result = "";
-            for (int i = 0; i <= entry.Count - 1; i++)
-            {
-                result += entry[i].Medication.Name;
                 if (i < entry.Count - 1)
                 {
                     result += ", ";

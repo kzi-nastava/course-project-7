@@ -7,25 +7,29 @@
       "Diabetes"
     ],
     "IngredientAllergies": [
-      1
+      4
     ],
     "OtherAllergies": [
       "Dust"
     ],
     "Prescriptions": [
-      1
+      1,
+      7,
+      8
     ],
     "Examinations": [
       1,
-      2,
       3,
       4,
-      8,
       9,
       13,
-      14,
-      15
+      15,
+      16,
+      17,
+      19,
+      20
     ],
+    "MinutesBeforeNotification": 20,
     "Id": 0,
     "Deleted": false
   },
@@ -45,12 +49,11 @@
       2
     ],
     "Examinations": [
-      5,
       6,
-      7,
       10,
       11
     ],
+    "MinutesBeforeNotification": 15,
     "Id": 1,
     "Deleted": false
   },
@@ -69,8 +72,10 @@
     ],
     "Examinations": [
       0,
-      12
+      12,
+      14
     ],
+    "MinutesBeforeNotification": 5,
     "Id": 2,
     "Deleted": false
   },
@@ -81,8 +86,13 @@
     "Illnesses": [],
     "IngredientAllergies": [],
     "OtherAllergies": [],
-    "Prescriptions": [],
-    "Examinations": [],
+    "Prescriptions": [
+      6
+    ],
+    "Examinations": [
+      18
+    ],
+    "MinutesBeforeNotification": 10,
     "Id": 3,
     "Deleted": false
   }

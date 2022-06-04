@@ -39,6 +39,7 @@ namespace HospitalIS.Backend.Controller
                 if (ua.Username == username && ua.Password == password)
                 {
                     if (ua.Blocked != UserAccount.BlockedBy.NONE) throw new InvalidLoginAttemptException("Account is blocked");
+                    MedicalRecordController.AddNotifsIfNecessary(ua);
                     return ua;
                 }
             }
@@ -118,9 +119,9 @@ namespace HospitalIS.Backend.Controller
             return IS.Instance.Hospital.UserAccounts.Where(account => !account.Deleted && IsBlocked(account)).ToList();
         }
         
-        public static List<UserAccount> GetNotBlockedAccounts()
+        public static List<UserAccount> GetNotBlockedPatientAccounts()
         {
-            return IS.Instance.Hospital.UserAccounts.Where(account => !account.Deleted && !IsBlocked(account)).ToList();
+            return IS.Instance.Hospital.UserAccounts.Where(account => !account.Deleted && !IsBlocked(account) && account.Type == UserAccount.AccountType.PATIENT).ToList();
         }
 
         internal static bool IsBlocked(UserAccount account)

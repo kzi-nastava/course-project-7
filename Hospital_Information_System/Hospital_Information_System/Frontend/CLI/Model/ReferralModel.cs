@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HospitalIS.Backend.Controller;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
@@ -13,7 +14,7 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintReferralMade = "You've Successfully made a referral!";
         private const string hintSelectReferral = "Select referral: ";
 
-        public enum ReferralProperty
+        private enum ReferralProperty
         {
             DOCTOR,
             SPECIALTY
@@ -29,14 +30,14 @@ namespace HospitalIS.Frontend.CLI.Model
                 var propertyToInput = EasyInput<ReferralProperty>.Select(properties, inputCancelString);
                 if (propertyToInput == ReferralProperty.DOCTOR)
                 {
-                    newReferral.Doctor = inputDoctor(appointment, inputCancelString);
+                    newReferral.Doctor = InputDoctor(appointment, inputCancelString);
                     newReferral.Specialty = newReferral.Doctor.Specialty;
                 }
 
                 if (propertyToInput == ReferralProperty.SPECIALTY)
                 {
                     newReferral.Doctor = null;
-                    newReferral.Specialty = inputSpecialty(inputCancelString);
+                    newReferral.Specialty = InputSpecialty(inputCancelString);
                 }
                 
                 IS.Instance.ReferralRepo.Add(newReferral);
@@ -49,39 +50,29 @@ namespace HospitalIS.Frontend.CLI.Model
             }
         }
         
-        internal static List<ReferralProperty> GetAllReferralProperties()
+        private static List<ReferralProperty> GetAllReferralProperties()
         {
             return Enum.GetValues(typeof(ReferralProperty)).Cast<ReferralProperty>().ToList();
         }
 
-        internal static Doctor inputDoctor(Appointment appointment, string inputCancelString)
+        private static Doctor InputDoctor(Appointment appointment, string inputCancelString)
         {
-            var availableDoctos = GetAvailableDoctors();
-            availableDoctos.Remove(appointment.Doctor);
+            var availableDoctors = DoctorController.GetDoctors();
+            availableDoctors.Remove(appointment.Doctor);
             Console.WriteLine(hintSelectDoctor);
-            var chosenDoctor = EasyInput<Doctor>.Select(availableDoctos, inputCancelString);
+            var chosenDoctor = EasyInput<Doctor>.Select(availableDoctors, inputCancelString);
             return chosenDoctor;
         }
 
-        internal static List<Doctor> GetAvailableDoctors()
+        internal static Doctor.MedicineSpeciality InputSpecialty(string inputCancelString)
         {
-            return IS.Instance.Hospital.Doctors.ToList();
-        }
-        
-        internal static Doctor.MedicineSpeciality inputSpecialty(string inputCancelString)
-        {
-            var specialties = GetAllSpecialties();
+            var specialties = DoctorController.GetAllSpecialties();
             Console.WriteLine(hintSelectSpecialty);
             var chosenSpecialty = EasyInput<Doctor.MedicineSpeciality>.Select(specialties, inputCancelString);
             return chosenSpecialty;
 
         }
-        
-        internal static List<Doctor.MedicineSpeciality> GetAllSpecialties()
-        {
-            return Enum.GetValues(typeof(Doctor.MedicineSpeciality)).Cast<Doctor.MedicineSpeciality>().ToList();
-        }
-        
+
         internal static void GetAllReferrals()
         {
             var allReferrals = IS.Instance.Hospital.Referrals.ToList();

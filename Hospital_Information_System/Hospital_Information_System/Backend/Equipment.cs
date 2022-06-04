@@ -6,7 +6,7 @@ namespace HospitalIS.Backend
 	{
 		public enum EquipmentType
 		{
-			Unknown, Chair, Table, Bed, Cabinet
+			Unknown, Chair, Table, Bed, Cabinet, Paper, Pen, Gauze, Injection, BandAid
 		}
 
 		public enum EquipmentUse

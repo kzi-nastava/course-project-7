@@ -15,7 +15,7 @@ namespace HospitalIS.Backend
 		public string Name { get; set; }
 		public int Floor { get; set; }
 
-		[JsonConverter(typeof(EquipmentRepository.EquipmentDictionaryConverter<int>))]
+		[JsonConverter(typeof(EquipmentJSONDictionaryConverter<int>))]
 		public Dictionary<Equipment, int> Equipment = new Dictionary<Equipment, int>();
 
 		public Room()
