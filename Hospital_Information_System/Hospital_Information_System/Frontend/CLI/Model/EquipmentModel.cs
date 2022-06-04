@@ -83,7 +83,6 @@ namespace HospitalIS.Frontend.CLI.Model
 			);
 		}
 
-
 		private static string PrintSingleEquipment(Equipment equipment)
 		{
 			int containingRoomCount = EquipmentController.GetContainingRoomCount(equipment);
