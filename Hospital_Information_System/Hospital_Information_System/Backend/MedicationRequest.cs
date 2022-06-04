@@ -38,6 +38,21 @@ namespace HospitalIS.Backend
 		{
 			return $"RequestFeedback{{Timestamp={Timestamp}, Message={Message}, Verdict={Verdict}, Reviewer={Reviewer.ToString()}}}";
 		}
+		
+		public static string ReviewsToString(List<MedicationRequestReview> entry)
+		{
+			string ret = "";
+			for (int i = 0; i <= entry.Count - 1; i++)
+			{
+				ret += entry[i].ToString();
+				if (i < entry.Count - 1)
+				{
+					ret += ";\n ";
+				}
+			}
+
+			return ret;
+		}
 	}
 
     public class MedicationRequest : Entity
@@ -58,38 +73,15 @@ namespace HospitalIS.Backend
 		}
 
         
-        public override string ToString()
-        {
-            return $"MedicationRequest{{Medication={Medication.ToString()}, Reviews=[{Reviews.Select(f => f.ToString() + "\n")}], State={State}}}";
-        }
         
-        
-        /*
         public override string ToString()
         {
 	        if (Reviews.Count != 0)
 	        {
-		        return $"MedicationRequest{{Medication={Medication.ToString()}, State={State}, Reviews=[\n{ConvertReviewListToString(Reviews)}\n]}}";
+		        return $"MedicationRequest{{Medication={Medication.ToString()}, State={State}, Reviews=[\n{MedicationRequestReview.ReviewsToString(Reviews)}\n]}}";
 	        }
 	        return $"MedicationRequest{{Medication={Medication.ToString()}, State={State}, Reviews=[None yet]}}";
         }
-        
-        
-        private static string ConvertReviewListToString(List<MedicationRequestReview> entry)
-        {
-	        string ret = "";
-	        for (int i = 0; i <= entry.Count - 1; i++)
-	        {
-		        ret += entry[i].ToString();
-		        if (i < entry.Count - 1)
-		        {
-			        ret += ";\n ";
-		        }
-	        }
 
-	        return ret;
-        }
-        */
-        
     }
 }

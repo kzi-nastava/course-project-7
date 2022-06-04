@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HospitalIS.Backend.Controller;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
@@ -56,32 +57,22 @@ namespace HospitalIS.Frontend.CLI.Model
 
         private static Doctor InputDoctor(Appointment appointment, string inputCancelString)
         {
-            var availableDoctors = GetAvailableDoctors();
+            var availableDoctors = DoctorController.GetDoctors();
             availableDoctors.Remove(appointment.Doctor);
             Console.WriteLine(hintSelectDoctor);
             var chosenDoctor = EasyInput<Doctor>.Select(availableDoctors, inputCancelString);
             return chosenDoctor;
         }
 
-        private static List<Doctor> GetAvailableDoctors()
-        {
-            return IS.Instance.Hospital.Doctors.ToList();
-        }
-        
         internal static Doctor.MedicineSpeciality InputSpecialty(string inputCancelString)
         {
-            var specialties = GetAllSpecialties();
+            var specialties = DoctorController.GetAllSpecialties();
             Console.WriteLine(hintSelectSpecialty);
             var chosenSpecialty = EasyInput<Doctor.MedicineSpeciality>.Select(specialties, inputCancelString);
             return chosenSpecialty;
 
         }
-        
-        private static List<Doctor.MedicineSpeciality> GetAllSpecialties()
-        {
-            return Enum.GetValues(typeof(Doctor.MedicineSpeciality)).Cast<Doctor.MedicineSpeciality>().ToList();
-        }
-        
+
         internal static void GetAllReferrals()
         {
             var allReferrals = IS.Instance.Hospital.Referrals.ToList();

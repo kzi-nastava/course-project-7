@@ -24,7 +24,6 @@ namespace HospitalIS.Frontend.CLI.Model
 
         private const string hintInputAllergy = "Input allegie:";
         private const string hintInputIngredients = "Input ingredients: ";
-        private const string hintInputAnamnesis = "Input anamnesis (newLine to finish)";
 
         private const string hintSelectProperties =
             "Select properties by their number, separated by whitespace.\nEnter a newline to finish";
@@ -37,7 +36,6 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string errHeightTooLow = "Height must be higher than 50cm!";
         private const string hintNoMedicalRecord = "This patient doesn't have a medical record yet.";
         private const string hintMedicalRecordUpdated = "You've successfully updated patient's medical record!";
-        private const string hintAnamensisUpdated = "You've successfully updated appointment's anamnesis";
         private const string hintSelectAction = "Select the action that you want to perform";
         private const string hintInputNew = "Input the item you want to add, or newLine to finish";
         private const string hintSelectToRemove = "Select items you want removed";
@@ -87,43 +85,41 @@ namespace HospitalIS.Frontend.CLI.Model
             }
         }
 
-        internal static void UpdateMedicalRecordAndAnamnesis(Appointment appointment, string inputCancelString)
+        internal static void UpdateMedicalRecord(Patient patient, string inputCancelString)
         {
-            MedicalRecord medicalRecord = GetPatientsMedicalRecord(appointment.Patient);
+            MedicalRecord medicalRecord = GetPatientsMedicalRecord(patient);
             if (medicalRecord is null)
             {
-                CreateMedicalRecord(appointment.Patient, inputCancelString);
+                CreateMedicalRecord(patient, inputCancelString);
             }
             else
             {
-                Console.WriteLine(hintSelectProperties);
-                try
-                {
-                    List<MedicalRecordProperty> modifiableProperties = GetModifiableProperties();
-                    var propertiesToUpdate = EasyInput<MedicalRecordProperty>.SelectMultiple(
-                        modifiableProperties,
-                        ap => GetAppointmentPropertyName(ap),
-                        inputCancelString
-                    ).ToList();
-                    var updatedMedialRecord =
-                        GetUpdatedMedicalRecord(inputCancelString, propertiesToUpdate, medicalRecord);
-                    CopyMedicalRecord(medicalRecord, updatedMedialRecord, propertiesToUpdate);
-                    Console.WriteLine(hintMedicalRecordUpdated);
-                }
-                
-                catch (InputFailedException e)
-                {
-                    Console.WriteLine(e.Message);
-                }
+                UpdateMedicalRecord(medicalRecord, inputCancelString);
             }
 
-            var propertyToUpdate = new List<AppointmentProperty>();
-            propertyToUpdate.Add(AppointmentProperty.ANAMNESIS);
-            Appointment updatedAppointment = appointment;
-            updatedAppointment.Anamnesis = InputAnamnesis();
-            CopyAppointment(appointment, updatedAppointment, propertyToUpdate);
-            Console.WriteLine(hintAnamensisUpdated);
+        }
 
+        private static void UpdateMedicalRecord(MedicalRecord medicalRecord, string inputCancelString)
+        {
+            Console.WriteLine(hintSelectProperties);
+            try
+            {
+                List<MedicalRecordProperty> modifiableProperties = GetModifiableProperties();
+                var propertiesToUpdate = EasyInput<MedicalRecordProperty>.SelectMultiple(
+                    modifiableProperties,
+                    ap => GetAppointmentPropertyName(ap),
+                    inputCancelString
+                ).ToList();
+                var updatedMedialRecord =
+                    GetUpdatedMedicalRecord(inputCancelString, propertiesToUpdate, medicalRecord);
+                CopyMedicalRecord(medicalRecord, updatedMedialRecord, propertiesToUpdate);
+                Console.WriteLine(hintMedicalRecordUpdated);
+            }
+                
+            catch (InputFailedException e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         private static float InputWeight(string inputCancelString)
@@ -217,13 +213,6 @@ namespace HospitalIS.Frontend.CLI.Model
         {
             return IS.Instance.Hospital.Ingredients.Where(
                 a => !a.Deleted).ToList();
-        }
-
-        private static string InputAnamnesis()
-        {
-            Console.WriteLine(hintInputAnamnesis);
-            return Console.ReadLine();
-
         }
 
         private static MedicalRecord GetUpdatedMedicalRecord(string inputCancelString,

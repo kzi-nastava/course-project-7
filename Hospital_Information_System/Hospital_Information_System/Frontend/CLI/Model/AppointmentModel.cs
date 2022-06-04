@@ -53,6 +53,10 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintWritePrescription =
             "Do you want to write a prescription?";
         private const string hintInputDate = "Input the date for which you want to be given scheduled appointments";
+        
+        private const string hintAnamensisUpdated = "You've successfully updated appointment's anamnesis";
+        
+        private const string hintInputAnamnesis = "Input anamnesis (newLine to finish)";
 
         internal static void CreateWithPredefinedProperties(string inputCancelString, UserAccount user, List<AppointmentController.AppointmentProperty> predefProperties, Appointment appointment)
         {
@@ -468,9 +472,11 @@ namespace HospitalIS.Frontend.CLI.Model
 
         internal static void ViewAndStartAppointments(UserAccount user, string inputCancelString)
         {
-            List<Appointment> nextAppointments = ShowNextAppointments(user, inputCancelString);
+            DateTime firstRelevantDay = GetFirstRelevantDayOfAppointments(inputCancelString);
+            List <Appointment> nextAppointments = AppointmentController.GetNextDoctorsAppointments(user, inputCancelString, firstRelevantDay);
             Print(nextAppointments, inputCancelString);
             if (nextAppointments.Count == 0) return;
+            
             Console.WriteLine(hintCheckStartingAppointment);
             if (EasyInput<bool>.YesNo(inputCancelString)) //wants to start appointment
             {
@@ -478,7 +484,7 @@ namespace HospitalIS.Frontend.CLI.Model
             }
         }
 
-        private static List<Appointment> ShowNextAppointments(UserAccount user, string inputCancelString)
+        private static DateTime GetFirstRelevantDayOfAppointments(string inputCancelString)
         {
             Console.WriteLine(hintInputDate);
             
@@ -492,8 +498,8 @@ namespace HospitalIS.Frontend.CLI.Model
                     hintDateTimeNotInFuture,
                 },
                 inputCancelString);
-            List <Appointment> nextAppointments = AppointmentController.GetNextDoctorsAppointments(user, inputCancelString, firstRelevantDay);
-            return nextAppointments;
+            
+            return firstRelevantDay;
         }
 
         private static void Print(List<Appointment> appointments, string inputCancelString)
@@ -518,7 +524,8 @@ namespace HospitalIS.Frontend.CLI.Model
             Console.WriteLine(hintSelectAppointment);
             var appointmentToStart = EasyInput<Appointment>.Select(startableAppointments, inputCancelString);
             
-            MedicalRecordModel.UpdateMedicalRecordAndAnamnesis(appointmentToStart, inputCancelString);
+            MedicalRecordModel.UpdateMedicalRecord(appointmentToStart.Patient, inputCancelString);
+            UpdateAnamnesis(appointmentToStart);
             
             Console.WriteLine(hintMakeReferral);
             if (EasyInput<bool>.YesNo(inputCancelString)) //wants to create a referral
@@ -537,6 +544,22 @@ namespace HospitalIS.Frontend.CLI.Model
             Console.ForegroundColor = ConsoleColor.Gray;
             
             EquipmentModel.DeleteEquipmentAfterAppointment(appointmentToStart.Room, inputCancelString);
+        }
+
+        private static void UpdateAnamnesis(Appointment appointment)
+        {
+            var propertyToUpdate = new List<AppointmentController.AppointmentProperty>();
+            propertyToUpdate.Add(AppointmentController.AppointmentProperty.ANAMNESIS);
+            Appointment updatedAppointment = appointment;
+            updatedAppointment.Anamnesis = InputAnamnesis();
+            AppointmentController.CopyAppointment(appointment, updatedAppointment, propertyToUpdate);
+            Console.WriteLine(hintAnamensisUpdated);
+        }
+        
+        private static string InputAnamnesis()
+        {
+            Console.WriteLine(hintInputAnamnesis);
+            return Console.ReadLine();
         }
         
         internal static void CreateAppointmentWithReferral(Referral referral, string inputCancelString, UserAccount user)
