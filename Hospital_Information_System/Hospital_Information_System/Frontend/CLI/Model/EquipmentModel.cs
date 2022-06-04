@@ -125,7 +125,10 @@ namespace HospitalIS.Frontend.CLI.Model
 			Console.WriteLine(showCurrentState);
 			foreach (KeyValuePair<Equipment, int> entry in currentEquipmentQuantity)
 			{
-				Console.WriteLine(entry.Key + ": " + entry.Value);
+				if (EquipmentController.IsDynamicEquipment(entry.Key))
+				{
+					Console.WriteLine(entry.Key + ": " + entry.Value);
+				}
 			}
 			
 		}
