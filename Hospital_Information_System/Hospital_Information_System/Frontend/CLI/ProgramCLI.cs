@@ -70,6 +70,9 @@ namespace HospitalIS.Frontend.CLI
             new Command("handle-patient-requests", () => RequestModel.HandleRequests(inputCancelString), new[] {UserAccount.AccountType.SECRETARY}),
             new Command("handle-referrals", () => ReferralModel.HandleReferrals(inputCancelString, user), new[] {UserAccount.AccountType.SECRETARY}),
             new Command("create-urgent-appointment", () => AppointmentModel.CreateUrgentAppointment(inputCancelString, user), new[] {UserAccount.AccountType.SECRETARY}),
+            
+            new Command("request-new-equipment", () => EquipmentModel.RequestNewEquipment(inputCancelString), new [] {UserAccount.AccountType.SECRETARY}),
+            new Command("move-dynamic-equipment", () => EquipmentRelocationModel.MoveDynamicEquipment(inputCancelString), new [] {UserAccount.AccountType.SECRETARY}),
 
             new Command("renovation-schedule", () => RenovationModel.NewRenovation(inputCancelString), new [] {UserAccount.AccountType.MANAGER}),
 

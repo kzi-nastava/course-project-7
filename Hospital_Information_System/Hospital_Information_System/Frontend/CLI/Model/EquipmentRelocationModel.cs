@@ -15,6 +15,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		private const string hintInputNewRoom = "Select room to relocate the equipment in";
 		private const string hintInputTimestamp = "Select date and time at which to perform the relocation";
 		private const string hintSelectForDeletion = "Select scheduled relocation(s) to remove";
+		private const string errNoEquipmentAvailable = "There is no equipment available";
 
 		internal static void Relocate(string inputCancelString)
 		{
@@ -58,10 +59,10 @@ namespace HospitalIS.Frontend.CLI.Model
 			EquipmentRelocationController.Copy(selectedRelocation, inputRelocation, selectedProperties);
 		}
 
-		private static void NewRelocation(string inputCancelString)
+		private static void NewRelocation(string inputCancelString, Room newRoom = null)
 		{
 			var allProperties = EquipmentRelocationController.GetRelocationProperties();
-			var relocation = InputRelocation(inputCancelString, allProperties);
+			var relocation = newRoom != null ? InputDynamicRelocation(inputCancelString, newRoom) : InputRelocation(inputCancelString, allProperties);
 			IS.Instance.EquipmentRelocationRepo.Add(relocation);
 			IS.Instance.EquipmentRelocationRepo.AddTask(relocation);
 		}
@@ -114,12 +115,11 @@ namespace HospitalIS.Frontend.CLI.Model
 		}
 
 
-		private static Equipment InputChangeEquipment(string inputCancelString, EquipmentRelocation editingRelocation)
+		private static Equipment InputChangeEquipment(string inputCancelString, EquipmentRelocation editingRelocation, bool dynamicRoom = false)
 		{
 			Debug.Assert(editingRelocation.RoomOld != null);
 
-			return EasyInput<Equipment>.Select(
-				RoomController.GetEquipment(editingRelocation.RoomOld),
+			return EasyInput<Equipment>.Select( !dynamicRoom ? RoomController.GetEquipment(editingRelocation.RoomOld) : RoomController.GetDynamicEquipment(editingRelocation.RoomOld),
 				new List<Func<Equipment, bool>>(),
 				new string[] { },
 				eq => eq.ToString(),
@@ -127,10 +127,10 @@ namespace HospitalIS.Frontend.CLI.Model
 			);
 		}
 
-		private static Room InputChangeRoomOld(string inputCancelString, EquipmentRelocation relocation)
+		private static Room InputChangeRoomOld(string inputCancelString, EquipmentRelocation relocation, bool dynamicRoom = false)
 		{
 			return EasyInput<Room>.Select(
-				RoomController.GetRooms().Where(room => EquipmentRelocationController.CanBeOldRoom(room, relocation)).ToList(),
+				RoomController.GetRooms().Where(room => EquipmentRelocationController.CanBeOldRoom(room, relocation, dynamicRoom)).ToList(),
 				new List<Func<Room, bool>>(),
 				new string[] { },
 				eq => eq.ToString(),
@@ -152,6 +152,76 @@ namespace HospitalIS.Frontend.CLI.Model
 		private static DateTime InputChangeTimestamp(string inputCancelString)
 		{
 			return EasyInput<DateTime>.Get(new List<Func<DateTime, bool>>(), new string[] { }, inputCancelString);
+		}
+		
+		internal static void MoveDynamicEquipment(string inputCancelString)
+		{
+			try
+			{
+				List<Room> needsEquipment = GetRoomsThatNeedEquipment();
+
+				Console.WriteLine("\n" + hintInputNewRoom);
+				Room chosenRoom = EasyInput<Room>.Select(needsEquipment, inputCancelString);
+
+				NewRelocation(inputCancelString, chosenRoom);
+			}
+			catch (NothingToSelectException)
+			{
+				Console.WriteLine(errNoEquipmentAvailable);
+			}
+			
+		}
+
+		private static List<Room> GetRoomsThatNeedEquipment()
+		{
+			List<Room> needsEquipment = new List<Room>();
+			List<Room> rooms = RoomController.GetExeminationAndOperationRooms();	
+			foreach (Room room in rooms)
+			{
+				List<Equipment> equipment = RoomController.GetDynamicEquipment(room);
+
+				if (equipment.Count > 0)
+				{
+					PrintRoomsEquipment(room, equipment);
+					needsEquipment.Add(room);
+				}
+			}
+
+			return needsEquipment;
+		}
+
+		private static void PrintRoomsEquipment(Room room, List<Equipment> roomEquipment)
+		{
+			Console.WriteLine("\n" + room);
+			
+			foreach (Equipment equipment in roomEquipment)
+			{
+				if (RoomController.DoesNotHaveEquipmentRightNow(room, equipment))
+				{
+					Console.ForegroundColor = ConsoleColor.Red;
+					Console.WriteLine(equipment);
+					Console.ResetColor();
+					continue;
+				}
+				if (!RoomController.HasSomeEquipmentRightNow(room, equipment))
+					Console.WriteLine(equipment);
+			}
+		}
+
+		private static EquipmentRelocation InputDynamicRelocation(string inputCancelString, Room newRoom)
+		{
+			EquipmentRelocation result = new EquipmentRelocation();
+			result.RoomNew = newRoom;
+			
+			Console.WriteLine(hintInputOldRoom);
+			result.RoomOld = InputChangeRoomOld(inputCancelString, result, true);
+			
+			Console.WriteLine(hintInputEquipment);
+			result.Equipment = InputChangeEquipment(inputCancelString, result, true);
+
+			result.ScheduledFor = DateTime.Now;
+
+			return result;
 		}
 	}
 }

@@ -43,9 +43,15 @@ namespace HospitalIS.Backend.Controller
 			return IS.Instance.Hospital.EquipmentRelocations.Where(r => r.RoomNew == room && r.Equipment == equipment).ToList();
 		}
 
-		public static bool CanBeOldRoom(Room room, EquipmentRelocation reference)
+		public static bool CanBeOldRoom(Room room, EquipmentRelocation reference, bool dynamicRoom = false)
 		{
-			if (reference.RoomOld == null)
+			if (dynamicRoom && reference.RoomNew == room)
+				return false;
+			
+			if (dynamicRoom && reference.RoomOld == null)
+				return room.Equipment.Count > 0 && IsRoomWithDynamicEquipment(room);
+			
+			if (reference.RoomOld == null && !dynamicRoom)
 			{
 				return room.Equipment.Count > 0;
 			}
@@ -57,5 +63,27 @@ namespace HospitalIS.Backend.Controller
 
 			return RoomController.HasEquipmentAfterRelocations(room, reference.Equipment);
 		}
+		private static bool IsRoomWithDynamicEquipment(Room room)
+		{
+			return (room.Type == Room.RoomType.OPERATION || room.Type == Room.RoomType.EXAMINATION ||
+			        room.Type == Room.RoomType.WAREHOUSE);
+		}
+		// public static bool CanBeOldRoomWithDynamicEquipment(Room room, EquipmentRelocation reference)
+		// {
+		// 	if (reference.RoomNew == room)
+		// 		return false;
+		// 	
+		// 	if (reference.RoomOld == null)
+		// 	{
+		// 		return room.Equipment.Count > 0 && IsRoomWithDynamicEquipment(room);
+		// 	}
+		//
+		// 	if (reference.Equipment == null)
+		// 	{
+		// 		return true;
+		// 	}
+		//
+		// 	return RoomController.HasEquipmentAfterRelocations(room, reference.Equipment);
+		// }
 	}
 }
