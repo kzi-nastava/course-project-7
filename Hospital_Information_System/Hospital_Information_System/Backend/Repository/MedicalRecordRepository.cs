@@ -48,12 +48,12 @@ namespace HospitalIS.Backend.Repository
             prescription.TimesOfUsage.Sort();
             foreach (TimeSpan time in prescription.TimesOfUsage)
             {
-                int minutesUntilPrescription = (int)(time - DateTime.Now.TimeOfDay).TotalMinutes;
-                if (minutesUntilPrescription < 0) continue;
-                int minutesToSleep = minutesUntilPrescription - record.MinutesBeforeNotification;
-                minutesToSleep = minutesToSleep > 0 ? minutesToSleep : 0;
+                TimeSpan timeUntilPrescription = time - DateTime.Now.TimeOfDay;
+                if (timeUntilPrescription.TotalMinutes < 0) continue;
+                TimeSpan timeToSleep = timeUntilPrescription - TimeSpan.FromMinutes(record.MinutesBeforeNotification);
+                timeToSleep = timeToSleep.TotalMinutes > 0 ? timeToSleep : TimeSpan.FromMinutes(0);
 
-                Thread.Sleep(minutesToSleep * 1000);
+                Thread.Sleep(timeToSleep);
 
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"Don't forget to take {prescription.Medication.Name} at {time}!");
