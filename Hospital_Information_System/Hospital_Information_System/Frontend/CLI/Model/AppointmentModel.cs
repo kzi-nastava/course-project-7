@@ -54,12 +54,18 @@ namespace HospitalIS.Frontend.CLI.Model
             "Do you want to write a prescription?";
         private const string hintInputDate = "Input the date for which you want to be given scheduled appointments";
 
+        internal static void CreateWithPredefinedProperties(string inputCancelString, UserAccount user, List<AppointmentController.AppointmentProperty> predefProperties, Appointment appointment)
+        {
+            var propertiesToInput = AppointmentController.GetProperties().FindAll(p => !predefProperties.Contains(p));
+            InputAppointment(inputCancelString, propertiesToInput, user, appointment);
+            AppointmentController.Create(appointment, user);
+        }
+
         internal static void CreateAppointment(string inputCancelString, UserAccount user)
         {
             try
             {
-                Appointment appointment = InputAppointment(inputCancelString, AppointmentController.GetProperties(), user);
-                AppointmentController.Create(appointment, user);
+                CreateWithPredefinedProperties(inputCancelString, user, new List<AppointmentController.AppointmentProperty>(), new Appointment());
                 Console.WriteLine(hintAppointmentScheduled);
             }
             catch (InputFailedException e)
@@ -96,7 +102,8 @@ namespace HospitalIS.Frontend.CLI.Model
             {
                 Appointment appointment = SelectModifiableAppointment(inputCancelString, user);
                 var propertiesToUpdate = SelectModifiableProperties(inputCancelString, user);
-                Appointment updatedAppointment = InputAppointment(inputCancelString, propertiesToUpdate, user, appointment);
+                var updatedAppointment = new Appointment();
+                InputAppointment(inputCancelString, propertiesToUpdate, user, updatedAppointment, appointment);
                 AppointmentController.Update(appointment, updatedAppointment, propertiesToUpdate, user);
                 Console.WriteLine(hintAppointmentUpdated);
             }
@@ -288,10 +295,8 @@ namespace HospitalIS.Frontend.CLI.Model
                 AppointmentController.GetModifiableAppointments(user), inputCancelString).ToList();
         }
 
-        private static Appointment InputAppointment(string inputCancelString, List<AppointmentController.AppointmentProperty> whichProperties, UserAccount user, Appointment refAppointment = null)
+        private static void InputAppointment(string inputCancelString, List<AppointmentController.AppointmentProperty> whichProperties, UserAccount user, Appointment appointment, Appointment refAppointment = null)
         {
-            var appointment = new Appointment();
-
             if (whichProperties.Contains(AppointmentController.AppointmentProperty.DOCTOR))
             {
                 appointment.Doctor = InputDoctor(inputCancelString, refAppointment, user);
@@ -311,8 +316,6 @@ namespace HospitalIS.Frontend.CLI.Model
             {
                 appointment.ScheduledFor = InputScheduledFor(inputCancelString, appointment, refAppointment);
             }
-
-            return appointment;
         }
 
         private static Doctor InputDoctor(string inputCancelString, Appointment referenceAppointment, UserAccount user)

@@ -33,6 +33,7 @@ namespace HospitalIS.Backend
 		public MedicationRepository MedicationRepo = new MedicationRepository();
 		public PrescriptionRepository PrescriptionRepo = new PrescriptionRepository();
 		public MedicationRequestRepository MedicationRequestRepo = new MedicationRequestRepository();
+		public AppointmentRatingRepository AppointmentRatingRepo = new AppointmentRatingRepository();
 
 		private readonly JsonSerializerSettings settings;
 		private const string fnameRooms = "rooms.json";
@@ -52,6 +53,7 @@ namespace HospitalIS.Backend
 		private const string fnameMedications = "medications.json";
 		private const string fnamePrescriptions = "prescriptions.json";
 		private const string fnameMedicationRequests = "medicationRequests.json";
+		private const string fnameAppointmentRatings = "appointmentRatings.json";
 
 		public IS()
 		{
@@ -77,6 +79,7 @@ namespace HospitalIS.Backend
 			PrescriptionRepo.Save(Path.Combine(directory, fnamePrescriptions), settings);
 			MedicalRecordRepo.Save(Path.Combine(directory, fnameMedicalRecords), settings);
 			MedicationRequestRepo.Save(Path.Combine(directory, fnameMedicationRequests), settings);
+			AppointmentRatingRepo.Save(Path.Combine(directory, fnameAppointmentRatings), settings);
 		}
 
 		public void Load(string directory)
@@ -98,6 +101,7 @@ namespace HospitalIS.Backend
 			PrescriptionRepo.Load(Path.Combine(directory, fnamePrescriptions), settings);
 			MedicalRecordRepo.Load(Path.Combine(directory, fnameMedicalRecords), settings);
 			MedicationRequestRepo.Load(Path.Combine(directory, fnameMedicationRequests), settings);
+			AppointmentRatingRepo.Load(Path.Combine(directory, fnameAppointmentRatings), settings);
 
 			foreach (var relocation in Hospital.EquipmentRelocations)
 			{
