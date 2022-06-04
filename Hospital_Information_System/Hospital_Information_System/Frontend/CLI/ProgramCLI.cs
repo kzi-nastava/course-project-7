@@ -147,7 +147,6 @@ namespace HospitalIS.Frontend.CLI
 
             // === Use program ===
 
-            
             Console.WriteLine("Type help for a list of commands\n\n");
       
             try

@@ -9,7 +9,7 @@ namespace HospitalIS.Backend
 
 	internal class Renovation : Entity
 	{
-		[JsonConverter(typeof(Repository.RoomRepository.RoomReferenceConverter))]
+		[JsonConverter(typeof(Repository.RoomJSONReferenceConverter))]
 		public Room Room;
 		public DateTime Start;
 		public DateTime End;

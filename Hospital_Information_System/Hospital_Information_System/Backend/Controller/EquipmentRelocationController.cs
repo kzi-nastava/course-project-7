@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace HospitalIS.Backend.Controller
 {
-	internal class EquipmentRelocationController
+	internal static class EquipmentRelocationController
 	{
-
 		public enum Property
 		{
 			EQUIPMENT,

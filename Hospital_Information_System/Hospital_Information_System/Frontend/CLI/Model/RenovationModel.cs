@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using HospitalIS.Backend;
 using HospitalIS.Backend.Controller;
-
 using System.Diagnostics;
 using HospitalIS.Backend.Util;
 

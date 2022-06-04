@@ -110,11 +110,12 @@ namespace HospitalIS.Backend
 
 			foreach (var relocation in Hospital.EquipmentRelocations)
 			{
-				EquipmentRelocationRepo.AddTask(relocation);
+				Controller.EquipmentRelocationController.AddTask(relocation);
 			}
+
 			foreach (var renovation in Hospital.Renovations)
 			{
-				RenovationRepo.AddTask(renovation);
+				Controller.RenovationController.AddTask(renovation);
 			}
 
 			foreach (var request in Hospital.RequestsEquipment)

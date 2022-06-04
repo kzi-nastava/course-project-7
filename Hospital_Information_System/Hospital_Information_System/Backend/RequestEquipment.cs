@@ -7,7 +7,7 @@ namespace HospitalIS.Backend
 {
     public class RequestEquipment : Entity
     {
-        [JsonConverter(typeof(EquipmentRepository.EquipmentDictionaryConverter<int>))]
+        [JsonConverter(typeof(EquipmentJSONDictionaryConverter<int>))]
         public Dictionary<Equipment, int> Equipment = new Dictionary<Equipment, int>();
 
         public DateTime OrderTime { get; set; }

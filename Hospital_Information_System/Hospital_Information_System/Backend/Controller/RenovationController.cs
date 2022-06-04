@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using HospitalIS.Backend.Util;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HospitalIS.Backend.Controller
 {
@@ -27,7 +29,7 @@ namespace HospitalIS.Backend.Controller
 		public static void Schedule(Renovation renovation)
 		{
 			IS.Instance.RenovationRepo.Add(renovation);
-			IS.Instance.RenovationRepo.AddTask(renovation);
+			AddTask(renovation);
 		}
 
 		public static List<DateTimeRange> GetUnavailableTimeslotsFromRenovations(Room r)
@@ -80,6 +82,55 @@ namespace HospitalIS.Backend.Controller
 				return RenovationController.GetRenovations().Where(ren => ren.Room == renovation.Room && ren.Start >= renovation.End).ToList();
 			}
 			return new List<Renovation>();
+		}
+
+		private static void ExecuteSplit(Renovation renovation)
+		{
+			IS.Instance.RoomRepo.Add(renovation.SplitRoomTarget1);
+			IS.Instance.RoomRepo.Add(renovation.SplitRoomTarget2);
+			IS.Instance.RoomRepo.Remove(renovation.Room);
+		}
+
+		private static void ExecuteMerge(Renovation renovation)
+		{
+			if (IS.Instance.RoomRepo.GetById(renovation.MergeRoomTarget.Id) == null)
+			{
+				IS.Instance.RoomRepo.Add(renovation.MergeRoomTarget);
+			}
+
+			foreach (var kv in renovation.Room.Equipment)
+			{
+				renovation.MergeRoomTarget.Equipment.Add(kv.Key, kv.Value);
+			}
+
+			IS.Instance.RoomRepo.Remove(renovation.Room);
+		}
+
+		public static void Execute(Renovation renovation)
+		{
+			Thread.Sleep(Math.Max(renovation.GetTimeToLive(), 0));
+
+			if (renovation.Deleted)
+				return;
+
+			if (!IS.Instance.Hospital.Renovations.Contains(renovation))
+				throw new EntityNotFoundException();
+
+			Console.WriteLine($"Finished renovation {renovation}.");
+
+			if (renovation.IsSplitting())
+				ExecuteSplit(renovation);
+			else if (renovation.IsMerging())
+				ExecuteMerge(renovation);
+
+			IS.Instance.RenovationRepo.Remove(renovation);
+		}
+
+		public static void AddTask(Renovation renovation)
+		{
+			Task t = new Task(() => Execute(renovation));
+			IS.Instance.Hospital.RenovationTasks.Add(t);
+			t.Start();
 		}
 	}
 }
