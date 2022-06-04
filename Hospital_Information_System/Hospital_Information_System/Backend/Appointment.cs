@@ -14,7 +14,7 @@ namespace HospitalIS.Backend
         [JsonConverter(typeof(Repository.PatientRepository.PatientReferenceConverter))]
         public Patient Patient { get; set; }
 
-        [JsonConverter(typeof(Repository.RoomRepository.RoomReferenceConverter))]
+        [JsonConverter(typeof(Repository.RoomJSONReferenceConverter))]
         public Room Room { get; set; }
 
         public DateTime ScheduledFor { get; set; }

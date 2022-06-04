@@ -64,7 +64,7 @@ namespace HospitalIS.Frontend.CLI.Model
 			var allProperties = EquipmentRelocationController.GetRelocationProperties();
 			var relocation = newRoom != null ? InputDynamicRelocation(inputCancelString, newRoom) : InputRelocation(inputCancelString, allProperties);
 			IS.Instance.EquipmentRelocationRepo.Add(relocation);
-			IS.Instance.EquipmentRelocationRepo.AddTask(relocation);
+			EquipmentRelocationController.AddTask(relocation);
 		}
 
 		private static void DeleteRelocation(string inputCancelString)

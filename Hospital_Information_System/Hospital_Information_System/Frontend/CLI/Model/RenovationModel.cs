@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using HospitalIS.Backend;
 using HospitalIS.Backend.Controller;
-
 using System.Diagnostics;
 using HospitalIS.Backend.Util;
 
@@ -27,16 +25,10 @@ namespace HospitalIS.Frontend.CLI.Model
 		private const string hintMergeInputNewRoom = "Input data for the room that will be created after merging";
 		private const string hintNoEquipment = "No equipment found to move";
 
-		private static void Schedule(Renovation renovation)
-		{
-			IS.Instance.RenovationRepo.Add(renovation);
-			IS.Instance.RenovationRepo.AddTask(renovation);
-		}
-
 		public static void NewRenovation(string inputCancelString)
 		{
 			var renovation = InputRenovation(inputCancelString);
-			Schedule(renovation);
+			RenovationController.Schedule(renovation);
 		}
 
 		private static Renovation InputRenovation(string inputCancelString)
@@ -44,7 +36,7 @@ namespace HospitalIS.Frontend.CLI.Model
 			Renovation renovation = new Renovation();
 			
 			Console.WriteLine(hintSelectRoom);
-			renovation.Room = InputRoom(inputCancelString);
+			renovation.Room = EasyInput<Room>.Select(RoomController.GetModifiableRooms(), inputCancelString);
 
 			PrintUnavailableTimeslotsForRenovation(renovation.Room);
 			Console.WriteLine(hintSelectStart);
@@ -62,7 +54,8 @@ namespace HospitalIS.Frontend.CLI.Model
 
 		private static bool InputRenovationTrySplit(Renovation renovation, string inputCancelString) 
 		{
-			if (WantToSplitRoom(renovation, inputCancelString))
+			Console.WriteLine(askWantsToSplit);
+			if (EasyInput<bool>.YesNo(inputCancelString))
 			{
 				InputSplitRoom(renovation, inputCancelString);
 				InputRemoveInvalidRenovationsAfterScheduling(renovation, inputCancelString);
@@ -79,13 +72,13 @@ namespace HospitalIS.Frontend.CLI.Model
 			if (otherRoomRenovation != null)
 			{
 				InputRemoveInvalidRenovationsAfterScheduling(otherRoomRenovation, inputCancelString);
-				Schedule(otherRoomRenovation);
+				RenovationController.Schedule(otherRoomRenovation);
 			}
 		}
 
 		private static void InputRemoveInvalidRenovationsAfterScheduling(Renovation renovation, string inputCancelString)
 		{
-			var invalidRenovations = GetInvalidRenovationsAfterScheduling(renovation);
+			var invalidRenovations = RenovationController.GetInvalidRenovationsAfterScheduling(renovation);
 
 			if (invalidRenovations.Count() > 0)
 			{
@@ -103,6 +96,7 @@ namespace HospitalIS.Frontend.CLI.Model
 				}
 			}
 		}
+
 		private static Renovation InputMergeRooms(Renovation renovation, string inputCancelString)
 		{
 			Console.WriteLine(askWantsToMerge);
@@ -121,10 +115,7 @@ namespace HospitalIS.Frontend.CLI.Model
 
 		private static Tuple<Room, Room> MergeRooms(Renovation renovation, string inputCancelString)
 		{
-			var roomPropertiesToInput = new List<RoomController.RoomProperty>{
-				RoomController.RoomProperty.TYPE,
-				RoomController.RoomProperty.NAME
-			};
+			var roomPropertiesToInput = new List<RoomController.RoomProperty>{RoomController.RoomProperty.TYPE, RoomController.RoomProperty.NAME};
 
 			Console.WriteLine(hintMergeInputNewRoom);
 			Room newRoom = RoomModel.InputRoom(inputCancelString, roomPropertiesToInput);
@@ -139,17 +130,9 @@ namespace HospitalIS.Frontend.CLI.Model
 			return new Tuple<Room, Room>(newRoom, otherRoom);
 		}
 
-		private static bool WantToSplitRoom(Renovation renovation, string inputCancelString) {
-			Console.WriteLine(askWantsToSplit);
-			return (EasyInput<bool>.YesNo(inputCancelString));
-		}
-
 		private static void InputSplitRoom(Renovation renovation, string inputCancelString)
 		{
-			var roomPropertiesToInput = new List<RoomController.RoomProperty>{
-				RoomController.RoomProperty.TYPE,
-				RoomController.RoomProperty.NAME
-			};
+			var roomPropertiesToInput = new List<RoomController.RoomProperty>{RoomController.RoomProperty.TYPE, RoomController.RoomProperty.NAME};
 
 			Room r1 = RoomModel.InputRoom(inputCancelString, roomPropertiesToInput);
 			Room r2 = RoomModel.InputRoom(inputCancelString, roomPropertiesToInput);
@@ -167,11 +150,7 @@ namespace HospitalIS.Frontend.CLI.Model
 			try
 			{
 				Console.WriteLine(hintSelectEquipmentForSplit);
-				var eqForRoom1 = EasyInput<KeyValuePair<Equipment, int>>.SelectMultiple(
-					renovation.Room.Equipment.ToList(),
-					kv => $"{kv.Key.ToString()} ({kv.Value})",
-					inputCancelString
-				);
+				var eqForRoom1 = EasyInput<KeyValuePair<Equipment, int>>.SelectMultiple(renovation.Room.Equipment.ToList(), kv => $"{kv.Key} ({kv.Value})", inputCancelString);
 				var eqForRoom2 = renovation.Room.Equipment.Except(eqForRoom1);
 
 				Debug.Assert(eqForRoom1.Intersect(eqForRoom2).Count() == 0);
@@ -186,15 +165,10 @@ namespace HospitalIS.Frontend.CLI.Model
 			}
 		}
 
-		private static Room InputRoom(string inputCancelString)
-		{
-			return EasyInput<Room>.Select(RoomController.GetModifiableRooms(), inputCancelString);
-		}
-
 		private static DateTime InputStart(string inputCancelString, Renovation reference)
 		{
 			Debug.Assert(reference.Room != null);
-			var badDates = GetUnavailableTimeslotsForRenovation(reference.Room);
+			var badDates = RenovationController.GetUnavailableTimeslotsForRenovation(reference.Room);
 
 			return EasyInput<DateTime>.Get(
 				new List<Func<DateTime, bool>>
@@ -214,7 +188,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		private static DateTime InputEnd(string inputCancelString, Renovation reference)
 		{
 			Debug.Assert(reference.Room != null);
-			var badDates = GetUnavailableTimeslotsForRenovation(reference.Room);
+			var badDates = RenovationController.GetUnavailableTimeslotsForRenovation(reference.Room);
 
 			return EasyInput<DateTime>.Get(
 				new List<Func<DateTime, bool>>
@@ -233,9 +207,9 @@ namespace HospitalIS.Frontend.CLI.Model
 			);
 		}
 
-		private static void PrintUnavailableTimeslotsForRenovation(Room r)
+		public static void PrintUnavailableTimeslotsForRenovation(Room r)
 		{
-			var unavailableSlotsSorted = GetUnavailableTimeslotsForRenovation(r);
+			var unavailableSlotsSorted = RenovationController.GetUnavailableTimeslotsForRenovation(r);
 			unavailableSlotsSorted.Sort((a, b) => (a.Start.CompareTo(b.Start)));
 
 			if (unavailableSlotsSorted.Count() > 0)
@@ -246,58 +220,6 @@ namespace HospitalIS.Frontend.CLI.Model
 					Console.WriteLine(interval);
 				}
 			}
-		}
-
-		private static List<Renovation> GetInvalidRenovationsAfterScheduling(Renovation renovation)
-		{
-			if (renovation.IsSplitting() || renovation.IsMerging())
-			{
-				return RenovationController.GetRenovations()
-					.Where(ren => ren.Room == renovation.Room && ren.Start >= renovation.End)
-					.ToList();
-			}
-			return new List<Renovation>();
-		}
-
-		private static List<DateTimeRange> GetUnavailableTimeslotsFromRenovations(Room r) {
-			List<DateTimeRange> result = new List<DateTimeRange>();
-
-			var relevantRenovations = RenovationController.GetRenovations().Where(ren => ren.Room == r).ToList();
-			foreach (var ren in relevantRenovations)
-			{
-				if (ren.IsSplitting() || ren.IsMerging())
-				{
-					result.Add(new DateTimeRange(ren.Start, DateTime.MaxValue));
-				}
-				else
-				{
-					result.Add(new DateTimeRange(ren.Start, ren.End));
-				}
-			}
-
-			return result;
-		}
-
-		private static List<DateTimeRange> GetUnavailableTimeslotsFromAppointments(Room r) {
-			List<DateTimeRange> result = new List<DateTimeRange>();
-
-			var relevantAppointments = AppointmentController.GetAppointments().Where(ap => ap.Room == r).ToList();
-			foreach (var ap in relevantAppointments)
-			{
-				// TODO @magley: Utilize "duration" property once it gets implemented into Appointments.
-				DateTime start = ap.ScheduledFor;
-				DateTime end = start.AddMinutes(AppointmentController.LengthOfAppointmentInMinutes);
-				result.Add(new DateTimeRange(start, end));
-			}
-
-			return result;
-		}
-
-		private static List<DateTimeRange> GetUnavailableTimeslotsForRenovation(Room r)
-		{
-			var result = GetUnavailableTimeslotsFromRenovations(r);
-			result.AddRange(GetUnavailableTimeslotsFromAppointments(r));
-			return result;
 		}
 	}
 }

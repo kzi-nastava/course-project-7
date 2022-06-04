@@ -6,7 +6,6 @@ namespace HospitalIS.Backend.Controller
 {
 	internal class EquipmentController
 	{
-
 		private static bool StringMatch(string s1, string s2)
 		{
 			s1 = s1.Trim().ToLower();

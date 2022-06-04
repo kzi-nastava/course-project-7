@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace HospitalIS.Backend.Repository
 {
@@ -41,30 +39,6 @@ namespace HospitalIS.Backend.Repository
 		public void Save(string fullFilename, JsonSerializerSettings settings)
 		{
 			File.WriteAllText(fullFilename, JsonConvert.SerializeObject(IS.Instance.Hospital.EquipmentRelocations, Formatting.Indented, settings));
-		}
-
-		public void Execute(EquipmentRelocation relocation)
-		{
-			Thread.Sleep(Math.Max(relocation.GetTimeToLive(), 0));
-
-			if (relocation.Deleted)
-				return;
-
-			if (!IS.Instance.Hospital.EquipmentRelocations.Contains(relocation))
-				throw new EntityNotFoundException();
-
-			Console.WriteLine($"Performed relocation {relocation}.");
-
-			IS.Instance.RoomRepo.Add(relocation.RoomNew, relocation.Equipment);
-			IS.Instance.RoomRepo.Remove(relocation.RoomOld, relocation.Equipment);
-			IS.Instance.EquipmentRelocationRepo.Remove(relocation);
-		}
-
-		public void AddTask(EquipmentRelocation equipmentRelocation)
-		{
-			Task t = new Task(() => Execute(equipmentRelocation));
-			IS.Instance.Hospital.EquipmentRelocationTasks.Add(t);
-			t.Start();
 		}
 	}
 }

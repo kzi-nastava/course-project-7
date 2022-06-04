@@ -26,19 +26,19 @@ namespace HospitalIS.Backend.Controller
 		{
 			return GetMedicationRequests().Where(req => req.State == MedicationRequestState.SENT || req.State == MedicationRequestState.RETURNED).ToList();
 		}
-		
+
 		private static List<MedicationRequestState> GetAllRequestStates()
 		{
 			return Enum.GetValues(typeof(MedicationRequestState)).Cast<MedicationRequestState>().ToList();
 		}
-		
+
 		public static List<MedicationRequestState> GetRequestStatesForDoctor()
 		{
 			List<MedicationRequestState> states = GetAllRequestStates();
 			states.Remove(MedicationRequestState.SENT);
 			return states;
 		}
-		
+
 		public static void Accept(ref MedicationRequest request, ref MedicationRequestReview review)
 		{
 			request.State = MedicationRequestState.APPROVED;
@@ -46,13 +46,14 @@ namespace HospitalIS.Backend.Controller
 			var newMedication = request.Medication;
 			IS.Instance.MedicationRepo.Add(newMedication);
 		}
-		
+
 		public static void Reject(ref MedicationRequest request, ref MedicationRequestReview review)
 		{
 			request.State = MedicationRequestState.REJECTED;
 			request.Reviews.Add(review);
 			IS.Instance.MedicationRequestRepo.Remove(request);
 		}
+
 		public static void SendForRevision(ref MedicationRequest request, ref MedicationRequestReview review)
 		{
 			request.State = MedicationRequestState.RETURNED;
