@@ -2,6 +2,8 @@
 using System;
 using System.Linq;
 using HospitalIS.Backend.Repository;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace HospitalIS.Backend.Controller
 {
@@ -85,13 +87,45 @@ namespace HospitalIS.Backend.Controller
             matches.Sort(comparer);
             return matches;
         }
+
         public static void AddNotifsIfNecessary(UserAccount ua)
         {
             if (ua.Type == UserAccount.AccountType.PATIENT)
             {
                 Patient p = PatientController.GetPatientFromPerson(ua.Person);
-                MedicalRecord mr = MedicalRecordController.GetPatientsMedicalRecord(p);
-                IS.Instance.MedicalRecordRepo.AddTask(mr);
+                MedicalRecord mr = GetPatientsMedicalRecord(p);
+                AddPrescriptionNotificationTasks(mr);
+            }
+        }
+
+        public static void ExecutePrescriptionNotification(MedicalRecord record, Prescription prescription)
+        {
+            prescription.TimesOfUsage.Sort();
+            foreach (TimeSpan time in prescription.TimesOfUsage)
+            {
+                TimeSpan timeUntilPrescription = time - DateTime.Now.TimeOfDay;
+                if (timeUntilPrescription.TotalMinutes < 0) continue;
+                TimeSpan timeToSleep = timeUntilPrescription - TimeSpan.FromMinutes(record.MinutesBeforeNotification);
+                timeToSleep = timeToSleep.TotalMinutes > 0 ? timeToSleep : TimeSpan.FromMinutes(0);
+
+                Thread.Sleep(timeToSleep);
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Don't forget to take {prescription.Medication.Name} at {time}!");
+                Console.ForegroundColor = ConsoleColor.Gray;
+            }
+        }
+
+        public static void AddPrescriptionNotificationTasks(MedicalRecord record)
+        {
+            var tasks = new List<Task>();
+            foreach (Prescription p in record.Prescriptions)
+            {
+                tasks.Add(new Task(() => ExecutePrescriptionNotification(record, p)));
+            }
+            foreach (Task t in tasks)
+            {
+                t.Start();
             }
         }
     }
