@@ -12,6 +12,11 @@ namespace HospitalIS.Backend.EquipmentModel
 		Unknown, Examination, Operation, Furniture, Hallway
 	}
 
+	public enum EquipmentProperty
+	{
+		TYPE, USE
+	}
+
 	public class Equipment : Entity
 	{
 		public EquipmentType Type { get; set; }

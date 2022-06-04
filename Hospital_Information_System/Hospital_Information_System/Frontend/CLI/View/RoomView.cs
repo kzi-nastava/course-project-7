@@ -12,13 +12,13 @@ namespace HospitalIS.Frontend.CLI.View
 		private const string errNameIsEmpty = "Name cannot be empty!";
 		private readonly IRoomService _service;
 		private readonly IEnumerable<RoomType> _types;
-		private readonly IEnumerable<RoomProperty> _properties;
+		private readonly IEnumerable<RoomProperty> _modifiableProperties;
 
 		internal RoomView(IRoomService roomService)
 		{
 			_service = roomService;
 			_types = Utility.GetEnumValues<RoomType>();
-			_properties = Utility.GetEnumValues<RoomProperty>();
+			_modifiableProperties = Utility.GetEnumValues<RoomProperty>().Except(new List<RoomProperty> { RoomProperty.EQUIPMENT });
 		}
 
 		#region commands
@@ -62,7 +62,7 @@ namespace HospitalIS.Frontend.CLI.View
 
 		private IList<RoomProperty> SelectProperties()
 		{
-			return EasyInput<RoomProperty>.SelectMultiple(_properties.ToList(), _cancel);
+			return EasyInput<RoomProperty>.SelectMultiple(_modifiableProperties.ToList(), _cancel);
 		}
 
 		private Room InputRoom(IEnumerable<RoomProperty> whichProperties)

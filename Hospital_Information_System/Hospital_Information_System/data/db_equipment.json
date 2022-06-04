@@ -4,5 +4,149 @@
     "Use": 0,
     "Id": 0,
     "Deleted": false
+  },
+  {
+    "Type": 0,
+    "Use": 1,
+    "Id": 1,
+    "Deleted": false
+  },
+  {
+    "Type": 0,
+    "Use": 2,
+    "Id": 2,
+    "Deleted": false
+  },
+  {
+    "Type": 0,
+    "Use": 3,
+    "Id": 3,
+    "Deleted": false
+  },
+  {
+    "Type": 0,
+    "Use": 4,
+    "Id": 4,
+    "Deleted": false
+  },
+  {
+    "Type": 1,
+    "Use": 0,
+    "Id": 5,
+    "Deleted": false
+  },
+  {
+    "Type": 1,
+    "Use": 1,
+    "Id": 6,
+    "Deleted": false
+  },
+  {
+    "Type": 1,
+    "Use": 2,
+    "Id": 7,
+    "Deleted": false
+  },
+  {
+    "Type": 1,
+    "Use": 3,
+    "Id": 8,
+    "Deleted": false
+  },
+  {
+    "Type": 1,
+    "Use": 4,
+    "Id": 9,
+    "Deleted": false
+  },
+  {
+    "Type": 2,
+    "Use": 0,
+    "Id": 10,
+    "Deleted": false
+  },
+  {
+    "Type": 2,
+    "Use": 1,
+    "Id": 11,
+    "Deleted": false
+  },
+  {
+    "Type": 2,
+    "Use": 2,
+    "Id": 12,
+    "Deleted": false
+  },
+  {
+    "Type": 2,
+    "Use": 3,
+    "Id": 13,
+    "Deleted": false
+  },
+  {
+    "Type": 2,
+    "Use": 4,
+    "Id": 14,
+    "Deleted": false
+  },
+  {
+    "Type": 3,
+    "Use": 0,
+    "Id": 15,
+    "Deleted": false
+  },
+  {
+    "Type": 3,
+    "Use": 1,
+    "Id": 16,
+    "Deleted": false
+  },
+  {
+    "Type": 3,
+    "Use": 2,
+    "Id": 17,
+    "Deleted": false
+  },
+  {
+    "Type": 3,
+    "Use": 3,
+    "Id": 18,
+    "Deleted": false
+  },
+  {
+    "Type": 3,
+    "Use": 4,
+    "Id": 19,
+    "Deleted": false
+  },
+  {
+    "Type": 4,
+    "Use": 0,
+    "Id": 20,
+    "Deleted": false
+  },
+  {
+    "Type": 4,
+    "Use": 1,
+    "Id": 21,
+    "Deleted": false
+  },
+  {
+    "Type": 4,
+    "Use": 2,
+    "Id": 22,
+    "Deleted": false
+  },
+  {
+    "Type": 4,
+    "Use": 3,
+    "Id": 23,
+    "Deleted": false
+  },
+  {
+    "Type": 4,
+    "Use": 4,
+    "Id": 24,
+    "Deleted": false
   }
 ]

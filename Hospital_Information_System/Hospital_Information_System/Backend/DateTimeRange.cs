@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-namespace HospitalIS.Backend.Util
+namespace HospitalIS.Backend
 {
 	struct DateTimeRange
 	{

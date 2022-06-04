@@ -8,7 +8,7 @@ namespace HospitalIS.Frontend.CLI.View
 
 		protected void Hint(string value)
 		{
-			Console.ForegroundColor = ConsoleColor.Gray;
+			Console.ForegroundColor = ConsoleColor.DarkGray;
 			Console.WriteLine(value);
 			Console.ResetColor();
 		}
@@ -22,7 +22,7 @@ namespace HospitalIS.Frontend.CLI.View
 
 		protected void Print(string value)
 		{
-			Console.Write(value);
+			Console.WriteLine(value);
 		}
 	}
 }

@@ -97,7 +97,7 @@ namespace HospitalIS.Frontend.CLI.View
 		{
 			for (int i = 0; i < rules.Count(); i++)
 			{
-				
+	
 				if (rules.ElementAt(i).Invoke(input) == false)
 					return i;
 			}
@@ -156,12 +156,12 @@ namespace HospitalIS.Frontend.CLI.View
 			return elements.ElementAt(selection);
 		}
 
-		public static T Select(IList<T> elements, Func<T, string> toStrFunc, string cancel)
+		public static T Select(IEnumerable<T> elements, Func<T, string> toStrFunc, string cancel)
 		{
 			return Select(elements, new List<Func<T, bool>>(), new string[] { }, toStrFunc, cancel);
 		}
 
-		public static T Select(IList<T> elements, string cancel)
+		public static T Select(IEnumerable<T> elements, string cancel)
 		{
 			return Select(elements, elem => elem.ToString(), cancel);
 		}

@@ -40,7 +40,7 @@ namespace HospitalIS.Backend.RoomModel
 
 		public override string ToString()
 		{
-			return $"Room{{Id = {Id}, Name = {Name}, Floor = {Floor}, Type = {Type}, EquipmentCount = {Equipment.Count()} }}";
+			return $"Room{{Id = {Id}, Name = {Name}, Floor = {Floor}, Type = {Type}}}";
 		}
 		#endregion
 	}

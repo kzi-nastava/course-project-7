@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using HospitalIS.Backend.Foundation;
+using System.Linq;
 
-namespace HospitalIS.Backend.Util
+namespace HospitalIS.Backend
 {
 	public static class ExtensionMethods
 	{
@@ -13,6 +14,11 @@ namespace HospitalIS.Backend.Util
 					return obj;
 			}
 			throw new EntityNotFoundException();
+		}
+
+		public static IEnumerable<T> UnionNullSafe<T>(this IEnumerable<T> c1, IEnumerable<T> c2)
+		{
+			return c1 ?? Enumerable.Empty<T>().Union(c2 ?? Enumerable.Empty<T>());
 		}
 	}
 }

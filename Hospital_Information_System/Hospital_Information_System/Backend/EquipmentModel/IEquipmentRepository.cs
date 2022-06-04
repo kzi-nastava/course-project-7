@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace HospitalIS.Backend.EquipmentModel
@@ -9,5 +10,8 @@ namespace HospitalIS.Backend.EquipmentModel
 		public Equipment Get(int id);
 		public void Add(Equipment obj);
 		public void Remove(Equipment obj);
+		IEnumerable<Equipment> Search(string searchQuery, IList<EquipmentProperty> propertiesToSearchOn);
+		IEnumerable<Equipment> FilterByType(EquipmentType equipmentType);
+		IEnumerable<Equipment> FilterByUse(EquipmentUse equipmentUse);
 	}
 }

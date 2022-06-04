@@ -43,13 +43,13 @@
     <Compile Remove="Backend\UpdateRequest.cs" />
     <Compile Remove="Backend\UserAccount.cs" />
     <Compile Remove="data\Ingredients.cs" />
+    <Compile Remove="Frontend\EquipmentModel.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="data\appointments.json" />
     <None Remove="data\deleteRequests.json" />
     <None Remove="data\doctors.json" />
-    <None Remove="data\equipment.json" />
     <None Remove="data\equipmentRelocation.json" />
     <None Remove="data\ingredients.json" />
     <None Remove="data\medicalRecords.json" />

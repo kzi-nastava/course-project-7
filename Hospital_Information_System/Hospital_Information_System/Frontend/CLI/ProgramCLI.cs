@@ -17,11 +17,17 @@ namespace HospitalIS.Frontend.CLI
 			IRoomRepository roomRepo = new RoomJSONRepository(dataDir + "db_rooms.json", jsonSettings);
 
 			IRoomService roomService = new RoomService(roomRepo);
-			IEquipmentService equipment = new EquipmentService(equipmentRepo);
+			IEquipmentService equipmentService = new EquipmentService(equipmentRepo);
+			RoomEquipmentServiceFacade roomEquipmentServiceFacade = new RoomEquipmentServiceFacade(equipmentService, roomService);
 
 			RoomView roomView = new RoomView(roomService);
+			EquipmentView equipmentView = new EquipmentView(roomEquipmentServiceFacade);
 
-			roomView.CmdRoomView();
+
+			//roomView.CmdRoomView();
+			//equipmentView.CmdSearch();
+			equipmentView.CmdFilter();
+
 
 			roomRepo.Save();
 		}
