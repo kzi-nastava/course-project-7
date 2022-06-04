@@ -25,6 +25,7 @@ namespace HospitalIS.Frontend.CLI.Model
 		private const string askWantsToMerge = "Will this room be merged with another room?";
 		private const string hintMergeSelectOtherRoom = "Select other room that will be merged with this one";
 		private const string hintMergeInputNewRoom = "Input data for the room that will be created after merging";
+		private const string hintNoEquipment = "No equipment found to move";
 
 		private static void Schedule(Renovation renovation)
 		{
@@ -163,19 +164,26 @@ namespace HospitalIS.Frontend.CLI.Model
 
 		private static void InputSplitEquipment(Renovation renovation, string inputCancelString, Room r1, Room r2) 
 		{
-			Console.WriteLine(hintSelectEquipmentForSplit);
-			var eqForRoom1 = EasyInput<KeyValuePair<Equipment, int>>.SelectMultiple(
-				renovation.Room.Equipment.ToList(),
-				kv => $"{kv.Key.ToString()} ({kv.Value})",
-				inputCancelString
-			);
-			var eqForRoom2 = renovation.Room.Equipment.Except(eqForRoom1);
+			try
+			{
+				Console.WriteLine(hintSelectEquipmentForSplit);
+				var eqForRoom1 = EasyInput<KeyValuePair<Equipment, int>>.SelectMultiple(
+					renovation.Room.Equipment.ToList(),
+					kv => $"{kv.Key.ToString()} ({kv.Value})",
+					inputCancelString
+				);
+				var eqForRoom2 = renovation.Room.Equipment.Except(eqForRoom1);
 
-			Debug.Assert(eqForRoom1.Intersect(eqForRoom2).Count() == 0);
-			Debug.Assert(new HashSet<KeyValuePair<Equipment, int>>(eqForRoom1.Concat(eqForRoom2)).SetEquals(renovation.Room.Equipment));
+				Debug.Assert(eqForRoom1.Intersect(eqForRoom2).Count() == 0);
+				Debug.Assert(new HashSet<KeyValuePair<Equipment, int>>(eqForRoom1.Concat(eqForRoom2)).SetEquals(renovation.Room.Equipment));
 
-			foreach (var eqAmount in eqForRoom1) r1.Equipment.Add(eqAmount.Key, eqAmount.Value);
-			foreach (var eqAmount in eqForRoom2) r2.Equipment.Add(eqAmount.Key, eqAmount.Value);
+				foreach (var eqAmount in eqForRoom1) r1.Equipment.Add(eqAmount.Key, eqAmount.Value);
+				foreach (var eqAmount in eqForRoom2) r2.Equipment.Add(eqAmount.Key, eqAmount.Value);
+			}
+			catch (NothingToSelectException)
+			{
+				Console.WriteLine(hintNoEquipment);
+			}
 		}
 
 		private static Room InputRoom(string inputCancelString)
