@@ -25,6 +25,16 @@ namespace HospitalIS.Backend.Controller
 
             return GetDoctors().FindAll(d => IsAvailable(d, refAppointment.ScheduledFor, refAppointment));
         }
+        
+        public static List<Doctor> GetAvailableDoctors()
+        {
+            return IS.Instance.Hospital.Doctors.ToList();
+        }
+        
+        public static List<Doctor.MedicineSpeciality> GetAllSpecialties()
+        {
+            return Enum.GetValues(typeof(Doctor.MedicineSpeciality)).Cast<Doctor.MedicineSpeciality>().ToList();
+        }
 
         public static bool IsAvailable(Doctor doctor, DateTime newSchedule, Appointment refAppointment = null)
         {

@@ -26,5 +26,21 @@ namespace HospitalIS.Backend.Controller
 				dest.Ingredients.AddRange(src.Ingredients);
 			}
 		}
+		
+		public static bool IsMedicationSafe(List<Ingredient> medicationIngredients,
+			List<Ingredient> patientsAllergies)
+		{
+			for (int i = 0; i < medicationIngredients.Count(); i++)
+			{
+				for (int j = 0; j < patientsAllergies.Count(); j++)
+				{
+					if (medicationIngredients[i] == patientsAllergies[j])
+					{
+						return false; 
+					}
+				}
+			}
+			return true;
+		}
 	}
 }

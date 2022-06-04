@@ -39,6 +39,13 @@ namespace HospitalIS.Backend.Controller
                 a => !a.Deleted).ToList();
         }
 
+        internal static List<MedicalRecordProperty> GetPrescriptionProperty()
+        {
+            List<MedicalRecordProperty> prescriptionProperty = new List<MedicalRecordProperty>();
+            prescriptionProperty.Add(MedicalRecordProperty.PRESCRIPTIONS);
+            return prescriptionProperty;
+        }
+
         public static MedicalRecord GetPatientsMedicalRecord(Patient patient)
         {
             var allMedicalRecords = GetAllMedicalRecords();

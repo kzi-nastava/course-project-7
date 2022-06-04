@@ -41,25 +41,22 @@ namespace HospitalIS.Frontend.CLI.Model
                 Console.WriteLine(e.Message);
             }
             Console.WriteLine(hintPrescriptionCreated);
+            
             MedicalRecord updatedMedicalRecord = oldMedicalRecord;
-                updatedMedicalRecord.Prescriptions.Add(newPrescription);
-            //List<MedicalRecordController.MedicalRecordProperty> properties = MedicalRecordController.GetAllMedicalRecordProperties();
-            //MedicalRecordController.CopyMedicalRecord(oldMedicalRecord, updatedMedicalRecord, properties);
-            List<MedicalRecordController.MedicalRecordProperty> prescriptionProperty =
-                new List<MedicalRecordController.MedicalRecordProperty>();
-            prescriptionProperty.Add(MedicalRecordController.MedicalRecordProperty.PRESCRIPTIONS);
+            updatedMedicalRecord.Prescriptions.Add(newPrescription);
+            var prescriptionProperty = MedicalRecordController.GetPrescriptionProperty();
             MedicalRecordController.CopyMedicalRecord(oldMedicalRecord, updatedMedicalRecord, prescriptionProperty);
             return newPrescription;
         }
 
         private static Medication InputMedication(string inputCancelString, MedicalRecord patientsMedicalRecord)
         {
-            List<Medication> medications = GetAllMedications();
+            List<Medication> medications = MedicationController.GetMedications();
             while (true)
             {
                 Console.WriteLine(hintInputMedication);
                 var selectedMedication = EasyInput<Medication>.Select(medications, inputCancelString);
-                bool medicationIsSafe = IsMedicationSafe(selectedMedication.Ingredients,
+                bool medicationIsSafe = MedicationController.IsMedicationSafe(selectedMedication.Ingredients,
                     patientsMedicalRecord.IngredientAllergies);
                 if (!medicationIsSafe)
                 {
@@ -72,27 +69,6 @@ namespace HospitalIS.Frontend.CLI.Model
             }
         }
 
-        private static List<Medication> GetAllMedications()
-        {
-            return IS.Instance.Hospital.Medications.Where(
-                a => !a.Deleted).ToList();
-        }
-
-        private static bool IsMedicationSafe(List<Ingredient> medicationIngredients,
-            List<Ingredient> patientsAllergies)
-        {
-            for (int i = 0; i < medicationIngredients.Count(); i++)
-            {
-                for (int j = 0; j < patientsAllergies.Count(); j++)
-                {
-                    if (medicationIngredients[i] == patientsAllergies[j])
-                    {
-                        return false; 
-                    }
-                }
-            }
-            return true;
-        }
 
         private static Prescription.UsageTypes InputUsage(string inputCancelString)
         {
