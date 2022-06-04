@@ -2,37 +2,41 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace HospitalIS.Backend
 {
-	public enum RequestState
+	public enum MedicationRequestState
 	{
-		REVISION, APPROVED, REJECTED
-	}
+		SENT, RETURNED, APPROVED, REJECTED
+	}	
 
-	public class MedicationRequestFeedback
+	public class MedicationRequestReview
 	{
-		public string Message {get; private set;}
-		public DateTime Timestamp {get; private set;}
-		public RequestState State {get; private set;}
-
-		[JsonConverter(typeof(Repository.DoctorRepository.DoctorReferenceConverter))]
-		public Doctor Reviewer {get; private set;}
+		public string Message {get; set;}
+		public DateTime Timestamp {get; set;}
 		
-		public MedicationRequestFeedback() 
+		[JsonConverter(typeof(Repository.DoctorRepository.DoctorReferenceConverter))]
+		public Doctor Reviewer {get; set;}
+		
+		public MedicationRequestState Verdict {get; set;}
+		
+		public MedicationRequestReview() 
 		{
 		}
 
-		public MedicationRequestFeedback(string message, RequestState state, Doctor reviewer) {
+		public MedicationRequestReview(Doctor reviewer, string message, MedicationRequestState verdict) {
+			Debug.Assert(verdict != MedicationRequestState.SENT);
+			
+			Reviewer = reviewer;
 			Message = message;
 			Timestamp = DateTime.Now;
-			State = state;
-			Reviewer = reviewer;
+			Verdict = verdict;
 		}
 
 		public override string ToString()
 		{
-			return $"RequestFeedback{{Timestamp={Timestamp}, Message={Message}, State={State}}}";
+			return $"RequestFeedback{{Timestamp={Timestamp}, Message={Message}, Verdict={Verdict}, Reviewer={Reviewer.ToString()}}}";
 		}
 	}
 
@@ -40,7 +44,9 @@ namespace HospitalIS.Backend
     {
 		public Medication Medication; // Kept internally until it gets approved.
 
-		public List<MedicationRequestFeedback> Feedback = new List<MedicationRequestFeedback>();
+		public List<MedicationRequestReview> Reviews = new List<MedicationRequestReview>();
+
+		public MedicationRequestState State {get; set;} = MedicationRequestState.SENT;
 
         public MedicationRequest()
         {
@@ -51,9 +57,39 @@ namespace HospitalIS.Backend
 			Medication = medication;
 		}
 
+        
         public override string ToString()
         {
-            return $"MedicationRequest{{Medication={Medication.ToString()}, Feedback=[{Feedback.Select(f => f.ToString() + "\n")}]}}";
+            return $"MedicationRequest{{Medication={Medication.ToString()}, Reviews=[{Reviews.Select(f => f.ToString() + "\n")}], State={State}}}";
         }
+        
+        
+        /*
+        public override string ToString()
+        {
+	        if (Reviews.Count != 0)
+	        {
+		        return $"MedicationRequest{{Medication={Medication.ToString()}, State={State}, Reviews=[\n{ConvertReviewListToString(Reviews)}\n]}}";
+	        }
+	        return $"MedicationRequest{{Medication={Medication.ToString()}, State={State}, Reviews=[None yet]}}";
+        }
+        
+        
+        private static string ConvertReviewListToString(List<MedicationRequestReview> entry)
+        {
+	        string ret = "";
+	        for (int i = 0; i <= entry.Count - 1; i++)
+	        {
+		        ret += entry[i].ToString();
+		        if (i < entry.Count - 1)
+		        {
+			        ret += ";\n ";
+		        }
+	        }
+
+	        return ret;
+        }
+        */
+        
     }
 }

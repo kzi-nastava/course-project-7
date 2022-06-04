@@ -1,16 +1,36 @@
 [
   {
     "Medication": {
-      "Name": "MedsTest",
+      "Name": "Brufen",
       "Ingredients": [
         0,
         1,
         2
       ],
-      "Id": -1,
+      "Id": 4,
       "Deleted": false
     },
-    "Feedback": [],
+    "Reviews": [
+      {
+        "Message": "Dangerous ingredient combo",
+        "Timestamp": "2022-05-31T16:03:07.6431996+02:00",
+        "Reviewer": 1,
+        "Verdict": 1
+      },
+      {
+        "Message": "Spelling mistakes in the name",
+        "Timestamp": "2022-05-31T16:06:15.9012006+02:00",
+        "Reviewer": 1,
+        "Verdict": 1
+      },
+      {
+        "Message": "Good enough",
+        "Timestamp": "2022-05-31T16:07:58.6362294+02:00",
+        "Reviewer": 1,
+        "Verdict": 2
+      }
+    ],
+    "State": 2,
     "Id": 0,
     "Deleted": false
   }

@@ -63,7 +63,7 @@ namespace HospitalIS.Backend
             return $"MedicalRecord{{Id = {Id}, Patient = {Patient.Id}, Weight = {Weight}, Height = {Height}, Illnesses = {ConvertStringListToString(Illnesses)}, AllergiesToIngredients = {Medication.ConvertIngredientListToString(IngredientAllergies)}, OtherAllergies = {ConvertStringListToString(OtherAllergies)}, Prescriptions = {ConvertPrescriptionListToString(Prescriptions)}}}";
         }
 
-        public static string ConvertStringListToString(List<String> entry)
+        private static string ConvertStringListToString(List<String> entry)
         {
             string result = "";
             for (int i = 0; i <= entry.Count - 1; i++)
