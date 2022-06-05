@@ -15,12 +15,13 @@ namespace HIS.Core.RoomModel
 		{
 			_fname = fname;
 			_settings = settings;
+			RoomJSONReferenceConverter.Repo = this;
 			_rooms = JsonConvert.DeserializeObject<List<Room>>(File.ReadAllText(fname), _settings);
 		}
 
 		public IEnumerable<Room> Get()
 		{
-			return _rooms;
+			return _rooms.Where(o => !o.Deleted);
 		}
 
 		public Room Get(int id)
@@ -35,7 +36,7 @@ namespace HIS.Core.RoomModel
 
 		public void Remove(Room obj)
 		{
-			_rooms.Remove(obj);
+			obj.Deleted = true;
 		}
 
 		public void Save()

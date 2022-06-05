@@ -5,7 +5,7 @@ namespace HIS.Core
 	{
 		static void Main()
 		{
-			Console.WriteLine("Run from CLI.Main()");
+			Console.WriteLine("Run from HIS.CLI.Main()");
 		}
 	}
 }

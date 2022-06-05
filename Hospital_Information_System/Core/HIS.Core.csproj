@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="EquipmentModel\EquipmentRelocationModel\EquipmentRelocation2.cs" />
+    <Compile Remove="EquipmentModel\EquipmentRelocationModel\EquipmentRelocationController2.cs" />
+    <Compile Remove="EquipmentModel\EquipmentRelocationModel\EquipmentRelocationRepository2.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 

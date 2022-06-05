@@ -1,10 +1,8 @@
 using HIS.Core.Util;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 
 namespace HIS.Core.EquipmentModel
 {
@@ -19,12 +17,13 @@ namespace HIS.Core.EquipmentModel
 			_fname = fname;
 			_settings = settings;
 			EquipmentJSONDictionaryConverter<int>.Repo = this;
+			EquipmentJSONReferenceConverter.Repo = this;
 			_equipment = JsonConvert.DeserializeObject<List<Equipment>>(File.ReadAllText(fname), _settings);
 		}
 
 		public IEnumerable<Equipment> Get()
 		{
-			return _equipment;
+			return _equipment.Where(o => !o.Deleted);
 		}
 
 		public Equipment Get(int id)
@@ -39,7 +38,7 @@ namespace HIS.Core.EquipmentModel
 
 		public void Remove(Equipment obj)
 		{
-			_equipment.Remove(obj);
+			obj.Deleted = true;
 		}
 
 		public void Save()

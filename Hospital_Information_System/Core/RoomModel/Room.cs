@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Linq;
 using HIS.Core.EquipmentModel;
 using HIS.Core.Foundation;
 
