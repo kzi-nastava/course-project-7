@@ -1,0 +1,34 @@
+[
+  {
+    "Name": "Empty",
+    "Ingredients": [],
+    "Id": 0,
+    "Deleted": false
+  },
+  {
+    "Name": "Antibiotic",
+    "Ingredients": [
+      1
+    ],
+    "Id": 1,
+    "Deleted": false
+  },
+  {
+    "Name": "Insulin",
+    "Ingredients": [
+      2,
+      3
+    ],
+    "Id": 2,
+    "Deleted": false
+  },
+  {
+    "Name": "Zoloft",
+    "Ingredients": [
+      2,
+      3
+    ],
+    "Id": 3,
+    "Deleted": false
+  }
+]

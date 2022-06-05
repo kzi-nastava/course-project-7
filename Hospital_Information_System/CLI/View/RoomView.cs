@@ -1,11 +1,11 @@
-﻿using HospitalIS.Core;
-using HospitalIS.Core.RoomModel;
-using HospitalIS.Core.Util;
+﻿using HIS.Core;
+using HIS.Core.RoomModel;
+using HIS.Core.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace HospitalIS.Frontend.CLI.View
+namespace HIS.CLI.View
 {
 	internal class RoomView : View
 	{

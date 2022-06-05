@@ -1,11 +1,11 @@
-﻿using HospitalIS.Core;
-using HospitalIS.Core.EquipmentModel;
+﻿using HIS.Core;
+using HIS.Core.EquipmentModel;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using HospitalIS.Core.Util;
+using HIS.Core.Util;
 
-namespace HospitalIS.Frontend.CLI.View
+namespace HIS.CLI.View
 {
 	internal class EquipmentView : View
 	{

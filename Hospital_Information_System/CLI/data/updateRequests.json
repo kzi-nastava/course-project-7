@@ -1,0 +1,34 @@
+[
+  {
+    "OldAppointment": 6,
+    "NewAppointment": {
+      "Doctor": 0,
+      "Patient": 2,
+      "Room": 11,
+      "ScheduledFor": "2022-04-27T10:15:00",
+      "Anamnesis": null,
+      "Id": -1,
+      "Deleted": false
+    },
+    "Requestee": 5,
+    "State": 0,
+    "Id": 0,
+    "Deleted": false
+  },
+  {
+    "OldAppointment": 6,
+    "NewAppointment": {
+      "Doctor": 0,
+      "Patient": 2,
+      "Room": 11,
+      "ScheduledFor": "2022-04-27T10:00:00",
+      "Anamnesis": null,
+      "Id": -1,
+      "Deleted": false
+    },
+    "Requestee": 5,
+    "State": 0,
+    "Id": 1,
+    "Deleted": false
+  }
+]

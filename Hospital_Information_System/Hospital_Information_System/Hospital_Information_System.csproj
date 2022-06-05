@@ -7,14 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Backend\Controller\**" />
-    <Compile Remove="Backend\Repository\**" />
+    <Compile Remove="Core\Controller\**" />
+    <Compile Remove="Core\Repository\**" />
     <Compile Remove="Frontend\CLI\Model\**" />
-    <EmbeddedResource Remove="Backend\Controller\**" />
-    <EmbeddedResource Remove="Backend\Repository\**" />
+    <EmbeddedResource Remove="Core\Controller\**" />
+    <EmbeddedResource Remove="Core\Repository\**" />
     <EmbeddedResource Remove="Frontend\CLI\Model\**" />
-    <None Remove="Backend\Controller\**" />
-    <None Remove="Backend\Repository\**" />
+    <None Remove="Core\Controller\**" />
+    <None Remove="Core\Repository\**" />
     <None Remove="Frontend\CLI\Model\**" />
   </ItemGroup>
 
@@ -23,25 +23,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Backend\Appointment.cs" />
-    <Compile Remove="Backend\DeleteRequest.cs" />
-    <Compile Remove="Backend\Doctor.cs" />
-    <Compile Remove="Backend\EquipmentRelocation.cs" />
-    <Compile Remove="Backend\Hospital.cs" />
-    <Compile Remove="Backend\HospitalIS.cs" />
-    <Compile Remove="Backend\Ingredient.cs" />
-    <Compile Remove="Backend\IRepository.cs" />
-    <Compile Remove="Backend\MedicalRecord.cs" />
-    <Compile Remove="Backend\Medication.cs" />
-    <Compile Remove="Backend\MedicationRequest.cs" />
-    <Compile Remove="Backend\Patient.cs" />
-    <Compile Remove="Backend\Person.cs" />
-    <Compile Remove="Backend\Prescription.cs" />
-    <Compile Remove="Backend\Referral.cs" />
-    <Compile Remove="Backend\Renovation.cs" />
-    <Compile Remove="Backend\Request.cs" />
-    <Compile Remove="Backend\UpdateRequest.cs" />
-    <Compile Remove="Backend\UserAccount.cs" />
+    <Compile Remove="Core\Appointment.cs" />
+    <Compile Remove="Core\DeleteRequest.cs" />
+    <Compile Remove="Core\Doctor.cs" />
+    <Compile Remove="Core\EquipmentRelocation.cs" />
+    <Compile Remove="Core\Hospital.cs" />
+    <Compile Remove="Core\HospitalIS.cs" />
+    <Compile Remove="Core\Ingredient.cs" />
+    <Compile Remove="Core\IRepository.cs" />
+    <Compile Remove="Core\MedicalRecord.cs" />
+    <Compile Remove="Core\Medication.cs" />
+    <Compile Remove="Core\MedicationRequest.cs" />
+    <Compile Remove="Core\Patient.cs" />
+    <Compile Remove="Core\Person.cs" />
+    <Compile Remove="Core\Prescription.cs" />
+    <Compile Remove="Core\Referral.cs" />
+    <Compile Remove="Core\Renovation.cs" />
+    <Compile Remove="Core\Request.cs" />
+    <Compile Remove="Core\UpdateRequest.cs" />
+    <Compile Remove="Core\UserAccount.cs" />
     <Compile Remove="data\Ingredients.cs" />
     <Compile Remove="Frontend\EquipmentModel.cs" />
   </ItemGroup>

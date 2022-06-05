@@ -1,12 +1,12 @@
-﻿using HospitalIS.Core.RoomModel;
-using HospitalIS.Core.EquipmentModel;
-using HospitalIS.Frontend.CLI.View;
+﻿using HIS.Core.EquipmentModel;
+using HIS.Core.RoomModel;
+using HIS.CLI.View;
 using Newtonsoft.Json;
 using System.IO;
 
-namespace HospitalIS.Frontend.CLI
+namespace HIS.CLI
 {
-	internal static class Startup
+	static class Startup
 	{
 		private static readonly string dataDir = Path.Combine("..", "..", "..", "data") + Path.DirectorySeparatorChar;
 		private static readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.None };
@@ -22,6 +22,8 @@ namespace HospitalIS.Frontend.CLI
 
 			RoomView roomView = new RoomView(roomService);
 			EquipmentView equipmentView = new EquipmentView(roomEquipmentServiceFacade);
+
+			equipmentView.CmdFilter();
 
 			roomRepo.Save();
 		}

@@ -1,0 +1,20 @@
+[
+  {
+    "Room": 14,
+    "Start": "2022-05-08T13:56:00",
+    "End": "2022-05-08T13:57:00",
+    "_room1": null,
+    "_room2": null,
+    "Id": 0,
+    "Deleted": true
+  },
+  {
+    "Room": 22,
+    "Start": "2022-05-08T13:56:00",
+    "End": "2022-05-08T13:57:00",
+    "_room1": null,
+    "_room2": null,
+    "Id": 1,
+    "Deleted": true
+  }
+]
