@@ -43,6 +43,7 @@ namespace HospitalIS.Backend
 		internal List<RequestEquipment> RequestsEquipment = new List<RequestEquipment>();
 		internal List<Task> RequestEquipmentTasks = new List<Task>();
 		internal List<AppointmentRating> AppointmentRatings = new List<AppointmentRating>();
+		internal List<DaysOffRequest> DaysOffRequests = new List<DaysOffRequest>();
 
 	}
 }

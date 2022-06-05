@@ -1,0 +1,11 @@
+[
+  {
+    "Start": "2022-06-05T21:56:41.2258087+02:00",
+    "End": "2022-06-08T21:56:41.225874+02:00",
+    "Reason": "some reason",
+    "State": 0,
+    "RejectionExplanation": "",
+    "Id": 0,
+    "Deleted": false
+  }
+]
