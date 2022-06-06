@@ -73,7 +73,8 @@
     "Examinations": [
       0,
       12,
-      14
+      14,
+      21
     ],
     "MinutesBeforeNotification": 5,
     "Id": 2,

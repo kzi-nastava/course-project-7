@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace HospitalIS.Backend
 {
@@ -11,7 +11,7 @@ namespace HospitalIS.Backend
         }
         
         [JsonConverter(typeof(Repository.DoctorRepository.DoctorReferenceConverter))]
-        public Doctor Requester { get; set; }
+        public Doctor Requester {get; set;}
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
         public string Reason { get; set; }
