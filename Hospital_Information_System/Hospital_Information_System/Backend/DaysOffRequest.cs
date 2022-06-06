@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 
 namespace HospitalIS.Backend
 {
@@ -8,6 +9,9 @@ namespace HospitalIS.Backend
         {
             SENT, APPROVED, REJECTED
         }
+        
+        [JsonConverter(typeof(Repository.DoctorRepository.DoctorReferenceConverter))]
+        public Doctor Requester { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
         public string Reason { get; set; }
@@ -19,8 +23,9 @@ namespace HospitalIS.Backend
             
         }
         
-        public DaysOffRequest(DateTime start, DateTime end, string reason, DaysOffRequestState state)
+        public DaysOffRequest(Doctor requester, DateTime start, DateTime end, string reason, DaysOffRequestState state)
         {
+            Requester = requester;
             Start = start;
             End = end;
             Reason = reason;
@@ -28,8 +33,9 @@ namespace HospitalIS.Backend
             RejectionExplanation = "";
         }
 
-        public DaysOffRequest(DateTime start, DateTime end, string reason, DaysOffRequestState state, string rejectionExplanation)
+        public DaysOffRequest(Doctor requester, DateTime start, DateTime end, string reason, DaysOffRequestState state, string rejectionExplanation)
         {
+            Requester = requester;
             Start = start;
             End = end;
             Reason = reason;
@@ -39,9 +45,9 @@ namespace HospitalIS.Backend
 
         public override string ToString()
         {
-            if (State != DaysOffRequestState.REJECTED)
-                return $"DaysOffRequest{{Start={Start}, End={End}, Reason={Reason}, State={State}}}";
-            return $"DaysOffRequest{{Start={Start}, End={End}, Reason={Reason}, State={State}, RejectionExplanation={RejectionExplanation}}}";
+            if (State == DaysOffRequestState.REJECTED)
+                return $"DaysOffRequest{{Doctor={Requester}, Start={Start}, End={End}, Reason={Reason}, State={State}, RejectionExplanation={RejectionExplanation}}}";
+            return $"DaysOffRequest{{Doctor={Requester}, Start={Start}, End={End}, Reason={Reason}, State={State}}}";
         }
     }
 }
