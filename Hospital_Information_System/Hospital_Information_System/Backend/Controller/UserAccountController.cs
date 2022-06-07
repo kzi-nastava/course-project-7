@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HospitalIS.Frontend.CLI.Model;
 
 namespace HospitalIS.Backend.Controller
 {
@@ -40,6 +41,7 @@ namespace HospitalIS.Backend.Controller
                 {
                     if (ua.Blocked != UserAccount.BlockedBy.NONE) throw new InvalidLoginAttemptException("Account is blocked");
                     MedicalRecordController.AddNotifsIfNecessary(ua);
+                    DaysOffRequestModel.ShowDeletedAppointments(ua);
                     return ua;
                 }
             }

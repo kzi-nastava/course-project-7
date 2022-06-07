@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using HospitalIS.Backend;
 using HospitalIS.Backend.Controller;
-using HospitalIS.Backend.Util;
 
 namespace HospitalIS.Frontend.CLI.Model
 {
@@ -16,51 +14,68 @@ namespace HospitalIS.Frontend.CLI.Model
         private const string hintInputStartDay = "Input date you want the break to start";
         private const string hintInputEndDay = "Input date you want the break to end";
         private const string hintInputReason = "Input reason for requesting days off";
+        private const string hintAppointmentsDeleted =
+            "Following appointments of yours will be deleted due to the doctor taking an urgent break:";
+
+        private const string hintIsRequestUrgent = "Do you want to make an urgent request?";
         private const string errEndBeforeStart = "The last day off comes before the first";
-        private const string errAppointmentsScheduled = "You have appointment(s) or days off scheduled during the requested break";
+        private const string errUnableToSchedule = "You have appointment(s) or days off scheduled during the requested break";
         private const string errNoReason = "You have to input reason";
 
         internal static void ReadDaysOffRequests(UserAccount user)
         {
             List<DaysOffRequest> requests =(user.Type == UserAccount.AccountType.DOCTOR)
-                ? GetDoctorsDaysOffRequests(DoctorController.GetDoctorFromPerson(user.Person))
-                : GetAllDaysOffRequests();
+                ? DaysOffRequestController.GetDaysOffRequests(DoctorController.GetDoctorFromPerson(user.Person))
+                : DaysOffRequestController.GetSentDaysOffRequests(); //for secretary
 
-            foreach (var request in requests)
-            {
-                Console.WriteLine(request);
-            }
+            Print(requests);
         }
 
-        private static List<DaysOffRequest> GetAllDaysOffRequests()
-        {
-            return IS.Instance.Hospital.DaysOffRequests.Where(a => !a.Deleted).ToList();
-        }
-
-        private static List<DaysOffRequest> GetDoctorsDaysOffRequests(Doctor doctor)
-        {
-            return IS.Instance.Hospital.DaysOffRequests.Where(a => !a.Deleted && a.Requester == doctor).ToList();
-        }
-        
         internal static void CreateDaysOffRequest(UserAccount user, string inputCancelString)
         {
             Doctor doctor = DoctorController.GetDoctorFromPerson(user.Person);
+            DaysOffRequest daysOffRequest; 
+            Console.WriteLine(hintIsRequestUrgent);
+            if (EasyInput<bool>.YesNo(inputCancelString)) //request is urgent
+            {
+                daysOffRequest = CreateUrgentRequest(inputCancelString, doctor);
+            }
+            else //request is not urgent
+            {
+                daysOffRequest = CreateUnurgentRequest(inputCancelString, doctor);
+            }
+            
+            IS.Instance.DaysOffRequestRepo.Add(daysOffRequest);
+        }
+
+        private static DaysOffRequest CreateUnurgentRequest(string inputCancelString, Doctor doctor)
+        {
             DateTime start;
             DateTime end;
             while (true)
             {
                 start = InputStartDay(inputCancelString);
                 end = InputEndDay(inputCancelString, start);
-                if (IsRangeCorrect(doctor, start, end)) break;
+                if (DaysOffRequestController.IsRangeCorrect(doctor, start, end)) break;
+                
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(errAppointmentsScheduled);
+                Console.WriteLine(errUnableToSchedule);
                 Console.ForegroundColor = ConsoleColor.Gray;
+                AppointmentModel.Print(DaysOffRequestController.FindProblematicAppointments(doctor, start, end));
+                Print(DaysOffRequestController.FindProblematicDaysOff(doctor, start, end));
             }
+            var reason = InputReason(inputCancelString);
+            var state = DaysOffRequest.DaysOffRequestState.SENT;
+            return new DaysOffRequest(doctor, start, end, reason, state);
+        }
 
-            string reason = InputReason(inputCancelString);
-            DaysOffRequest.DaysOffRequestState state = DaysOffRequest.DaysOffRequestState.SENT;
-            DaysOffRequest daysOffRequest = new DaysOffRequest(doctor, start, end, reason, state);
-            IS.Instance.DaysOffRequestRepo.Add(daysOffRequest);
+        private static DaysOffRequest CreateUrgentRequest(string inputCancelString, Doctor doctor)
+        {
+            DateTime start = InputStartDay(inputCancelString);
+            DateTime end = start.AddDays(5);
+            var reason = InputReason(inputCancelString);
+            var state = DaysOffRequest.DaysOffRequestState.APPROVED;
+            return new DaysOffRequest(doctor, start, end, reason, state);
         }
 
         private static DateTime InputStartDay(string inputCancelString)
@@ -94,34 +109,6 @@ namespace HospitalIS.Frontend.CLI.Model
                 inputCancelString);
         }
 
-        private static bool IsRangeCorrect(Doctor doctor, DateTime start, DateTime end)
-        {
-            List<Appointment> doctorsAppointments = AppointmentController.GetAppointments(doctor);
-            foreach (var appointment in doctorsAppointments)
-            {
-                if (DateTime.Compare(start, appointment.ScheduledFor) <= 0 && //if date of the appointment is later than the start of break
-                    DateTime.Compare(appointment.ScheduledFor, end) <= 0) // if date of the appointment is earlier than the end of break
-                {
-                    Console.WriteLine(appointment);
-                    return false;
-                }
-            }
-
-            DateTimeRange newRequestRange = new DateTimeRange(start, end);
-            List<DaysOffRequest> oldDaysOffRequests = GetDoctorsDaysOffRequests(doctor);
-            foreach (var oldRequest in oldDaysOffRequests)
-            {
-                DateTimeRange oldRequestRange = new DateTimeRange(oldRequest.Start, oldRequest.End);
-                if (newRequestRange.Intersects(oldRequestRange))
-                {
-                    Console.WriteLine(oldRequestRange);
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
         private static string InputReason(string inputCancelString)
         {
             Console.WriteLine(hintInputReason);
@@ -135,6 +122,29 @@ namespace HospitalIS.Frontend.CLI.Model
                     errNoReason,
                 },
                 inputCancelString);
+        }
+
+        internal static void ShowDeletedAppointments(UserAccount ua)
+        {
+            var appointmentsToDelete = DaysOffRequestController.GetAppointmentsToDelete(ua);
+            if (appointmentsToDelete.Count == 0) return;
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(hintAppointmentsDeleted);
+            Console.ForegroundColor = ConsoleColor.Gray;
+            foreach (var appointment in appointmentsToDelete)
+            {
+                Console.WriteLine(appointment);
+                UserAccount doctorsAccount = DoctorController.GetUserFromDoctor(appointment.Doctor);
+                AppointmentController.Delete(appointment, doctorsAccount);
+            }
+        }
+
+        private static void Print(List<DaysOffRequest> requests)
+        {
+            foreach (var request in requests)
+            {
+                Console.WriteLine(request);
+            }
         }
     }
 }

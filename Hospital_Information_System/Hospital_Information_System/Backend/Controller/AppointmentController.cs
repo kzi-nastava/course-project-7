@@ -107,7 +107,7 @@ namespace HospitalIS.Backend.Controller
 
         public static List<Appointment> GetAppointments(Doctor doctor)
         {
-            return GetAppointments().FindAll(a => a.Doctor == doctor);
+            return GetAppointments().FindAll(a => a.Doctor == doctor && !a.Deleted);
         }
         
         public static List<Appointment> GetNextDoctorsAppointments(UserAccount user, string inputCancelString, DateTime firstRelevantDay)

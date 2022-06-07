@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using HospitalIS.Backend.Controller;
 using HospitalIS.Backend.Repository;
 
@@ -90,13 +91,8 @@ namespace HospitalIS.Frontend.CLI.Model
             {
                 allAppointments = AppointmentController.GetAppointments(DoctorController.GetDoctorFromPerson(user.Person));
             }
-
             
-            for (int i = 0; i < allAppointments.Count; i++)
-            {
-                var appointment = allAppointments[i];
-                Console.WriteLine(appointment.ToString());
-            }
+            Print(allAppointments);
 
         }
 
@@ -474,7 +470,7 @@ namespace HospitalIS.Frontend.CLI.Model
         {
             DateTime firstRelevantDay = GetFirstRelevantDayOfAppointments(inputCancelString);
             List <Appointment> nextAppointments = AppointmentController.GetNextDoctorsAppointments(user, inputCancelString, firstRelevantDay);
-            Print(nextAppointments, inputCancelString);
+            PrintApppointmentAndMedicalRecord(nextAppointments, inputCancelString);
             if (nextAppointments.Count == 0) return;
             
             Console.WriteLine(hintCheckStartingAppointment);
@@ -502,7 +498,7 @@ namespace HospitalIS.Frontend.CLI.Model
             return firstRelevantDay;
         }
 
-        private static void Print(List<Appointment> appointments, string inputCancelString)
+        private static void PrintApppointmentAndMedicalRecord(List<Appointment> appointments, string inputCancelString)
         {
             if (appointments.Count == 0)
             {
@@ -606,6 +602,14 @@ namespace HospitalIS.Frontend.CLI.Model
         {
             return EasyInput<Doctor>.Select(DoctorController.GetDoctorsBySpecialty(speciality),
                 inputCancelString);
+        }
+
+        internal static void Print(List<Appointment> appointments)
+        {
+            foreach (var appointment in appointments)
+            {
+                Console.WriteLine(appointment);
+            }
         }
     }
 }

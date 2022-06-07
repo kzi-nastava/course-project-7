@@ -16,6 +16,11 @@ namespace HospitalIS.Backend.Controller
             return IS.Instance.Hospital.Doctors.Find(d => d.Person == person);
         }
 
+        public static UserAccount GetUserFromDoctor(Doctor doctor)
+        {
+            return IS.Instance.Hospital.UserAccounts.Find(ua => ua.Person == doctor.Person);
+        }
+
         public static List<Doctor> GetAvailableDoctors(Appointment refAppointment)
         {
             if (refAppointment == null)
@@ -44,6 +49,19 @@ namespace HospitalIS.Backend.Controller
                     }
                 }
             }
+            
+            var daysOff = DaysOffRequestController.GetApprovedRequests(doctor);
+            foreach (var dayOff in daysOff)
+            {
+                //if date of the appointment is later than the start of break
+                if (DateTime.Compare(dayOff.Start, newSchedule) <= 0 && 
+                    // if date of the appointment is earlier than the end of break
+                    DateTime.Compare(newSchedule, dayOff.End) <= 0) 
+                {
+                    return false;
+                }
+            }
+
             return true;
         }
 
