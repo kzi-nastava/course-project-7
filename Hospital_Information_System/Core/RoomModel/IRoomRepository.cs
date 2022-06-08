@@ -17,6 +17,8 @@ namespace HIS.Core.RoomModel
 			return Get().Where(r => r.Type != RoomType.WAREHOUSE);
 		}
 
+		int GetNextId();
+
 		public Room GetWarehouse()
 		{
 			return Get().FirstOrException(r => r.Type == RoomType.WAREHOUSE);

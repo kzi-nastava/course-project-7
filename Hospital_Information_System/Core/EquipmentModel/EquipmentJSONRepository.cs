@@ -21,6 +21,11 @@ namespace HIS.Core.EquipmentModel
 			_equipment = JsonConvert.DeserializeObject<List<Equipment>>(File.ReadAllText(fname), _settings);
 		}
 
+		public int GetNextId()
+		{
+			return _equipment.Count;
+		}
+
 		public IEnumerable<Equipment> Get()
 		{
 			return _equipment.Where(o => !o.Deleted);

@@ -11,12 +11,12 @@ namespace HIS.CLI.View
 	{
 		private static readonly string hintEnterQuery = "Enter search query";
 
-		private readonly EquipmentServiceFacade _service;
+		private readonly IEquipmentService _service;
 		private readonly IList<EquipmentProperty> _searchableProperties;
 		private readonly IEnumerable<EquipmentType> _equipmentTypes;
 		private readonly IEnumerable<EquipmentUse> _equipmentUses;
 
-		internal EquipmentView(EquipmentServiceFacade service)
+		internal EquipmentView(IEquipmentService service)
 		{
 			_service = service;
 			_searchableProperties = Utility.GetEnumValues<EquipmentProperty>().ToList();

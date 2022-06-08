@@ -10,9 +10,17 @@ namespace HIS.Core.Util
 
 		public DateTimeRange(DateTime start, DateTime end)
 		{
-			Debug.Assert(start < end);
 			Start = start;
 			End = end;
+		}
+
+		public int CompareTo(DateTimeRange other)
+		{
+			if (Start < other.Start)
+				return -1;
+			if (Start == other.Start)
+				return End.CompareTo(other.End);
+			return 1;
 		}
 
 		public bool Contains(DateTime dt)

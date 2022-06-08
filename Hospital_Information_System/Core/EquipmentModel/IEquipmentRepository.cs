@@ -5,6 +5,7 @@ namespace HIS.Core.EquipmentModel
 {
 	public interface IEquipmentRepository
 	{
+		public int GetNextId();
 		public void Save();
 		public IEnumerable<Equipment> Get();
 		public Equipment Get(int id);

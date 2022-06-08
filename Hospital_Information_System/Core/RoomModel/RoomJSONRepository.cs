@@ -19,6 +19,11 @@ namespace HIS.Core.RoomModel
 			_rooms = JsonConvert.DeserializeObject<List<Room>>(File.ReadAllText(fname), _settings);
 		}
 
+		public int GetNextId()
+		{
+			return _rooms.Count;
+		}
+
 		public IEnumerable<Room> Get()
 		{
 			return _rooms.Where(o => !o.Deleted);

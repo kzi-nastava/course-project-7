@@ -27,6 +27,7 @@ namespace HIS.Core.RoomModel
 		#region Constructors, ToString
 		public Room()
 		{
+			Equipment = new Dictionary<Equipment, int>();
 		}
 
 		public Room(int floor, RoomType type, string name)

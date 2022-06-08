@@ -11,6 +11,11 @@ namespace HIS.CLI.View
 	{
 		private const string errFloorNonNegative = "Room floor must be a non-negative integer!";
 		private const string errNameIsEmpty = "Name cannot be empty!";
+
+		private const string hintInputName = "Enter room name";
+		private const string hintInputType = "Select room type";
+		private const string hintInputFloor = "Enter room floor";
+
 		private readonly IRoomService _service;
 		private readonly IEnumerable<RoomType> _types;
 		private readonly IEnumerable<RoomProperty> _modifiableProperties;
@@ -23,10 +28,11 @@ namespace HIS.CLI.View
 		}
 
 		#region commands
-		internal void CmdRoomCreate()
+		internal Room CmdRoomCreate()
 		{
-			Room r = InputRoom(Utility.GetEnumValues<RoomProperty>());
+			Room r = InputRoom();
 			_service.Add(r);
+			return r;
 		}
 
 		internal void CmdRoomView()
@@ -51,9 +57,21 @@ namespace HIS.CLI.View
 		#endregion
 
 		#region helper
+		internal Room InputRoom(int floor)
+		{
+			var room = InputRoom(Utility.GetEnumValues<RoomProperty>().Except(new List<RoomProperty> { RoomProperty.FLOOR }));
+			room.Floor = floor;
+			return room;
+		}
+
+		private Room InputRoom()
+		{
+			return InputRoom(Utility.GetEnumValues<RoomProperty>());
+		}
+
 		private Room Select()
 		{
-			return EasyInput<Room>.Select(_service.Get().ToList(), r => r.Name, _cancel);
+			return EasyInput<Room>.Select(_service.GetAll().ToList(), r => r.Name, _cancel);
 		}
 
 		private Room SelectModifiable()
@@ -72,16 +90,19 @@ namespace HIS.CLI.View
 
 			if (whichProperties.Contains(RoomProperty.NAME))
 			{
+				Hint(hintInputName);
 				r.Name = InputName();
 			}
 
 			if (whichProperties.Contains(RoomProperty.TYPE))
 			{
+				Hint(hintInputType);
 				r.Type = InputType();
 			}
 
 			if (whichProperties.Contains(RoomProperty.FLOOR))
 			{
+				Hint(hintInputFloor);
 				r.Floor = InputFloor();
 			}
 

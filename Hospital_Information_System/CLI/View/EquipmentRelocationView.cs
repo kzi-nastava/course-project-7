@@ -34,7 +34,7 @@ namespace HIS.CLI.View
 
 		private Room SelectRoom()
 		{
-			return EasyInput<Room>.Select(_roomService.Get(), _cancel);
+			return EasyInput<Room>.Select(_roomService.GetAll(), _cancel);
 		}
 
 		private Equipment SelectEquipment(Room r)

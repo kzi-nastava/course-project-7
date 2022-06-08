@@ -6,6 +6,8 @@ using HIS.Core.EquipmentModel;
 using HIS.CLI.View;
 using Newtonsoft.Json;
 using HIS.Core.EquipmentModel.EquipmentRelocationModel;
+using HIS.Core.RoomModel.RenovationModel;
+using HIS.Core.RoomModel.RoomAvailability;
 
 namespace HIS.CLI
 {
@@ -20,19 +22,22 @@ namespace HIS.CLI
 			IEquipmentRepository equipmentRepo = new EquipmentJSONRepository(dataDir + "db_equipment.json", jsonSettings);
 			IRoomRepository roomRepo = new RoomJSONRepository(dataDir + "db_rooms.json", jsonSettings);
 			IEquipmentRelocationRepository relocationRepo = new EquipmentRelocationJSONRepository(dataDir + "db_relocations.json", jsonSettings);
+			IRenovationRepository renovationRepo = new RenovationJSONRepository(dataDir + "db_renovations.json", jsonSettings);
 
 			IRoomService roomService = new RoomService(roomRepo);
-			IEquipmentService equipmentService = new EquipmentService(equipmentRepo);
-			EquipmentServiceFacade roomEquipmentServiceFacade = new EquipmentServiceFacade(equipmentService, roomService);
-			IEquipmentRelocationService equipmentRelocationService = new EquipmentRelocationService(relocationRepo, _tasks);
+			IEquipmentService equipmentService = new EquipmentService(equipmentRepo, roomService);
+			IEquipmentRelocationService equipmentRelocationService = new EquipmentRelocationService(relocationRepo, roomService, _tasks);
+			IRenovationService renovationService = new RenovationService(renovationRepo, _tasks, roomService);
+			IRoomAvailabilityService roomAvailabilityService = new RoomAvailabilityService(roomService, renovationService);
 
 			RoomView roomView = new RoomView(roomService);
-			EquipmentView equipmentView = new EquipmentView(roomEquipmentServiceFacade);
+			EquipmentView equipmentView = new EquipmentView(equipmentService);
 			EquipmentRelocationView equipmentRelocationView = new EquipmentRelocationView(equipmentRelocationService, roomService);
+			RenovationView renovationView = new RenovationView(renovationService, roomService, roomAvailabilityService, roomView);
 
 			try
 			{
-				equipmentRelocationView.CmdPerform();
+				renovationView.CmdSchedule();
 			}
 			catch (InputCancelledException)
 			{
@@ -47,6 +52,7 @@ namespace HIS.CLI
 			roomRepo.Save();
 			equipmentRepo.Save();
 			relocationRepo.Save();
+			renovationRepo.Save();
 		}
 	}
 }

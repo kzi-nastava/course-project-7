@@ -1,4 +1,5 @@
 ﻿using HIS.Core.Foundation;
+using HIS.Core.RoomModel;
 using System.Linq;
 
 namespace HIS.Core.EquipmentModel.EquipmentRelocationModel
@@ -6,11 +7,13 @@ namespace HIS.Core.EquipmentModel.EquipmentRelocationModel
 	public class EquipmentRelocationService : IEquipmentRelocationService
 	{
 		private readonly IEquipmentRelocationRepository _repo;
+		private readonly IRoomService _roomService;
 		private readonly TaskQueue _taskQueue;
 
-		public EquipmentRelocationService(IEquipmentRelocationRepository repo, TaskQueue taskQueue)
+		public EquipmentRelocationService(IEquipmentRelocationRepository repo, IRoomService roomService, TaskQueue taskQueue)
 		{
 			_repo = repo;
+			_roomService = roomService;
 			_taskQueue = taskQueue;
 
 			ContinueUnfinishedTasks();
@@ -18,7 +21,7 @@ namespace HIS.Core.EquipmentModel.EquipmentRelocationModel
 
 		public void Add(EquipmentRelocation e)
 		{
-			e.Id = (_repo.Get().LastOrDefault()?.Id ?? -1) + 1;
+			e.Id = _repo.GetNextId();
 			_repo.Add(e);
 			AddToTasks(e);
 		}
@@ -32,22 +35,24 @@ namespace HIS.Core.EquipmentModel.EquipmentRelocationModel
 		private void Perform(EquipmentRelocation e)
 		{
 			if (e.Deleted)
+			{
 				return;
-
-			int amount = e.RoomFrom.Equipment[e.Equipment];
-
-			if (e.RoomTo.Equipment.ContainsKey(e.Equipment))
-			{
-				e.RoomTo.Equipment[e.Equipment] += amount;
-			}
-			else
-			{
-				e.RoomTo.Equipment[e.Equipment] = amount;
 			}
 
-			e.RoomFrom.Equipment[e.Equipment] -= amount;
+			if (e.RoomFrom.Deleted)
+			{
+				Remove(e);
+				return;
+			}
 
-			System.Console.WriteLine(e.ToString());
+			if (e.RoomTo.Deleted)
+			{
+				e.RoomTo = _roomService.GetWarehouse();
+			}
+
+			_roomService.Move(e.Equipment, e.RoomFrom.Equipment[e.Equipment], e.RoomFrom, e.RoomTo);
+
+			System.Console.WriteLine("EquipmentRelocationService.cs: Finished relocation.");
 			Remove(e);
 		}
 

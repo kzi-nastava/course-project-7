@@ -18,6 +18,11 @@ namespace HIS.Core.EquipmentModel.EquipmentRelocationModel
 			_equipmentRelocations = JsonConvert.DeserializeObject<List<EquipmentRelocation>>(File.ReadAllText(fname), _settings);
 		}
 
+		public int GetNextId()
+		{
+			return _equipmentRelocations.Count;
+		}
+
 		public IEnumerable<EquipmentRelocation> Get()
 		{
 			return _equipmentRelocations.Where(o => !o.Deleted);
