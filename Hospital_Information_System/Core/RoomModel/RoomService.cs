@@ -68,5 +68,10 @@ namespace HIS.Core.RoomModel
 			if (properties.Contains(RoomProperty.TYPE)) dest.Type = src.Type;
 			if (properties.Contains(RoomProperty.EQUIPMENT)) dest.Equipment = src.Equipment.ToDictionary(e => e.Key, e => e.Value);
 		}
+
+		public IEnumerable<Room> GetOtherModifiableOnSameFloor(Room comparedTo)
+		{
+			return _repo.GetOtherModifiableOnSameFloor(comparedTo);
+		}
 	}
 }

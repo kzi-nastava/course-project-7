@@ -150,7 +150,7 @@ namespace HIS.CLI.View
 
 		private void InputMerge(Renovation r)
 		{
-			var roomsOnSameFloor = _roomService.GetAll().Where(room => room.Floor == r.Room.Floor);
+			var roomsOnSameFloor = _roomService.GetOtherModifiableOnSameFloor(r.Room);
 			Room room1 = EasyInput<Room>.Select(roomsOnSameFloor, _cancel);		
 			r.MergePairRoom = room1;
 		}

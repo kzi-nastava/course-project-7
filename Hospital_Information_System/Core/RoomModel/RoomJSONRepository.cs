@@ -48,5 +48,15 @@ namespace HIS.Core.RoomModel
 		{
 			File.WriteAllText(_fname, JsonConvert.SerializeObject(_rooms, Formatting.Indented, _settings));
 		}
+
+		public IEnumerable<Room> GetModifiable()
+		{
+			return Get().Where(r => r.Type != RoomType.WAREHOUSE);
+		}
+
+		public IEnumerable<Room> GetOtherModifiableOnSameFloor(Room comparedTo)
+		{
+			return GetModifiable().Where(r => r.Floor == comparedTo.Floor && r.Id != comparedTo.Id);
+		}
 	}
 }

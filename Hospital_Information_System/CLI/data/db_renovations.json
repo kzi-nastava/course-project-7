@@ -1,6 +1,6 @@
 [
   {
-    "Room": 1,
+    "Room": null,
     "MergePairRoom": null,
     "SplitNewRoom1": null,
     "SplitNewRoom2": null,
@@ -13,7 +13,7 @@
     "Deleted": true
   },
   {
-    "Room": 1,
+    "Room": null,
     "MergePairRoom": null,
     "SplitNewRoom1": {
       "Name": "split_01",

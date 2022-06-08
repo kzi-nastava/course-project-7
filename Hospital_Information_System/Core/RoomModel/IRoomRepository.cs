@@ -12,10 +12,7 @@ namespace HIS.Core.RoomModel
 		public void Add(Room obj);
 		public void Remove(Room obj);
 
-		public IEnumerable<Room> GetModifiable()
-		{
-			return Get().Where(r => r.Type != RoomType.WAREHOUSE);
-		}
+		public IEnumerable<Room> GetModifiable();
 
 		int GetNextId();
 
@@ -23,5 +20,7 @@ namespace HIS.Core.RoomModel
 		{
 			return Get().FirstOrException(r => r.Type == RoomType.WAREHOUSE);
 		}
+
+		IEnumerable<Room> GetOtherModifiableOnSameFloor(Room comparedTo);
 	}
 }
