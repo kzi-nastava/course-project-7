@@ -95,5 +95,11 @@ namespace HospitalIS.Backend.Controller
 
             return appointmentsToDelete;
         }
+
+        public static bool IsEndDateCorrect(DateTime start, DateTime end)
+        {
+            var latestEndDay = start.AddDays(5);
+            return !(DateTime.Compare(latestEndDay, end) <= 0);
+        }
     }
 }

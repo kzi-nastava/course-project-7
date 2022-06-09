@@ -38,5 +38,15 @@
     "RejectionExplanation": "",
     "Id": 3,
     "Deleted": false
+  },
+  {
+    "Requester": 1,
+    "Start": "2022-07-15T00:00:00",
+    "End": "2022-07-16T00:00:00",
+    "Reason": "Sick child",
+    "State": 1,
+    "RejectionExplanation": "",
+    "Id": 5,
+    "Deleted": false
   }
 ]

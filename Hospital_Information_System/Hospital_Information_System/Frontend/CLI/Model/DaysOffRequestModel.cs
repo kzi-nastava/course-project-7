@@ -18,9 +18,10 @@ namespace HospitalIS.Frontend.CLI.Model
             "Following appointments of yours will be deleted due to the doctor taking an urgent break:";
 
         private const string hintIsRequestUrgent = "Do you want to make an urgent request?";
-        private const string errEndBeforeStart = "The last day off comes before the first";
+        private const string errEndBeforeStart = "The last day off comes before or at the same day as the first day, input last day again";
         private const string errUnableToSchedule = "You have appointment(s) or days off scheduled during the requested break";
         private const string errNoReason = "You have to input reason";
+        private const string errBreakTooLong = "You can schedule break that lasts up to 5 days";
 
         internal static void ReadDaysOffRequests(UserAccount user)
         {
@@ -71,8 +72,19 @@ namespace HospitalIS.Frontend.CLI.Model
 
         private static DaysOffRequest CreateUrgentRequest(string inputCancelString, Doctor doctor)
         {
-            DateTime start = InputStartDay(inputCancelString);
-            DateTime end = start.AddDays(5);
+            DateTime start;
+            DateTime end;
+            while (true)
+            {
+                start = InputStartDay(inputCancelString);
+                end = InputEndDay(inputCancelString, start);
+                if (DaysOffRequestController.IsEndDateCorrect(start, end)) break;
+                
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(errBreakTooLong);
+                Console.ForegroundColor = ConsoleColor.Gray;
+            }
+
             var reason = InputReason(inputCancelString);
             var state = DaysOffRequest.DaysOffRequestState.APPROVED;
             return new DaysOffRequest(doctor, start, end, reason, state);
@@ -100,7 +112,7 @@ namespace HospitalIS.Frontend.CLI.Model
             return EasyInput<DateTime>.Get(
                 new List<Func<DateTime, bool>>
                 {
-                    m => DateTime.Compare(startDay, m) <= 0,
+                    m => DateTime.Compare(startDay.AddDays(1), m) <= 0,
                 },
                 new string[]
                 {
