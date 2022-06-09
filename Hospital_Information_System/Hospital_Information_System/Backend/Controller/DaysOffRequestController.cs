@@ -23,13 +23,20 @@ namespace HospitalIS.Backend.Controller
 
         private static List<DaysOffRequest> GetFutureDaysOffRequests()
         {
-            return IS.Instance.Hospital.DaysOffRequests.Where(a => !a.Deleted && DateTime.Compare(DateTime.Now, a.Start) <= 0).ToList();
+            return IS.Instance.Hospital.DaysOffRequests.Where(a => !a.Deleted && a.State == DaysOffRequest.DaysOffRequestState.APPROVED && DateTime.Compare(DateTime.Now, a.Start) <= 0).ToList();
         }
 
         public static List<DaysOffRequest> GetApprovedRequests(Doctor doctor)
         {
             return IS.Instance.Hospital.DaysOffRequests.Where(a =>
                 !a.Deleted && a.Requester == doctor && a.State == DaysOffRequest.DaysOffRequestState.APPROVED).ToList();
+        }
+
+        private static List<DaysOffRequest> GetSentAndApprovedRequests(Doctor doctor)
+        {
+            return IS.Instance.Hospital.DaysOffRequests.Where(a =>
+                !a.Deleted && a.Requester == doctor && 
+                (a.State == DaysOffRequest.DaysOffRequestState.APPROVED || a.State == DaysOffRequest.DaysOffRequestState.SENT)).ToList();
         }
 
         public static bool IsRangeCorrect(Doctor doctor, DateTime start, DateTime end)
@@ -44,7 +51,7 @@ namespace HospitalIS.Backend.Controller
         public static List<DaysOffRequest> FindProblematicDaysOff(Doctor doctor, DateTime start, DateTime end)
         {
             DateTimeRange newRequestRange = new DateTimeRange(start, end);
-            List<DaysOffRequest> daysOffRequests = GetDaysOffRequests(doctor);
+            List<DaysOffRequest> daysOffRequests = GetSentAndApprovedRequests(doctor);
             List<DaysOffRequest> problematicDaysOffRequests = new List<DaysOffRequest>();
             foreach (var request in daysOffRequests)
             {
