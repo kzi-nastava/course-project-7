@@ -24,7 +24,7 @@ namespace HIS.Core.RoomModel
 			return _rooms.Count;
 		}
 
-		public IEnumerable<Room> Get()
+		public IEnumerable<Room> GetAll()
 		{
 			return _rooms.Where(o => !o.Deleted);
 		}
@@ -51,7 +51,7 @@ namespace HIS.Core.RoomModel
 
 		public IEnumerable<Room> GetModifiable()
 		{
-			return Get().Where(r => r.Type != RoomType.WAREHOUSE);
+			return GetAll().Where(r => r.Type != RoomType.WAREHOUSE);
 		}
 
 		public IEnumerable<Room> GetOtherModifiableOnSameFloor(Room comparedTo)

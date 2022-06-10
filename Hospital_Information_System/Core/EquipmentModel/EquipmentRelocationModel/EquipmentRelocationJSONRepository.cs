@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using HIS.Core.RoomModel;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace HIS.Core.EquipmentModel.EquipmentRelocationModel
 			return _equipmentRelocations.Count;
 		}
 
-		public IEnumerable<EquipmentRelocation> Get()
+		public IEnumerable<EquipmentRelocation> GetAll()
 		{
 			return _equipmentRelocations.Where(o => !o.Deleted);
 		}
@@ -46,6 +47,11 @@ namespace HIS.Core.EquipmentModel.EquipmentRelocationModel
 		public void Save()
 		{
 			File.WriteAllText(_fname, JsonConvert.SerializeObject(_equipmentRelocations, Formatting.Indented, _settings));
+		}
+
+		public IEnumerable<EquipmentRelocation> Get(Room ofRoom)
+		{
+			return GetAll().Where(reloc => reloc.RoomFrom == ofRoom || reloc.RoomTo == ofRoom);
 		}
 	}
 }

@@ -22,7 +22,7 @@ namespace HIS.Core.EquipmentModel
 		public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
 		{
 			var equipmentID = serializer.Deserialize<int>(reader);
-			return Repo.Get().First(eq => eq.Id == equipmentID);
+			return Repo.GetAll().First(eq => eq.Id == equipmentID);
 		}
 
 		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

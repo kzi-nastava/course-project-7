@@ -31,7 +31,7 @@ namespace HIS.Core.EquipmentModel
 			var result = new Dictionary<Equipment, T>();
 			foreach (var kv in readableDict)
 			{
-				Equipment eq = Repo.Get().First(eq => eq.Id == kv.Key);
+				Equipment eq = Repo.GetAll().First(eq => eq.Id == kv.Key);
 				result[eq] = kv.Value;
 			}
 			return result;

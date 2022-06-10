@@ -26,7 +26,7 @@ namespace HIS.Core.EquipmentModel
 			return _equipment.Count;
 		}
 
-		public IEnumerable<Equipment> Get()
+		public IEnumerable<Equipment> GetAll()
 		{
 			return _equipment.Where(o => !o.Deleted);
 		}

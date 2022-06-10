@@ -34,7 +34,7 @@ namespace HIS.Core.RoomModel.RenovationModel
 
 		public IEnumerable<Renovation> GetAll()
 		{
-			return _repo.Get();
+			return _repo.GetAll();
 		}
 
 		public IEnumerable<Renovation> GetAll(Room r)
@@ -103,7 +103,7 @@ namespace HIS.Core.RoomModel.RenovationModel
 
 		private void ContinueUnfinishedTasks()
 		{
-			foreach (Renovation pendingRenovation in _repo.Get())
+			foreach (Renovation pendingRenovation in _repo.GetAll())
 			{
 				AddToTasks(pendingRenovation);
 			}

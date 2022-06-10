@@ -23,7 +23,7 @@ namespace HIS.Core.RoomModel
 
 		public IEnumerable<Room> GetAll()
 		{
-			return _repo.Get();
+			return _repo.GetAll();
 		}
 
 		public IEnumerable<Room> GetModifiable()

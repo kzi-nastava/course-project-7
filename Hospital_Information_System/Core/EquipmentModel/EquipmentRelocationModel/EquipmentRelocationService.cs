@@ -58,7 +58,7 @@ namespace HIS.Core.EquipmentModel.EquipmentRelocationModel
 
 		private void ContinueUnfinishedTasks()
 		{
-			foreach (var pendingRelocation in _repo.Get())
+			foreach (var pendingRelocation in _repo.GetAll())
 			{
 				AddToTasks(pendingRelocation);
 			}

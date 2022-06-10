@@ -24,7 +24,7 @@ namespace HIS.Core.RoomModel
 			try
 			{
 				var equipmentID = serializer.Deserialize<int>(reader);
-				return Repo.Get().First(eq => eq.Id == equipmentID);
+				return Repo.GetAll().First(eq => eq.Id == equipmentID);
 			}
 			catch
 			{

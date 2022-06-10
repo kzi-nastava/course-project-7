@@ -9,15 +9,11 @@ namespace HIS.Core.EquipmentModel.EquipmentRelocationModel
 	public interface IEquipmentRelocationRepository
 	{
 		public void Save();
-		public IEnumerable<EquipmentRelocation> Get();
+		public IEnumerable<EquipmentRelocation> GetAll();
 		public EquipmentRelocation Get(int id);
 		public void Add(EquipmentRelocation obj);
 		public void Remove(EquipmentRelocation obj);
-		public IEnumerable<EquipmentRelocation> Get(Room ofRoom)
-		{
-			return Get().Where(reloc => reloc.RoomFrom == ofRoom || reloc.RoomTo == ofRoom);
-		}
-
+		public IEnumerable<EquipmentRelocation> Get(Room ofRoom);
 		int GetNextId();
 	}
 }

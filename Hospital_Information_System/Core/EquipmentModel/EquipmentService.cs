@@ -33,7 +33,7 @@ namespace HIS.Core.EquipmentModel
 
 		public IEnumerable<Equipment> GetAll()
 		{
-			return _repo.Get();
+			return _repo.GetAll();
 		}
 
 		public IEnumerable<Equipment> Search(string searchQuery, IList<EquipmentProperty> propertiesToSearchOn)

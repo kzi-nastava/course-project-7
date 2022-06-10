@@ -7,7 +7,7 @@ namespace HIS.Core.RoomModel
 	public interface IRoomRepository
 	{
 		public void Save();
-		public IEnumerable<Room> Get();
+		public IEnumerable<Room> GetAll();
 		public Room Get(int id);
 		public void Add(Room obj);
 		public void Remove(Room obj);
@@ -18,7 +18,7 @@ namespace HIS.Core.RoomModel
 
 		public Room GetWarehouse()
 		{
-			return Get().FirstOrException(r => r.Type == RoomType.WAREHOUSE);
+			return GetAll().FirstOrException(r => r.Type == RoomType.WAREHOUSE);
 		}
 
 		IEnumerable<Room> GetOtherModifiableOnSameFloor(Room comparedTo);

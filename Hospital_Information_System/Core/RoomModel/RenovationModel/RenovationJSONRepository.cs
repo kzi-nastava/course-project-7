@@ -25,14 +25,14 @@ namespace HIS.Core.RoomModel.RenovationModel
 			return _renovations.Count;
 		}
 
-		public IEnumerable<Renovation> Get()
+		public IEnumerable<Renovation> GetAll()
 		{
 			return _renovations.Where(o => !o.Deleted);
 		}
 
 		public IEnumerable<Renovation> Get(Room r)
 		{
-			return Get().Where(ren => ren.Room == r);
+			return GetAll().Where(ren => ren.Room == r);
 		}
 
 		public Renovation Get(int id)

@@ -7,7 +7,7 @@ namespace HIS.Core.EquipmentModel
 	{
 		public int GetNextId();
 		public void Save();
-		public IEnumerable<Equipment> Get();
+		public IEnumerable<Equipment> GetAll();
 		public Equipment Get(int id);
 		public void Add(Equipment obj);
 		public void Remove(Equipment obj);
