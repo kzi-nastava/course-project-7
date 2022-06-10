@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using HIS.Core.EquipmentModel.EquipmentRelocationModel;
 using HIS.Core.RoomModel.RenovationModel;
 using HIS.Core.RoomModel.RoomAvailability;
+using HIS.Core.MedicationModel.IngredientModel;
 
 namespace HIS.CLI
 {
@@ -23,12 +24,14 @@ namespace HIS.CLI
 			IRoomRepository roomRepo = new RoomJSONRepository(dataDir + "db_rooms.json", jsonSettings);
 			IEquipmentRelocationRepository relocationRepo = new EquipmentRelocationJSONRepository(dataDir + "db_relocations.json", jsonSettings);
 			IRenovationRepository renovationRepo = new RenovationJSONRepository(dataDir + "db_renovations.json", jsonSettings);
+			IIngredientRepository ingredientRepo = new IngredientJSONRepository(dataDir + "db_ingredients.json", jsonSettings);
 
 			IRoomService roomService = new RoomService(roomRepo);
 			IEquipmentService equipmentService = new EquipmentService(equipmentRepo, roomService);
 			IEquipmentRelocationService equipmentRelocationService = new EquipmentRelocationService(relocationRepo, roomService, _tasks);
 			IRenovationService renovationService = new RenovationService(renovationRepo, _tasks, roomService);
 			IRoomAvailabilityService roomAvailabilityService = new RoomAvailabilityService(roomService, renovationService);
+			IIngredientService ingredientService = new IngredientService(ingredientRepo);
 
 			RoomView roomView = new RoomView(roomService);
 			EquipmentView equipmentView = new EquipmentView(equipmentService);
