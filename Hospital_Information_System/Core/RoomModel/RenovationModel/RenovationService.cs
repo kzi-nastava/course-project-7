@@ -20,7 +20,7 @@ namespace HIS.Core.RoomModel.RenovationModel
 			_roomService = roomService;
 		}
 
-		public Room Add(Renovation r)
+		public Renovation Add(Renovation r)
 		{
 			_repo.Add(r);
 			AddToTasks(r);

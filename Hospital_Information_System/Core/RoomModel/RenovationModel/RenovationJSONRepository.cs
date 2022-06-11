@@ -40,7 +40,7 @@ namespace HIS.Core.RoomModel.RenovationModel
 			return _renovations.FirstOrDefault(r => r.Id == id);
 		}
 
-		public void Add(Renovation obj)
+		public Renovation Add(Renovation obj)
 		{
 			obj.Id = GetNextId();
 			_renovations.Add(obj);

@@ -38,7 +38,7 @@ namespace HIS.Core.MedicationModel.MedicationRequestModel
 
 		public MedicationRequest Add(MedicationRequest obj)
 		{
-			medicationRequest.Id = GetNextId();
+			obj.Id = GetNextId();
 			_requests.Add(obj);
 			return obj;
 		}
