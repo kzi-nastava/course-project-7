@@ -6,7 +6,7 @@
       3
     ],
     "Id": 0,
-    "Deleted": false
+    "Deleted": true
   },
   {
     "Name": "MeddoPlus",
@@ -17,7 +17,7 @@
       3
     ],
     "Id": 1,
-    "Deleted": false
+    "Deleted": true
   },
   {
     "Name": "Pupu",
@@ -26,6 +26,6 @@
       1
     ],
     "Id": 2,
-    "Deleted": false
+    "Deleted": true
   }
 ]

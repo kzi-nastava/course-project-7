@@ -18,6 +18,11 @@ namespace HIS.Core.MedicationModel.MedicationRequestModel
 		{
 		}
 
+		public MedicationRequest(Medication medication)
+		{
+			Medication = medication;
+		}
+
 		public override string ToString()
 		{
 			return $"Medication{{Medication={Medication}, State={State}, ReviewCount={Reviews.Count}, LastReview={Reviews.Last()}}}";

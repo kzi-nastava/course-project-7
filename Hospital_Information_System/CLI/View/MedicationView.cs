@@ -1,5 +1,6 @@
 ﻿using HIS.Core.MedicationModel;
 using HIS.Core.MedicationModel.IngredientModel;
+using HIS.Core.MedicationModel.MedicationRequestModel;
 using HIS.Core.Util;
 using System;
 using System.Collections.Generic;
@@ -11,25 +12,25 @@ namespace HIS.CLI.View
 	{
 		private readonly IMedicationService _service;
 		private readonly IIngredientService _ingredientService;
+		private readonly IMedicationRequestService _medicationRequestService;
 		private IEnumerable<MedicationProperty> _properties;
 
 		private static readonly string hintInputName = "Enter name";
 		private static readonly string hintSelectIngredients = "Select ingredients";
 		private static readonly string errNameExists = "Name already exists";
 
-
-		public MedicationView(IMedicationService service, IIngredientService ingredientService)
+		public MedicationView(IMedicationService service, IIngredientService ingredientService, IMedicationRequestService medicationRequestService)
 		{
 			_service = service;
 			_ingredientService = ingredientService;
+			_medicationRequestService = medicationRequestService;
 			_properties = Utility.GetEnumValues<MedicationProperty>();
 		}
 
 		internal void CmdCreateAndSendForReview()
 		{
 			var medication = Input(_properties);
-			_service.Add(medication);
-			Print("TODO: Send for review instead of directly adding to database");
+			_medicationRequestService.Add(new MedicationRequest(medication));
 		}
 
 		private Medication Input(IEnumerable<MedicationProperty> whichProperties)

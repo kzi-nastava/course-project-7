@@ -1,5 +1,6 @@
 ﻿using HIS.Core.MedicationModel;
 using HIS.Core.MedicationModel.IngredientModel;
+using HIS.Core.MedicationModel.MedicationRequestModel;
 using HIS.Core.Util;
 using System;
 using System.Collections.Generic;
@@ -15,12 +16,14 @@ namespace HIS.CLI.View
 
 		private IIngredientService _service;
 		private IMedicationService _medicationService;
+		private IMedicationRequestService _medicationRequestService;
 		private IEnumerable<IngredientProperty> _properties;
 
-		public IngredientView(IIngredientService service, IMedicationService medicationService)
+		public IngredientView(IIngredientService service, IMedicationService medicationService, IMedicationRequestService medicationRequestService)
 		{
 			_service = service;
 			_medicationService = medicationService;
+			_medicationRequestService = medicationRequestService;
 			_properties = Utility.GetEnumValues<IngredientProperty>();
 		}
 
@@ -48,20 +51,27 @@ namespace HIS.CLI.View
 		{
 			var selected = EasyInput<Ingredient>.SelectMultiple(_service.GetAll().ToList(), _cancel);
 			var dependentMedications = selected.SelectMany(ing => _medicationService.GetAllThatUse(ing)).Distinct();
+			var dependentMedicationRequests = selected.SelectMany(ing => _medicationRequestService.GetAllThatUse(ing)).Distinct();
 
-			if (dependentMedications.Count() != 0)
+			if (dependentMedications.Count() + dependentMedicationRequests.Count() != 0)
 			{
 				Hint(warnDependentMedications);
 				Print(dependentMedications.Select(med => med.Name).Aggregate((s1, s2) => s1 + ", " + s2));
+				Print(dependentMedicationRequests.Select(req => req.Medication.Name).Aggregate((s1, s2) => s1 + ", " + s2));
 				if (!EasyInput<bool>.YesNo(_cancel))
 				{
 					return;
 				}
 			}
 
+			// todo @magley : is this the right place to do this or should IngredientService be in charge of this?
 			foreach (var med in dependentMedications)
 			{
 				_medicationService.Remove(med);
+			}
+			foreach (var req in dependentMedicationRequests)
+			{
+				_medicationRequestService.Remove(req);
 			}
 
 			foreach (var s in selected)

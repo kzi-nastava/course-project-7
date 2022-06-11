@@ -10,6 +10,7 @@ using HIS.Core.RoomModel.RenovationModel;
 using HIS.Core.RoomModel.RoomAvailability;
 using HIS.Core.MedicationModel.IngredientModel;
 using HIS.Core.MedicationModel;
+using HIS.Core.MedicationModel.MedicationRequestModel;
 
 namespace HIS.CLI
 {
@@ -27,6 +28,7 @@ namespace HIS.CLI
 			IRenovationRepository renovationRepo = new RenovationJSONRepository(dataDir + "db_renovations.json", jsonSettings);
 			IIngredientRepository ingredientRepo = new IngredientJSONRepository(dataDir + "db_ingredients.json", jsonSettings);
 			IMedicationRepository medicationRepo = new MedicationJSONRepository(dataDir + "db_medications.json", jsonSettings);
+			IMedicationRequestRepository medicationRequestRepo = new MedicationRequestJSONRepository(dataDir + "db_medication_requests.json", jsonSettings);
 
 			IRoomService roomService = new RoomService(roomRepo);
 			IEquipmentService equipmentService = new EquipmentService(equipmentRepo, roomService);
@@ -35,13 +37,14 @@ namespace HIS.CLI
 			IRoomAvailabilityService roomAvailabilityService = new RoomAvailabilityService(roomService, renovationService);
 			IIngredientService ingredientService = new IngredientService(ingredientRepo);
 			IMedicationService medicationService = new MedicationService(medicationRepo);
+			IMedicationRequestService medicationRequestService = new MedicationRequestService(medicationRequestRepo);
 
 			RoomView roomView = new RoomView(roomService);
 			EquipmentView equipmentView = new EquipmentView(equipmentService);
 			EquipmentRelocationView equipmentRelocationView = new EquipmentRelocationView(equipmentRelocationService, roomService);
 			RenovationView renovationView = new RenovationView(renovationService, roomService, roomAvailabilityService, roomView);
-			IngredientView ingredientView = new IngredientView(ingredientService, medicationService);
-			MedicationView medicationView = new MedicationView(medicationService, ingredientService);
+			IngredientView ingredientView = new IngredientView(ingredientService, medicationService, medicationRequestService);
+			MedicationView medicationView = new MedicationView(medicationService, ingredientService, medicationRequestService);
 
 			try
 			{
@@ -69,6 +72,7 @@ namespace HIS.CLI
 			renovationRepo.Save();
 			ingredientRepo.Save();
 			medicationRepo.Save();
+			medicationRequestRepo.Save();
 		}
 	}
 }

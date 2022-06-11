@@ -1,0 +1,30 @@
+[
+  {
+    "Reviews": [],
+    "Medication": {
+      "Name": "remove-this",
+      "Ingredients": [
+        0
+      ],
+      "Id": -1,
+      "Deleted": false
+    },
+    "State": 0,
+    "Id": 0,
+    "Deleted": true
+  },
+  {
+    "Reviews": [],
+    "Medication": {
+      "Name": "somethingium",
+      "Ingredients": [
+        1
+      ],
+      "Id": -1,
+      "Deleted": false
+    },
+    "State": 0,
+    "Id": 1,
+    "Deleted": false
+  }
+]
