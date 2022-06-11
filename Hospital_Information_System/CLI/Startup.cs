@@ -37,10 +37,15 @@ namespace HIS.CLI
 			EquipmentView equipmentView = new EquipmentView(equipmentService);
 			EquipmentRelocationView equipmentRelocationView = new EquipmentRelocationView(equipmentRelocationService, roomService);
 			RenovationView renovationView = new RenovationView(renovationService, roomService, roomAvailabilityService, roomView);
+			IngredientView ingredient = new IngredientView(ingredientService);
 
 			try
 			{
-				renovationView.CmdSchedule();
+				ingredient.CmdRead();
+				ingredient.CmdAdd();
+				ingredient.CmdUpdate();
+				ingredient.CmdDelete();
+				ingredient.CmdRead();
 			}
 			catch (InputCancelledException)
 			{
@@ -56,6 +61,7 @@ namespace HIS.CLI
 			equipmentRepo.Save();
 			relocationRepo.Save();
 			renovationRepo.Save();
+			ingredientRepo.Save();
 		}
 	}
 }

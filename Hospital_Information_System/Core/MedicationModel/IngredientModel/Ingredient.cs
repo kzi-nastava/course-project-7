@@ -2,7 +2,7 @@
 
 namespace HIS.Core.MedicationModel.IngredientModel
 {
-	public enum IngredientProperties { NAME }
+	public enum IngredientProperty { NAME }
 
 	public class Ingredient : Entity
 	{

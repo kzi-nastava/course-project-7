@@ -12,5 +12,6 @@ namespace HIS.Core.MedicationModel.IngredientModel
 		public Ingredient Add(Ingredient obj);
 		public void Remove(Ingredient obj);
 		public int GetNextId();
+		public IEnumerable<Ingredient> GetByName(string name);
 	}
 }

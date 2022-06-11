@@ -50,5 +50,10 @@ namespace HIS.Core.MedicationModel.IngredientModel
 		{
 			File.WriteAllText(_fname, JsonConvert.SerializeObject(_ingredients, Formatting.Indented, _settings));
 		}
+
+		public IEnumerable<Ingredient> GetByName(string name)
+		{
+			return GetAll().Where(ing => ing.Name == name);
+		}
 	}
 }

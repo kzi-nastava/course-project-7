@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace HIS.Core.MedicationModel.IngredientModel
 {
@@ -13,6 +14,7 @@ namespace HIS.Core.MedicationModel.IngredientModel
 
 		public Ingredient Add(Ingredient obj)
 		{
+			obj.Id = _repo.GetNextId();
 			return _repo.Add(obj);
 		}
 
@@ -24,6 +26,16 @@ namespace HIS.Core.MedicationModel.IngredientModel
 		public void Remove(Ingredient obj)
 		{
 			_repo.Remove(obj);
+		}
+
+		public IEnumerable<Ingredient> GetByName(string name)
+		{
+			return _repo.GetByName(name);
+		}
+
+		public void Copy(Ingredient src, Ingredient dest, IEnumerable<IngredientProperty> properties)
+		{
+			if (properties.Contains(IngredientProperty.NAME)) dest.Name = src.Name;
 		}
 	}
 }
