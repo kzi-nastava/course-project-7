@@ -52,6 +52,7 @@ namespace HIS.CLI.View
 			if (dependentMedications.Count() != 0)
 			{
 				Hint(warnDependentMedications);
+				Print(dependentMedications.Select(med => med.Name).Aggregate((s1, s2) => s1 + ", " + s2));
 				if (!EasyInput<bool>.YesNo(_cancel))
 				{
 					return;

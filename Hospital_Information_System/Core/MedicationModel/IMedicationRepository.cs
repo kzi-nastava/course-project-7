@@ -14,5 +14,6 @@ namespace HIS.Core.MedicationModel
 		public void Remove(Medication obj);
 		public int GetNextId();
 		public IEnumerable<Medication> GetAllThatUse(Ingredient ingredient);
+		IEnumerable<Medication> GetByName(string name);
 	}
 }

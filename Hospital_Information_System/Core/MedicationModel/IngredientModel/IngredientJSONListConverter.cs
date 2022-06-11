@@ -23,7 +23,7 @@ namespace HIS.Core.MedicationModel.IngredientModel
 		public override object ReadJson(JsonReader reader, System.Type objectType, object existingValue, JsonSerializer serializer)
 		{
 			var readableList = serializer.Deserialize<IList<int>>(reader);
-			return readableList.Select(ingId => Repo.Get(ingId));
+			return readableList.Select(ingId => Repo.Get(ingId)).ToList();
 		}
 
 		public override bool CanConvert(System.Type objectType)

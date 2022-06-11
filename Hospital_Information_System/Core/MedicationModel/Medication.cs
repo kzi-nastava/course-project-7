@@ -6,21 +6,20 @@ using System.Linq;
 
 namespace HIS.Core.MedicationModel
 {
+	public enum MedicationProperty
+	{
+		NAME, INGREDIENTS
+	}
+
 	public class Medication : Entity
 	{
 		public string Name { get; set; }
 		[JsonConverter(typeof(IngredientJSONIListConverter))]
-		public IList<Ingredient> Ingredients { get; private set; }
+		public IList<Ingredient> Ingredients { get; set; }
 
 		public Medication()
 		{
 
-		}
-
-		public Medication(string name, IList<Ingredient> ingredients)
-		{
-			Name = name;
-			Ingredients = ingredients;
 		}
 
 		public override string ToString()

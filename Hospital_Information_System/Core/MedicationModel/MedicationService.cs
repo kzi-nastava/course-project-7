@@ -37,5 +37,10 @@ namespace HIS.Core.MedicationModel
 		{
 			return _repo.GetAllThatUse(ingredient);
 		}
+
+		public IEnumerable<Medication> GetByName(string name)
+		{
+			return _repo.GetByName(name);
+		}
 	}
 }

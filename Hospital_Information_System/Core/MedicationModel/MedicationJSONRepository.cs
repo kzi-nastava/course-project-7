@@ -54,5 +54,10 @@ namespace HIS.Core.MedicationModel
 		{
 			return GetAll().Where(med => med.Ingredients.Contains(ingredient));
 		}
+
+		public IEnumerable<Medication> GetByName(string name)
+		{
+			return GetAll().Where(med => med.Name == name);
+		}
 	}
 }

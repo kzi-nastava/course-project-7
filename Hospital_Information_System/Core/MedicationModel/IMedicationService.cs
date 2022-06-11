@@ -10,6 +10,7 @@ namespace HIS.Core.MedicationModel
 		public Medication Add(Medication obj);
 		public Medication Get(int id);
 		public IEnumerable<Medication> GetAll();
+		public IEnumerable<Medication> GetByName(string name);
 		public void Remove(Medication obj);
 		public IEnumerable<Medication> GetAllThatUse(Ingredient ingredient);
 	}
