@@ -5,7 +5,7 @@ using System.Linq;
 namespace HIS.CLI.View
 {
 	/// <summary>
-	/// This exception does not imply that an error happened but rather that the user cancelled his input.
+	/// Thrown when the user inputs an exit string. Signifies that the operation has been cancelled.
 	/// </summary>
 	public class InputCancelledException : Exception
 	{
@@ -13,21 +13,32 @@ namespace HIS.CLI.View
 		{
 
 		}
-	}
 
-	public class InputFailedException : Exception
-	{
-		public InputFailedException(string errorMessage) : base(errorMessage)
+		public InputCancelledException(string message) : base(message)
 		{
+		}
 
+		public InputCancelledException(string message, Exception innerException) : base(message, innerException)
+		{
 		}
 	}
 
-	public class NothingToSelectException : InputFailedException
+	/// <summary>
+	/// Thrown when Select or any of its variants is called on an empty sequence.
+	/// </summary>
+	public class NothingToSelectException : Exception
 	{
 		public NothingToSelectException() : base("Nothing to select!")
 		{
 
+		}
+
+		public NothingToSelectException(string errorMessage) : base(errorMessage)
+		{
+		}
+
+		public NothingToSelectException(string message, Exception innerException) : base(message, innerException)
+		{
 		}
 	}
 
@@ -82,7 +93,6 @@ namespace HIS.CLI.View
 				if (brokenRuleIndex != -1)
 				{
 					WriteLineError(errorMsg[brokenRuleIndex]);
-					continue;
 				}
 				else
 				{
@@ -97,8 +107,7 @@ namespace HIS.CLI.View
 		{
 			for (int i = 0; i < rules.Count(); i++)
 			{
-	
-				if (rules.ElementAt(i).Invoke(input) == false)
+				if (!rules.ElementAt(i).Invoke(input))
 					return i;
 			}
 			return -1;
@@ -106,7 +115,7 @@ namespace HIS.CLI.View
 
 		public static T Select(IEnumerable<T> elements, IEnumerable<Func<T, bool>> rules, IEnumerable<string> errorMsg, Func<T, string> toStrFunc, string cancel)
 		{
-			if (elements.Count() == 0)
+			if (!elements.Any())
 			{
 				throw new NothingToSelectException();
 			}
@@ -125,13 +134,13 @@ namespace HIS.CLI.View
 					selection = EasyInput<int>.Get(
 						new List<Func<int, bool>>
 						{
-						n => n >= 0,
-						n => n < elements.Count(),
+							n => n >= 0,
+							n => n < elements.Count(),
 						},
 						new[]
 						{
-						"Selection must be greater than 0.",
-						"Selection must be less than " + elements.Count() + ".",
+							"Selection must be greater than 0.",
+							"Selection must be less than " + elements.Count() + ".",
 						},
 						cancel
 					);
@@ -140,7 +149,6 @@ namespace HIS.CLI.View
 					if (brokenRuleIndex != -1)
 					{
 						WriteLineError(errorMsg.ElementAt(brokenRuleIndex));
-						continue;
 					}
 					else
 					{
@@ -170,7 +178,7 @@ namespace HIS.CLI.View
 		{
 			Console.WriteLine("[Y/N]");
 			string s = EasyInput<string>.Get(
-				new List<Func<string, bool>> { s => s.ToLower() == "y" || s.ToLower() == "n" },
+				new List<Func<string, bool>> { s => string.Equals(s, "y", StringComparison.OrdinalIgnoreCase) || string.Equals(s, "n", StringComparison.OrdinalIgnoreCase) },
 				new[] { "Must be [Y]es or [N]o." },
 				cancel
 			);
@@ -183,8 +191,11 @@ namespace HIS.CLI.View
 		{
 			return SelectMultiple(elements, e => e.ToString(), cancel);
 		}
+
 		/// <summary>
-		/// Select multiple elements from the given list, separated by whitespace. An empty input implies end of selection.
+		/// Select multiple elements from the given list, separated by whitespace. 
+		/// Inputing the same item twice cancels its input.
+		/// Empty input implies end of selection.
 		/// </summary>
 		public static IList<T> SelectMultiple(IList<T> elements, Func<T, string> toStrFunc, string cancel)
 		{
@@ -199,7 +210,7 @@ namespace HIS.CLI.View
 
 			while (true)
 			{
-				printWithSelection(elements, toStrFunc, isSelected);
+				PrintWithSelection(elements, toStrFunc, isSelected);
 				string input = Console.ReadLine();
 
 				if (input == cancel)
@@ -220,13 +231,10 @@ namespace HIS.CLI.View
 					.ForEach(i => { isSelected[i] ^= true; });
 			}
 
-			return (from e
-					in elements
-					where isSelected[elements.IndexOf(e)]
-					select e
-			).ToList();
+			return elements.Where(elem => isSelected[elements.IndexOf(elem)]).ToList();
 		}
-		private static void printWithSelection(IList<T> elements, Func<T, string> toStrFunc, IList<bool> isSelected)
+
+		private static void PrintWithSelection(IList<T> elements, Func<T, string> toStrFunc, IList<bool> isSelected)
 		{
 			// [x] 1. Room 1
 			// [ ] 2. Room 2
