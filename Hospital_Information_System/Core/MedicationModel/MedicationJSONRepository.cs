@@ -36,6 +36,7 @@ namespace HIS.Core.MedicationModel
 
 		public Medication Add(Medication obj)
 		{
+			obj.Id = GetNextId();
 			_medication.Add(obj);
 			return obj;
 		}

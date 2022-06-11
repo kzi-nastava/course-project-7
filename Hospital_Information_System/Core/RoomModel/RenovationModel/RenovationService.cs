@@ -20,11 +20,11 @@ namespace HIS.Core.RoomModel.RenovationModel
 			_roomService = roomService;
 		}
 
-		public void Add(Renovation r)
+		public Room Add(Renovation r)
 		{
-			r.Id = _repo.GetNextId();
 			_repo.Add(r);
 			AddToTasks(r);
+			return r;
 		}
 
 		public void Remove(Renovation r)

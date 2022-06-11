@@ -9,7 +9,7 @@ namespace HIS.Core.EquipmentModel
 		public void Save();
 		public IEnumerable<Equipment> GetAll();
 		public Equipment Get(int id);
-		public void Add(Equipment obj);
+		public Equipment Add(Equipment obj);
 		public void Remove(Equipment obj);
 		IEnumerable<Equipment> Search(string searchQuery, IList<EquipmentProperty> propertiesToSearchOn);
 		IEnumerable<Equipment> FilterByType(EquipmentType equipmentType);

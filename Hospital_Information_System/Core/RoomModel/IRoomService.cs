@@ -5,7 +5,7 @@ namespace HIS.Core.RoomModel
 {
 	public interface IRoomService
 	{
-		public void Add(Room r);
+		public Room Add(Room r);
 		public IEnumerable<Room> GetAll();
 		public void Remove(Room r);
 		public IEnumerable<Room> GetModifiable();

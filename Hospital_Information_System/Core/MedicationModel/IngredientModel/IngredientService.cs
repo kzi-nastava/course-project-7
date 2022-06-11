@@ -14,7 +14,6 @@ namespace HIS.Core.MedicationModel.IngredientModel
 
 		public Ingredient Add(Ingredient obj)
 		{
-			obj.Id = _repo.GetNextId();
 			return _repo.Add(obj);
 		}
 

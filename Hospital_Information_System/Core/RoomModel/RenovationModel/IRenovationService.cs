@@ -6,7 +6,7 @@ namespace HIS.Core.RoomModel.RenovationModel
 {
 	public interface IRenovationService
 	{
-		public void Add(Renovation r);
+		public Room Add(Renovation r);
 		public void Remove(Renovation r);
 		public IEnumerable<Renovation> GetAll();
 		public IEnumerable<Renovation> GetAll(Room r);

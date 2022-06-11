@@ -34,9 +34,11 @@ namespace HIS.Core.RoomModel
 			return _rooms.FirstOrDefault(r => r.Id == id);
 		}
 
-		public void Add(Room obj)
+		public Room Add(Room obj)
 		{
+			obj.Id = GetNextId();
 			_rooms.Add(obj);
+			return obj;
 		}
 
 		public void Remove(Room obj)

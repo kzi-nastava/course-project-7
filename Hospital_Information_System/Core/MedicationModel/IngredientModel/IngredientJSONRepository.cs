@@ -19,8 +19,6 @@ namespace HIS.Core.MedicationModel.IngredientModel
 			_ingredients = JsonConvert.DeserializeObject<List<Ingredient>>(File.ReadAllText(fname), _settings);
 		}
 
-		// todo @magley : Add() should do id-assignment, not the service
-
 		public int GetNextId()
 		{
 			return _ingredients.Count;
@@ -38,6 +36,7 @@ namespace HIS.Core.MedicationModel.IngredientModel
 
 		public Ingredient Add(Ingredient obj)
 		{
+			obj.Id = GetNextId();
 			_ingredients.Add(obj);
 			return obj;
 		}

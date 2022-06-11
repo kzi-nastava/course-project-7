@@ -15,10 +15,10 @@ namespace HIS.Core.RoomModel
 			_repo = repo;
 		}
 
-		public void Add(Room r)
+		public Room Add(Room r)
 		{
-			r.Id = _repo.GetNextId();
 			_repo.Add(r);
+			return r;
 		}
 
 		public IEnumerable<Room> GetAll()

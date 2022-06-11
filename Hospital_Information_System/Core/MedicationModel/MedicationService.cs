@@ -15,7 +15,6 @@ namespace HIS.Core.MedicationModel
 
 		public Medication Add(Medication obj)
 		{
-			obj.Id = _repo.GetNextId();
 			return _repo.Add(obj);
 		}
 

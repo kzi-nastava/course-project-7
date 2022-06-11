@@ -9,7 +9,7 @@ namespace HIS.Core.RoomModel
 		public void Save();
 		public IEnumerable<Room> GetAll();
 		public Room Get(int id);
-		public void Add(Room obj);
+		public Room Add(Room obj);
 		public void Remove(Room obj);
 
 		public IEnumerable<Room> GetModifiable();

@@ -9,7 +9,7 @@ namespace HIS.Core.RoomModel.RenovationModel
 		public IEnumerable<Renovation> GetAll();
 		IEnumerable<Renovation> Get(Room whichRoom);
 		public Renovation Get(int id);
-		public void Add(Renovation obj);
+		public Room Add(Renovation obj);
 		public void Remove(Renovation obj);
 	}
 }

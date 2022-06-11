@@ -42,7 +42,9 @@ namespace HIS.Core.RoomModel.RenovationModel
 
 		public void Add(Renovation obj)
 		{
+			obj.Id = GetNextId();
 			_renovations.Add(obj);
+			return obj;
 		}
 
 		public void Remove(Renovation obj)

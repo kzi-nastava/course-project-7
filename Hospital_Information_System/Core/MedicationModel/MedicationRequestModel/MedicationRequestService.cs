@@ -16,7 +16,6 @@ namespace HIS.Core.MedicationModel.MedicationRequestModel
 
 		public MedicationRequest Add(MedicationRequest medicationRequest)
 		{
-			medicationRequest.Id = _repo.GetNextId();
 			return _repo.Add(medicationRequest);
 		}
 

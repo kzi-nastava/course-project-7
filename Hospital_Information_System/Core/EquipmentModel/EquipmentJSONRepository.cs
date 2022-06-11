@@ -36,9 +36,11 @@ namespace HIS.Core.EquipmentModel
 			return _equipment.FirstOrDefault(r => r.Id == id);
 		}
 
-		public void Add(Equipment obj)
+		public Equipment Add(Equipment obj)
 		{
+			obj.Id = GetNextId();
 			_equipment.Add(obj);
+			return obj;
 		}
 
 		public void Remove(Equipment obj)
