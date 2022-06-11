@@ -15,6 +15,7 @@ namespace HIS.Core.MedicationModel.IngredientModel
 		{
 			_fname = fname;
 			_settings = settings;
+			IngredientJSONIListConverter.Repo = this;
 			_ingredients = JsonConvert.DeserializeObject<List<Ingredient>>(File.ReadAllText(fname), _settings);
 		}
 
