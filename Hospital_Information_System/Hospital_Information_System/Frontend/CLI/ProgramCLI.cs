@@ -89,6 +89,8 @@ namespace HospitalIS.Frontend.CLI
             new Command("doctor-search-and-appoint", () => DoctorModel.AppointFromSearch(user, inputCancelString), new [] {UserAccount.AccountType.PATIENT}),
 			
 			new Command("medication-request-review", () => MedicationModel.ReviewMedicationRequests(user, inputCancelString), new [] {UserAccount.AccountType.DOCTOR}),
+			new Command("request-days-off", () => DaysOffRequestModel.CreateDaysOffRequest(user, inputCancelString), new [] {UserAccount.AccountType.DOCTOR}),
+			new Command("read-days-off-requests", () => DaysOffRequestModel.ReadDaysOffRequests(user), new [] {UserAccount.AccountType.DOCTOR}),
         };
 
         static List<Command> GetCommands(UserAccount user)
