@@ -48,12 +48,14 @@ namespace HIS.CLI
 
 			try
 			{
-				medicationView.CmdCreateAndSendForReview();
+
+				medicationView.CmdUpdateRequest();
+				// medicationView.CmdCreateAndSendForReview();
 
 				//ingredientView.CmdRead();
 				//ingredientView.CmdAdd();
 				//ingredientView.CmdUpdate();
-				ingredientView.CmdDelete();
+				// ingredientView.CmdDelete();
 				//ingredientView.CmdRead();
 			}
 			catch (InputCancelledException)

@@ -56,5 +56,10 @@ namespace HIS.Core.MedicationModel.MedicationRequestModel
 		{
 			return GetAll().Where(req => req.Medication.Ingredients.Contains(ing));
 		}
+
+		public IEnumerable<MedicationRequest> GetAllReturnedForRevision()
+		{
+			return GetAll().Where(req => req.State == MedicationRequestState.RETURNED);
+		}
 	}
 }

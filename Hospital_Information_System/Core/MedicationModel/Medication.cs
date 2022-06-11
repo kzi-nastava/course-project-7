@@ -24,7 +24,7 @@ namespace HIS.Core.MedicationModel
 
 		public override string ToString()
 		{
-			return $"Medication{{Name={Name}, Ingredients=[{Ingredients.Select(ing => ing.ToString() + ", ")}]}}";
+			return $"Medication{{Name={Name}, Ingredients=[{Ingredients.Select(ing => ing.Name).Aggregate((s1, s2) => s1 + ", " + s2)}]}}";
 		}
 	}
 }

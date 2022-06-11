@@ -1,5 +1,6 @@
 ﻿using HIS.Core.MedicationModel.IngredientModel;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HIS.Core.MedicationModel
 {
@@ -41,6 +42,12 @@ namespace HIS.Core.MedicationModel
 		public IEnumerable<Medication> GetByName(string name)
 		{
 			return _repo.GetByName(name);
+		}
+
+		public void Copy(Medication src, Medication dest, IEnumerable<MedicationProperty> properties)
+		{
+			if (properties.Contains(MedicationProperty.NAME)) dest.Name = src.Name;
+			if (properties.Contains(MedicationProperty.NAME)) dest.Ingredients = new List<Ingredient>(src.Ingredients);
 		}
 	}
 }

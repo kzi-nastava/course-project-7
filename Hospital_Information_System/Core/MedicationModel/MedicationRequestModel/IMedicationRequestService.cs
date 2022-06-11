@@ -9,6 +9,7 @@ namespace HIS.Core.MedicationModel.MedicationRequestModel
 	{
 		public MedicationRequest Add(MedicationRequest medicationRequest);
 		public IEnumerable<MedicationRequest> GetAllThatUse(Ingredient ing);
-		void Remove(MedicationRequest req);
+		public void Remove(MedicationRequest req);
+		public IEnumerable<MedicationRequest> GetAllReturnedForRevision();
 	}
 }

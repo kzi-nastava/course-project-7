@@ -6,7 +6,7 @@ using System.Text;
 
 namespace HIS.Core.MedicationModel.MedicationRequestModel
 {
-	public enum MedicationRequestState { SENT, RETURNED, APPROVED };
+	public enum MedicationRequestState { SENT, RETURNED, APPROVED, REJECTED };
 
 	public class MedicationRequest : Entity
 	{

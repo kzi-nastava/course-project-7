@@ -14,5 +14,6 @@ namespace HIS.Core.MedicationModel.MedicationRequestModel
 		public MedicationRequest Add(MedicationRequest obj);
 		public void Remove(MedicationRequest obj);
 		public IEnumerable<MedicationRequest> GetAllThatUse(Ingredient ing);
+		IEnumerable<MedicationRequest> GetAllReturnedForRevision();
 	}
 }

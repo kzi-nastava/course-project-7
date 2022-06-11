@@ -29,5 +29,10 @@ namespace HIS.Core.MedicationModel.MedicationRequestModel
 		{
 			_repo.Remove(req);
 		}
+
+		public IEnumerable<MedicationRequest> GetAllReturnedForRevision()
+		{
+			return _repo.GetAllReturnedForRevision();
+		}
 	}
 }

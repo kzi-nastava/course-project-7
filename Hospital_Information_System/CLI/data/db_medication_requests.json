@@ -14,7 +14,13 @@
     "Deleted": true
   },
   {
-    "Reviews": [],
+    "Reviews": [
+      {
+        "Message": "Foo bar",
+        "Timestamp": "2022-06-05T13:58:12",
+        "Verdict": 1
+      }
+    ],
     "Medication": {
       "Name": "somethingium",
       "Ingredients": [

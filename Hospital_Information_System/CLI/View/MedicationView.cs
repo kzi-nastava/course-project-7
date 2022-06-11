@@ -18,6 +18,7 @@ namespace HIS.CLI.View
 		private static readonly string hintInputName = "Enter name";
 		private static readonly string hintSelectIngredients = "Select ingredients";
 		private static readonly string errNameExists = "Name already exists";
+		private static readonly string hintNothingToSelect = "Nothing to select. Stop";
 
 		public MedicationView(IMedicationService service, IIngredientService ingredientService, IMedicationRequestService medicationRequestService)
 		{
@@ -31,6 +32,25 @@ namespace HIS.CLI.View
 		{
 			var medication = Input(_properties);
 			_medicationRequestService.Add(new MedicationRequest(medication));
+		}
+
+		internal void CmdUpdateRequest()
+		{
+			try
+			{
+				var request = EasyInput<MedicationRequest>.Select(_medicationRequestService.GetAllReturnedForRevision(), request => request.Medication.Name, _cancel);
+				Print(request.ToString());
+
+				var propertiesToUpdate = EasyInput<MedicationProperty>.SelectMultiple(_properties.ToList(), _cancel);
+				Medication changed = Input(propertiesToUpdate);
+
+				_service.Copy(changed, request.Medication, propertiesToUpdate);
+				request.State = MedicationRequestState.SENT;
+			}
+			catch (NothingToSelectException)
+			{
+				Hint(hintNothingToSelect);
+			}
 		}
 
 		private Medication Input(IEnumerable<MedicationProperty> whichProperties)
