@@ -13,6 +13,6 @@ namespace HIS.Core.MedicationModel
 		public Medication Add(Medication obj);
 		public void Remove(Medication obj);
 		public int GetNextId();
-		IEnumerable<Medication> GetAllThatUse(Ingredient ingredient);
+		public IEnumerable<Medication> GetAllThatUse(Ingredient ingredient);
 	}
 }

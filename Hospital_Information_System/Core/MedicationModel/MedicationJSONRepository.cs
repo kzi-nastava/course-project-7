@@ -50,7 +50,7 @@ namespace HIS.Core.MedicationModel
 			File.WriteAllText(_fname, JsonConvert.SerializeObject(_medication, Formatting.Indented, _settings));
 		}
 
-		IEnumerable<Medication> GetAllThatUse(Ingredient ingredient)
+		public IEnumerable<Medication> GetAllThatUse(Ingredient ingredient)
 		{
 			return GetAll().Where(med => med.Ingredients.Contains(ingredient));
 		}
