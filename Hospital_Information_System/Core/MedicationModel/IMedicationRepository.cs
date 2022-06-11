@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HIS.Core.MedicationModel.IngredientModel;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,5 +13,6 @@ namespace HIS.Core.MedicationModel
 		public Medication Add(Medication obj);
 		public void Remove(Medication obj);
 		public int GetNextId();
+		IEnumerable<Medication> GetAllThatUse(Ingredient ingredient);
 	}
 }

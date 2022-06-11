@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using HIS.Core.MedicationModel.IngredientModel;
+using System.Collections.Generic;
 
 namespace HIS.Core.MedicationModel
 {
@@ -30,6 +31,11 @@ namespace HIS.Core.MedicationModel
 		public void Remove(Medication obj)
 		{
 			_repo.Remove(obj);
+		}
+
+		public IEnumerable<Medication> GetAllThatUse(Ingredient ingredient)
+		{
+			return _repo.GetAllThatUse(ingredient);
 		}
 	}
 }

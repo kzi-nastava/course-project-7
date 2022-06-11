@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using HIS.Core.MedicationModel.IngredientModel;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -47,6 +48,11 @@ namespace HIS.Core.MedicationModel
 		public void Save()
 		{
 			File.WriteAllText(_fname, JsonConvert.SerializeObject(_medication, Formatting.Indented, _settings));
+		}
+
+		IEnumerable<Medication> GetAllThatUse(Ingredient ingredient)
+		{
+			return GetAll().Where(med => med.Ingredients.Contains(ingredient));
 		}
 	}
 }

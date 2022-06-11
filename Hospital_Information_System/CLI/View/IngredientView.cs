@@ -1,4 +1,5 @@
-﻿using HIS.Core.MedicationModel.IngredientModel;
+﻿using HIS.Core.MedicationModel;
+using HIS.Core.MedicationModel.IngredientModel;
 using HIS.Core.Util;
 using System;
 using System.Collections.Generic;
@@ -10,13 +11,16 @@ namespace HIS.CLI.View
 	{
 		private static readonly string errNameTaken = "Name already taken";
 		private static readonly string hintName = "Enter name";
+		private static readonly string warnDependentMedications = "The following medications will also be removed. Proceed?";
 
 		private IIngredientService _service;
+		private IMedicationService _medicationService;
 		private IEnumerable<IngredientProperty> _properties;
 
-		public IngredientView(IIngredientService service)
+		public IngredientView(IIngredientService service, IMedicationService medicationService)
 		{
 			_service = service;
+			_medicationService = medicationService;
 			_properties = Utility.GetEnumValues<IngredientProperty>();
 		}
 
@@ -42,8 +46,23 @@ namespace HIS.CLI.View
 
 		internal void CmdDelete()
 		{
-			Console.WriteLine("TODO: Remove medications using this ingredient (ask first)");
 			var selected = EasyInput<Ingredient>.SelectMultiple(_service.GetAll().ToList(), _cancel);
+			var dependentMedications = selected.SelectMany(ing => _medicationService.GetAllThatUse(ing)).Distinct();
+
+			if (dependentMedications.Count() != 0)
+			{
+				Hint(warnDependentMedications);
+				if (!EasyInput<bool>.YesNo(_cancel))
+				{
+					return;
+				}
+			}
+
+			foreach (var med in dependentMedications)
+			{
+				_medicationService.Remove(med);
+			}
+
 			foreach (var s in selected)
 			{
 				_service.Remove(s);

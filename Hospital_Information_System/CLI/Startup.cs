@@ -9,6 +9,7 @@ using HIS.Core.EquipmentModel.EquipmentRelocationModel;
 using HIS.Core.RoomModel.RenovationModel;
 using HIS.Core.RoomModel.RoomAvailability;
 using HIS.Core.MedicationModel.IngredientModel;
+using HIS.Core.MedicationModel;
 
 namespace HIS.CLI
 {
@@ -25,6 +26,7 @@ namespace HIS.CLI
 			IEquipmentRelocationRepository relocationRepo = new EquipmentRelocationJSONRepository(dataDir + "db_relocations.json", jsonSettings);
 			IRenovationRepository renovationRepo = new RenovationJSONRepository(dataDir + "db_renovations.json", jsonSettings);
 			IIngredientRepository ingredientRepo = new IngredientJSONRepository(dataDir + "db_ingredients.json", jsonSettings);
+			IMedicationRepository medicationRepo = new MedicatinoJSONRepository(dataDir + "db_medications.json", jsonSettings);
 
 			IRoomService roomService = new RoomService(roomRepo);
 			IEquipmentService equipmentService = new EquipmentService(equipmentRepo, roomService);
@@ -32,12 +34,13 @@ namespace HIS.CLI
 			IRenovationService renovationService = new RenovationService(renovationRepo, _tasks, roomService);
 			IRoomAvailabilityService roomAvailabilityService = new RoomAvailabilityService(roomService, renovationService);
 			IIngredientService ingredientService = new IngredientService(ingredientRepo);
+			IMedicationService medicationService = new MedicationService(medicationRepo);
 
 			RoomView roomView = new RoomView(roomService);
 			EquipmentView equipmentView = new EquipmentView(equipmentService);
 			EquipmentRelocationView equipmentRelocationView = new EquipmentRelocationView(equipmentRelocationService, roomService);
 			RenovationView renovationView = new RenovationView(renovationService, roomService, roomAvailabilityService, roomView);
-			IngredientView ingredient = new IngredientView(ingredientService);
+			IngredientView ingredient = new IngredientView(ingredientService, medicationService);
 
 			try
 			{
