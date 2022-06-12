@@ -1,0 +1,60 @@
+[
+  {
+    "Room": null,
+    "MergePairRoom": null,
+    "SplitNewRoom1": null,
+    "SplitNewRoom2": null,
+    "TimeRange": {
+      "Start": "2022-06-08T22:54:00",
+      "End": "2022-06-08T22:55:00"
+    },
+    "EquipmentForSplitNewRoom1": {},
+    "Id": 0,
+    "Deleted": true
+  },
+  {
+    "Room": null,
+    "MergePairRoom": null,
+    "SplitNewRoom1": {
+      "Name": "split_01",
+      "Floor": 0,
+      "Type": 4,
+      "Equipment": {
+        "1": 1,
+        "23": 2,
+        "2": 3,
+        "24": 0,
+        "22": 0
+      },
+      "Id": 24,
+      "Deleted": false
+    },
+    "SplitNewRoom2": {
+      "Name": "split_02",
+      "Floor": 0,
+      "Type": 4,
+      "Equipment": {
+        "1": 8,
+        "23": 2,
+        "2": 0,
+        "24": 4,
+        "22": 5
+      },
+      "Id": 25,
+      "Deleted": false
+    },
+    "TimeRange": {
+      "Start": "2022-06-08T23:01:00",
+      "End": "2022-06-08T23:02:00"
+    },
+    "EquipmentForSplitNewRoom1": {
+      "1": 1,
+      "23": 2,
+      "2": 3,
+      "24": 0,
+      "22": 0
+    },
+    "Id": 1,
+    "Deleted": true
+  }
+]
