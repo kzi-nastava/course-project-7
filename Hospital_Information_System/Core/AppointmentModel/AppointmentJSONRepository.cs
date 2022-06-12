@@ -1,5 +1,9 @@
-﻿using HIS.Core.Util;
+﻿using HIS.Core.DoctorModel;
+using HIS.Core.PatientModel;
+using HIS.Core.UserAccountModel;
+using HIS.Core.Util;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,7 +16,9 @@ namespace HIS.Core.AppointmentModel
         private readonly string _fname;
         private readonly JsonSerializerSettings _settings;
 
-        public AppointmentJSONRepository(string fname, JsonSerializerSettings settings)
+		private const int daysBeforeAppointmentUnmodifiable = 1;
+
+		public AppointmentJSONRepository(string fname, JsonSerializerSettings settings)
         {
             _fname = fname;
             _settings = settings;
@@ -51,5 +57,45 @@ namespace HIS.Core.AppointmentModel
 		{
 			File.WriteAllText(_fname, JsonConvert.SerializeObject(_appointments, Formatting.Indented, _settings));
 		}
-    }
+
+        public IEnumerable<Appointment> GetAll(Patient patient)
+		{
+			return GetAll().Where(a => a.Patient == patient);
+		}
+
+        public IEnumerable<Appointment> GetAll(Doctor doctor)
+		{
+			return GetAll().Where(a => a.Doctor == doctor);
+		}
+
+        public IEnumerable<Appointment> GetModifiable(UserAccount user)
+		{
+			if (user.Type == UserAccount.AccountType.PATIENT)
+			{
+				return GetAll().Where(a => a.Patient.Person == user.Person && CanModify(a, user));
+			}
+
+			if (user.Type == UserAccount.AccountType.DOCTOR)
+			{
+				return GetAll().Where(a => a.Doctor.Person == user.Person && CanModify(a, user));
+			}
+			else
+			{
+				return GetAll().Where(a => CanModify(a, user));
+			}
+		}
+
+		private bool CanModify(Appointment appointment, UserAccount user)
+		{
+			if (user.Type == UserAccount.AccountType.PATIENT)
+			{
+				TimeSpan difference = appointment.ScheduledFor - DateTime.Now;
+				return difference.TotalDays >= daysBeforeAppointmentUnmodifiable;
+			}
+			else
+			{
+				return true;
+			}
+		}
+	}
 }
