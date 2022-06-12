@@ -46,7 +46,7 @@ namespace HIS.Core.MedicationModel
 		public void Copy(Medication src, Medication dest, IEnumerable<MedicationProperty> properties)
 		{
 			if (properties.Contains(MedicationProperty.NAME)) dest.Name = src.Name;
-			if (properties.Contains(MedicationProperty.NAME)) dest.Ingredients = new List<Ingredient>(src.Ingredients);
+			if (properties.Contains(MedicationProperty.INGREDIENTS)) dest.Ingredients = new List<Ingredient>(src.Ingredients);
 		}
 	}
 }
