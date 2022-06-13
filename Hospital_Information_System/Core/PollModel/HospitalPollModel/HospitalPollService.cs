@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HIS.Core.PersonModel.PatientModel;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -17,5 +18,10 @@ namespace HIS.Core.PollModel.HospitalPollModel
 		{
 			return _repo.GetAll();
 		}
-	}
+
+        public IEnumerable<HospitalPoll> GetAll(Patient pollee)
+        {
+			return _repo.GetAll(pollee);
+        }
+    }
 }

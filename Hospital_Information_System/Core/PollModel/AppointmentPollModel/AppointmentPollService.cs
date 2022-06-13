@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HIS.Core.PersonModel.DoctorModel;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -17,5 +18,10 @@ namespace HIS.Core.PollModel.AppointmentPollModel
 		{
 			return _repo.GetAll();
 		}
-	}
+
+        public IEnumerable<AppointmentPoll> GetAll(Doctor doctor)
+        {
+			return _repo.GetAll(doctor);
+        }
+    }
 }

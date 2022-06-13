@@ -1,4 +1,5 @@
-﻿using HIS.Core.Util;
+﻿using HIS.Core.PersonModel.DoctorModel;
+using HIS.Core.Util;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
@@ -50,5 +51,10 @@ namespace HIS.Core.PollModel.AppointmentPollModel
 		{
 			File.WriteAllText(_fname, JsonConvert.SerializeObject(_appointmentPolls, Formatting.Indented, _settings));
 		}
-	}
+
+        public IEnumerable<AppointmentPoll> GetAll(Doctor doctor)
+		{
+			return GetAll().Where(ar => ar.Appointment.Doctor == doctor);
+		}
+    }
 }

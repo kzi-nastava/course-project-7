@@ -1,4 +1,5 @@
-﻿using HIS.Core.Util;
+﻿using HIS.Core.PersonModel.PatientModel;
+using HIS.Core.Util;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
@@ -50,5 +51,10 @@ namespace HIS.Core.PollModel.HospitalPollModel
 		{
 			File.WriteAllText(_fname, JsonConvert.SerializeObject(_hospitalPolls, Formatting.Indented, _settings));
 		}
-	}
+
+        public IEnumerable<HospitalPoll> GetAll(Patient pollee)
+		{
+			return GetAll().Where(hp => !hp.Deleted && hp.Pollee == pollee);
+		}
+    }
 }
