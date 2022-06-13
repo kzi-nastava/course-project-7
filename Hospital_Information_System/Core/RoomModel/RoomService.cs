@@ -73,5 +73,10 @@ namespace HIS.Core.RoomModel
 		{
 			return _repo.GetOtherModifiableOnSameFloor(comparedTo);
 		}
-	}
+
+        public IEnumerable<Room> GetExaminationRooms()
+		{
+			return _repo.GetExaminationRooms();
+		}
+    }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using HIS.Core.Util;
+using HIS.Core.PersonModel.UserAccountModel;
 
 namespace HIS.CLI.View
 {
@@ -16,7 +17,7 @@ namespace HIS.CLI.View
 		private readonly IEnumerable<EquipmentType> _equipmentTypes;
 		private readonly IEnumerable<EquipmentUse> _equipmentUses;
 
-		internal EquipmentView(IEquipmentService service)
+		internal EquipmentView(IEquipmentService service, UserAccount user) : base(user)
 		{
 			_service = service;
 			_searchableProperties = Utility.GetEnumValues<EquipmentProperty>().ToList();

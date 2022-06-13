@@ -1,6 +1,7 @@
 ﻿using HIS.Core.MedicationModel;
 using HIS.Core.MedicationModel.IngredientModel;
 using HIS.Core.MedicationModel.MedicationRequestModel;
+using HIS.Core.PersonModel.UserAccountModel;
 using HIS.Core.Util;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace HIS.CLI.View
 		private IMedicationRequestService _medicationRequestService;
 		private IEnumerable<IngredientProperty> _properties;
 
-		public IngredientView(IIngredientService service, IMedicationService medicationService, IMedicationRequestService medicationRequestService)
+		public IngredientView(IIngredientService service, IMedicationService medicationService, IMedicationRequestService medicationRequestService, UserAccount user) : base(user)
 		{
 			_service = service;
 			_medicationService = medicationService;

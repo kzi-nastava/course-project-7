@@ -1,5 +1,6 @@
 ﻿using HIS.Core.EquipmentModel;
 using HIS.Core.EquipmentModel.EquipmentRelocationModel;
+using HIS.Core.PersonModel.UserAccountModel;
 using HIS.Core.RoomModel;
 using HIS.Core.Util;
 using System;
@@ -14,7 +15,7 @@ namespace HIS.CLI.View
 		private readonly IEquipmentRelocationService _service;
 		private readonly IList<EquipmentRelocationProperty> _properties;
 
-		internal EquipmentRelocationView(IEquipmentRelocationService service, IRoomService roomService)
+		internal EquipmentRelocationView(IEquipmentRelocationService service, IRoomService roomService, UserAccount user) : base(user)
 		{
 			_roomService = roomService;
 			_service = service;

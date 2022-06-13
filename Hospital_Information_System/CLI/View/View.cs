@@ -1,10 +1,17 @@
-﻿using System;
+﻿using HIS.Core.PersonModel.UserAccountModel;
+using System;
 
 namespace HIS.CLI.View
 {
 	internal abstract class View
 	{
 		protected static string _cancel = "-q";
+		protected UserAccount _user;
+
+		public View(UserAccount user)
+        {
+			_user = user;
+        }
 
 		protected void Hint(string value)
 		{
