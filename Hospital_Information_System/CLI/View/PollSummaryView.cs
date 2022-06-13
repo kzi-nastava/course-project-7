@@ -66,7 +66,7 @@ namespace HIS.CLI.View
 		private IOrderedEnumerable<KeyValuePair<Doctor, double>> GetDoctorTotalAverageRatingsSorted()
 		{
 			// for each doctor [ for each poll of that doctor [ reduce to ratings and find average rating for that poll ] find the average rating of all polls for that doctor ] sort by rating
-			return GetAppointmentPollsByDoctor().Select(kv => new KeyValuePair<Doctor, double>(kv.Key, ReduceToRatings(kv.Value).Select(kvp => kvp.Value.Average()).ToList().Average())).OrderByDescending(kv => kv.Value);
+			return GetAppointmentPollsByDoctor().Select(kv => new KeyValuePair<Doctor, double>(kv.Key, PollHelpers.ReduceToRatings(kv.Value).Select(kvp => kvp.Value.Average()).ToList().Average())).OrderByDescending(kv => kv.Value);
 		}
 
 		private void PrintDoctorRatings()
@@ -74,7 +74,7 @@ namespace HIS.CLI.View
 			var doctorPolls = GetAppointmentPollsByDoctor();
 			foreach (var doctorPollsPair in doctorPolls)
 			{
-				var ratingsForThisDoctor = ReduceToRatings(doctorPollsPair.Value);
+				var ratingsForThisDoctor = PollHelpers.ReduceToRatings(doctorPollsPair.Value);
 
 				Print($"{doctorPollsPair.Key}");
 				foreach (var questionRatingPair in ratingsForThisDoctor)
@@ -122,28 +122,12 @@ namespace HIS.CLI.View
 
 		private void PrintHospitalAverageRatings()
 		{
-			foreach (var kvp in ReduceToRatings(_hospitalPollService.GetAll()))
+			foreach (var kvp in PollHelpers.ReduceToRatings(_hospitalPollService.GetAll()))
 			{
 				Print($"{kvp.Key}: {kvp.Value.Average()} ({kvp.Value.Count()} ratings)");
 			}
 		}
 
-		private Dictionary<string, IList<double>> ReduceToRatings(IEnumerable<Poll> polls)
-		{
-			var summaryAverageCollected = new Dictionary<string, IList<double>>();
-			foreach (var poll in polls)
-			{
-				var questions = poll.GetQuestions();
-
-				foreach (var q in questions)
-				{
-					if (!summaryAverageCollected.ContainsKey(q))
-						summaryAverageCollected[q] = new List<double>();
-					summaryAverageCollected[q].Add(poll.GetRating(q));
-				}
-			}
-
-			return summaryAverageCollected;
-		}
+		
 	}
 }
