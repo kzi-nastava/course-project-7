@@ -22,6 +22,7 @@ using HIS.Core.PersonModel.PatientModel;
 using HIS.Core.PersonModel.PatientModel.PatientAvailability;
 using HIS.Core.PersonModel;
 using HIS.Core.MedicationModel.PrescriptionModel;
+using HIS.Core.PersonModel.UserAccountModel.Util;
 
 namespace HIS.CLI
 {
@@ -69,18 +70,21 @@ namespace HIS.CLI
 			IPatientService patientService = new PatientService(patientRepo); ;
 			IPatientAvailabilityService patientAvailabilityService = new PatientAvailabilityService(patientService, appointmentService);
 
+			// TODO: This can be avoided.
 			// Now we have everything we need to fully create appointmentService.
 			appointmentService.Copy(new AppointmentService(appointmentRepo, userAccountService, deleteRequestService, updateRequestService,
 				medicalRecordService, roomAvailabilityService, doctorAvailabilityService, patientAvailabilityService));
 
-			RoomView roomView = new RoomView(roomService, null);
-			EquipmentView equipmentView = new EquipmentView(equipmentService, null);
-			EquipmentRelocationView equipmentRelocationView = new EquipmentRelocationView(equipmentRelocationService, roomService, null);
-			RenovationView renovationView = new RenovationView(renovationService, roomService, roomAvailabilityService, roomView, null);
-			IngredientView ingredientView = new IngredientView(ingredientService, medicationService, medicationRequestService, null);
-			MedicationView medicationView = new MedicationView(medicationService, ingredientService, medicationRequestService, null);
+			UserAccount user = userAccountService.AttemptLogin("janeka", "123");
+
+			RoomView roomView = new RoomView(roomService, user);
+			EquipmentView equipmentView = new EquipmentView(equipmentService, user);
+			EquipmentRelocationView equipmentRelocationView = new EquipmentRelocationView(equipmentRelocationService, roomService, user);
+			RenovationView renovationView = new RenovationView(renovationService, roomService, roomAvailabilityService, roomView, user);
+			IngredientView ingredientView = new IngredientView(ingredientService, medicationService, medicationRequestService, user);
+			MedicationView medicationView = new MedicationView(medicationService, ingredientService, medicationRequestService, user);
 			AppointmentView appointmentView = new AppointmentView(appointmentService, doctorService, doctorAvailabilityService,
-				patientService, patientAvailabilityService, roomService, roomAvailabilityService, null);
+				patientService, patientAvailabilityService, roomService, roomAvailabilityService, user);
 
 			try
 			{
@@ -100,6 +104,10 @@ namespace HIS.CLI
 				Console.WriteLine("^C");
 				Console.ResetColor();
 			}
+			catch (UserAccountForcefullyBlockedException e)
+            {
+				Console.WriteLine(e.Message);
+            }
 
 			Console.WriteLine("Press any key to exit...");
 			Console.ReadLine();

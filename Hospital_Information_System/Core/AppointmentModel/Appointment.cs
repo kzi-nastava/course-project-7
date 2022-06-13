@@ -39,5 +39,10 @@ namespace HIS.Core.AppointmentModel
         public Appointment()
         {
         }
+
+        public override string ToString()
+        {
+            return $"Appointment{{Id = {Id}, Doctor = {Doctor.Id}, Patient = {Patient.Id}, Room = {Room.Id}, ScheduledFor = {ScheduledFor}, Anamnesis = {Anamnesis}}}";
+        }
     }
 }

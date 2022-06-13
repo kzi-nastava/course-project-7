@@ -9,8 +9,7 @@ namespace HIS.Core.AppointmentModel.Util
     {
         public static IEnumerable<AppointmentProperty> GetModifiableProperties(UserAccount user)
         {
-            // Hack.
-            List<AppointmentProperty> modifiableProperties = (List<AppointmentProperty>)GetProperties();
+            var modifiableProperties = GetProperties().ToList();
 
             if (user.Type == UserAccount.AccountType.PATIENT)
             {

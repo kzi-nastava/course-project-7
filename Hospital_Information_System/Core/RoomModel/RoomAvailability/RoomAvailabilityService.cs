@@ -84,8 +84,8 @@ namespace HIS.Core.RoomModel.RoomAvailability
         public Room GetRandomAvailableExaminationRoom(Appointment refAppointment)
 		{
 			var rnd = new Random();
-			List<Room> rooms = (List<Room>)GetAvailableExaminationRooms(refAppointment);
-			return rooms[rnd.Next(rooms.Count)];
+			var rooms = GetAvailableExaminationRooms(refAppointment);
+			return rooms.ElementAt(rnd.Next(rooms.Count()));
 		}
     }
 }
