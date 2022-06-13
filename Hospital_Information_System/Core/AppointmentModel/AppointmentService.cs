@@ -17,14 +17,34 @@ namespace HIS.Core.AppointmentModel
 {
     public class AppointmentService : IAppointmentService
     {
-        private readonly IAppointmentRepository _repo;
-        private readonly IUserAccountService _userAccountService;
-        private readonly IDeleteRequestService _deleteRequestService;
-        private readonly IUpdateRequestService _updateRequestService;
-        private readonly IMedicalRecordService _medicalRecordService;
-        private readonly IRoomAvailabilityService _roomAvailabilityService;
-        private readonly IDoctorAvailabilityService _doctorAvailabilityService;
-        private readonly IPatientAvailabilityService _patientAvailabilityService;
+        private IAppointmentRepository _repo;
+        private IUserAccountService _userAccountService;
+        private IDeleteRequestService _deleteRequestService;
+        private IUpdateRequestService _updateRequestService;
+        private IMedicalRecordService _medicalRecordService;
+        private IRoomAvailabilityService _roomAvailabilityService;
+        private IDoctorAvailabilityService _doctorAvailabilityService;
+        private IPatientAvailabilityService _patientAvailabilityService;
+
+        // Used for forward declaration
+        public AppointmentService()
+        {
+
+        }
+
+        // Used for when we forward declare AppointmentService with the default constructor
+        public void Copy(IAppointmentService other)
+        {
+            AppointmentService _other = (AppointmentService)other;
+            _repo = _other._repo;
+            _userAccountService = _other._userAccountService;
+            _deleteRequestService = _other._deleteRequestService;
+            _updateRequestService = _other._updateRequestService;
+            _medicalRecordService = _other._medicalRecordService;
+            _roomAvailabilityService = _other._roomAvailabilityService;
+            _doctorAvailabilityService = _other._doctorAvailabilityService;
+            _patientAvailabilityService = _other._patientAvailabilityService;
+        }
 
         public AppointmentService(IAppointmentRepository repo, IUserAccountService userAccountService, IDeleteRequestService deleteRequestService, IUpdateRequestService updateRequestService,
             IMedicalRecordService medicalRecordService, IRoomAvailabilityService roomAvailabilityService, IDoctorAvailabilityService doctorAvailabilityService,

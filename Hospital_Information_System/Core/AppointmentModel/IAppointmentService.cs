@@ -9,6 +9,7 @@ namespace HIS.Core.AppointmentModel
 {
     public interface IAppointmentService
     {
+        void Copy(IAppointmentService other);
         IEnumerable<Appointment> GetAll();
         IEnumerable<Appointment> GetAll(Patient patient);
         IEnumerable<Appointment> GetAll(Doctor doctor);
