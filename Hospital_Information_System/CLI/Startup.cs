@@ -81,7 +81,14 @@ namespace HIS.CLI
 			appointmentService.Copy(new AppointmentService(appointmentRepo, userAccountService, deleteRequestService, updateRequestService,
 				medicalRecordService, roomAvailabilityService, doctorAvailabilityService, patientAvailabilityService, appointmentPollService));
 
-			UserAccount user = userAccountService.AttemptLogin("janeka", "123");
+			// TODO: This is a temporary way of logging in.
+			UserAccount user = null;
+			// Cheaty login
+			//UserAccount user = userAccountService.AttemptLogin("janeka", "123");
+
+			// Ew.
+			UserAccountView userAccountView = new UserAccountView(userAccountService, user);
+			user = userAccountView.CmdLogin();
 
 			RoomView roomView = new RoomView(roomService, user);
 			EquipmentView equipmentView = new EquipmentView(equipmentService, user);
