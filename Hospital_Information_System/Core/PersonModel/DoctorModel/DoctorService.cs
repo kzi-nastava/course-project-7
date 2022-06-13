@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace HIS.Core.PersonModel.DoctorModel
@@ -17,5 +18,10 @@ namespace HIS.Core.PersonModel.DoctorModel
 		{
 			return _repo.GetAll();
 		}
-	}
+
+        public Doctor GetDoctorFromPerson(Person person)
+		{
+            return _repo.GetAll().First(d => d.Person == person);
+		}
+    }
 }

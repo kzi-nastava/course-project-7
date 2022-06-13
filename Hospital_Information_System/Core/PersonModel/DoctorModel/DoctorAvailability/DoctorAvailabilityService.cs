@@ -1,5 +1,6 @@
 ﻿using HIS.Core.AppointmentModel;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace HIS.Core.PersonModel.DoctorModel.DoctorAvailability
@@ -37,6 +38,16 @@ namespace HIS.Core.PersonModel.DoctorModel.DoctorAvailability
                 }
             }
             return true;
+        }
+
+        public IEnumerable<Doctor> GetAvailable(Appointment refAppointment)
+        {
+            if (refAppointment == null)
+            {
+                return _doctorService.GetAll();
+            }
+
+            return _doctorService.GetAll().Where(d => IsAvailable(d, refAppointment.ScheduledFor, refAppointment));
         }
     }
 }
