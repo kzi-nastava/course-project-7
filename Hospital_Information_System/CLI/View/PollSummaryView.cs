@@ -31,10 +31,10 @@ namespace HIS.CLI.View
 			PrintHospitalAverageRatings();
 			PrintAllComments();
 
-			PrintDoctorAverageRatings();
+			PrintDoctorRatings();
 		}
 
-		private void PrintDoctorAverageRatings()
+		private void PrintDoctorRatings()
 		{
 			var doctorPolls = GetAppointmentPollsByDoctor();
 			foreach (var doctorPollsPair in doctorPolls)
@@ -45,6 +45,14 @@ namespace HIS.CLI.View
 				foreach (var questionRatingPair in ratingsForThisDoctor)
 				{
 					Print($"\t{questionRatingPair.Key}: {questionRatingPair.Value.Average()}");
+				}
+
+				foreach (var poll in doctorPollsPair.Value)
+				{
+					if (poll.Comment != "")
+					{
+						Print($"\t{poll.Comment}");
+					}
 				}
 			}
 		}
