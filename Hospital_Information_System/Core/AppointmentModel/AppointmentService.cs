@@ -1,6 +1,6 @@
 ﻿using HIS.Core.AppointmentModel;
-using HIS.Core.AppointmentModel.PropertyUtil;
-using HIS.Core.AppointmentModel.SearchUtil;
+using HIS.Core.AppointmentModel.Util;
+using HIS.Core.AppointmentModel.Util;
 using HIS.Core.DoctorModel;
 using HIS.Core.PatientModel;
 using HIS.Core.UserAccountModel;
@@ -60,7 +60,7 @@ namespace HIS.Core.AppointmentModel
             if (MustRequestModification(appointment, user))
             {
                 var proposedAppointment = new Appointment();
-                Copy(proposedAppointment, appointment, AppointmentPropertyHelper.GetProperties());
+                Copy(proposedAppointment, appointment, AppointmentPropertyHelpers.GetProperties());
                 Copy(proposedAppointment, updatedAppointment, propertiesToUpdate);
                 //IS.Instance.UpdateRequestRepo.Add(new UpdateRequest(user, appointment, proposedAppointment));
             }

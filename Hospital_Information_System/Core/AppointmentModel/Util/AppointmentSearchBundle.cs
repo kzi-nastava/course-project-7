@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace HIS.Core.AppointmentModel.SearchUtil
+namespace HIS.Core.AppointmentModel.Util
 {
     /// <summary>
     /// Information relevant to automatically finding an appointment fitting certain criteria.

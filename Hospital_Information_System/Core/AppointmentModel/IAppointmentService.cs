@@ -1,4 +1,4 @@
-﻿using HIS.Core.AppointmentModel.SearchUtil;
+﻿using HIS.Core.AppointmentModel.Util;
 using HIS.Core.DoctorModel;
 using HIS.Core.PatientModel;
 using HIS.Core.UserAccountModel;

@@ -3,9 +3,9 @@ using HIS.Core.Util;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace HIS.Core.AppointmentModel.PropertyUtil
+namespace HIS.Core.AppointmentModel.Util
 {
-    public static class AppointmentPropertyHelper
+    public static class AppointmentPropertyHelpers
     {
         public static IEnumerable<AppointmentProperty> GetModifiableProperties(UserAccount user)
         {
