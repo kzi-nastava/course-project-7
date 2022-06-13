@@ -32,6 +32,43 @@ namespace HIS.CLI.View
 			PrintAllComments();
 
 			PrintDoctorRatings();
+			PrintTop3();
+		}
+
+		private void PrintTop3()
+		{
+			var doctorRatingsSorted = GetDoctorTotalAverageRatingsSorted().ToList();
+			int topN = 3;
+
+			if (doctorRatingsSorted.Count() <= topN)
+			{
+				Hint("Top 3:");
+				foreach (var docRating in doctorRatingsSorted)
+				{
+					Print($"{docRating.Key}: {docRating.Value}");
+				}
+			} else
+			{
+				Hint("Top 3:");
+				for (int i = 0; i < topN; i++)
+				{
+					var docRating = doctorRatingsSorted[i];
+					Print($"{docRating.Key}: {docRating.Value}");
+				}
+
+				Hint("Bottom 3:");
+				for (int i = topN - 1; i > 0 - 1; i--)
+				{
+					var docRating = doctorRatingsSorted[doctorRatingsSorted.Count() - 1 - i];
+					Print($"{docRating.Key}: {docRating.Value}");
+				}
+			}
+		}
+
+		private IOrderedEnumerable<KeyValuePair<Doctor, double>> GetDoctorTotalAverageRatingsSorted()
+		{
+			// for each doctor [ for each poll of that doctor [ reduce to ratings and find average rating for that poll ] find the average rating of all polls for that doctor ] sort by rating
+			return GetAppointmentPollsByDoctor().Select(kv => new KeyValuePair<Doctor, double>(kv.Key, ReduceToRatings(kv.Value).Select(kvp => kvp.Value.Average()).ToList().Average())).OrderByDescending(kv => kv.Value);
 		}
 
 		private void PrintDoctorRatings()
