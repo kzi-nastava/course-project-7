@@ -85,6 +85,7 @@ namespace HIS.CLI
 			MedicationView medicationView = new MedicationView(medicationService, ingredientService, medicationRequestService, user);
 			AppointmentView appointmentView = new AppointmentView(appointmentService, doctorService, doctorAvailabilityService,
 				patientService, patientAvailabilityService, roomService, roomAvailabilityService, user);
+			MedicalRecordView medicalRecordView = new MedicalRecordView(medicalRecordService, patientService, user);
 
 			try
 			{

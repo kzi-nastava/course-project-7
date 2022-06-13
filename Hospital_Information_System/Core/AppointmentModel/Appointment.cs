@@ -44,5 +44,10 @@ namespace HIS.Core.AppointmentModel
         {
             return $"Appointment{{Id = {Id}, Doctor = {Doctor.Id}, Patient = {Patient.Id}, Room = {Room.Id}, ScheduledFor = {ScheduledFor}, Anamnesis = {Anamnesis}}}";
         }
+
+        public string AnamnesisFocusedToString()
+        {
+            return $"Appointment{{Id = {Id}, Doctor = {Doctor.Id}, DoctorSpecialty = {Doctor.Specialty}, ScheduledFor = {ScheduledFor}, Anamnesis = {Anamnesis}}}";
+        }
     }
 }

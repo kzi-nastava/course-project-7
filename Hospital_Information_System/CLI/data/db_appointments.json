@@ -139,7 +139,7 @@
     "Patient": 1,
     "Room": 19,
     "ScheduledFor": "2022-05-20T09:00:00",
-    "Anamnesis": null,
+    "Anamnesis": "",
     "Id": 15,
     "Deleted": false
   },
