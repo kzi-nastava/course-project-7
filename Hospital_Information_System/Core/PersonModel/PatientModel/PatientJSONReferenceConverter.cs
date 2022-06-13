@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Linq;
 
-namespace HIS.Core.PatientModel
+namespace HIS.Core.PersonModel.PatientModel
 {
     public class PatientJSONReferenceConverter : JsonConverter
     {

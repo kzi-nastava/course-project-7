@@ -1,4 +1,4 @@
-﻿using HIS.Core.UserAccountModel;
+﻿using HIS.Core.PersonModel.UserAccountModel;
 using HIS.Core.Util;
 using System.Collections.Generic;
 using System.Linq;

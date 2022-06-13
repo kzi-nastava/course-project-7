@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace HIS.Core.UserAccountModel
+namespace HIS.Core.PersonModel.UserAccountModel
 {
     public interface IUserAccountService
     {

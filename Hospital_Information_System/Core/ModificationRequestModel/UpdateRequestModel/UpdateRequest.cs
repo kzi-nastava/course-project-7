@@ -1,6 +1,6 @@
 ﻿using HIS.Core.AppointmentModel;
 using HIS.Core.Foundation;
-using HIS.Core.UserAccountModel;
+using HIS.Core.PersonModel.UserAccountModel;
 using Newtonsoft.Json;
 
 namespace HIS.Core.ModificationRequestModel.UpdateRequestModel

@@ -1,7 +1,7 @@
 ﻿using System;
-using HIS.Core.DoctorModel;
+using HIS.Core.PersonModel.DoctorModel;
 using HIS.Core.Foundation;
-using HIS.Core.PatientModel;
+using HIS.Core.PersonModel.PatientModel;
 using HIS.Core.RoomModel;
 using Newtonsoft.Json;
 

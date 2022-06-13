@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace HIS.Core.DoctorModel
+namespace HIS.Core.PersonModel.DoctorModel
 {
 	public class DoctorJSONRepository : IDoctorRepository
 	{

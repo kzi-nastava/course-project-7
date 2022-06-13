@@ -1,10 +1,10 @@
 ﻿using HIS.Core.AppointmentModel;
 using HIS.Core.AppointmentModel.Util;
-using HIS.Core.DoctorModel;
+using HIS.Core.PersonModel.DoctorModel;
 using HIS.Core.ModificationRequestModel.DeleteRequestModel;
 using HIS.Core.ModificationRequestModel.UpdateRequestModel;
-using HIS.Core.PatientModel;
-using HIS.Core.UserAccountModel;
+using HIS.Core.PersonModel.PatientModel;
+using HIS.Core.PersonModel.UserAccountModel;
 using HIS.Core.Util;
 using System;
 using System.Collections.Generic;

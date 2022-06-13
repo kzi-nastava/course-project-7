@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HIS.Core.DoctorModel
+namespace HIS.Core.PersonModel.DoctorModel
 {
 	public interface IDoctorRepository
 	{

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace HIS.Core.DoctorModel
+namespace HIS.Core.PersonModel.DoctorModel
 {
     public interface IDoctorService
     {

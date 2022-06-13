@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
-namespace HIS.Core.UserAccountModel
+namespace HIS.Core.PersonModel.UserAccountModel
 {
     public class UserAccount : Entity
     {

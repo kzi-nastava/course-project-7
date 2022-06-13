@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Linq;
 
-namespace HIS.Core.UserAccountModel
+namespace HIS.Core.PersonModel.UserAccountModel
 {
 	public class UserAccountJSONReferenceConverter : JsonConverter
 	{

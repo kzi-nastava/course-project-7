@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using HIS.Core.PersonModel.UserAccountModel.Util;
 
-namespace HIS.Core.UserAccountModel
+namespace HIS.Core.PersonModel.UserAccountModel
 {
 	public class UserAccountService : IUserAccountService
 	{

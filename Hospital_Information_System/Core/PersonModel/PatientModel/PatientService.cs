@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace HIS.Core.PatientModel
+namespace HIS.Core.PersonModel.PatientModel
 {
     public class PatientService : IPatientService
     {

@@ -2,7 +2,7 @@
 using HIS.Core.PersonModel;
 using Newtonsoft.Json;
 
-namespace HIS.Core.PatientModel
+namespace HIS.Core.PersonModel.PatientModel
 {
     public class Patient : Entity
     {

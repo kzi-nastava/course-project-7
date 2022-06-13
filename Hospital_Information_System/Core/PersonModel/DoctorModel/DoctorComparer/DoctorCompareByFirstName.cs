@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace HIS.Core.DoctorModel.DoctorComparer
+namespace HIS.Core.PersonModel.DoctorModel.DoctorComparer
 {
     class DoctorCompareByFirstName : DoctorComparer
     {

@@ -1,5 +1,5 @@
-﻿using HIS.Core.DoctorModel;
-using HIS.Core.PatientModel;
+﻿using HIS.Core.PersonModel.DoctorModel;
+using HIS.Core.PersonModel.PatientModel;
 using System;
 
 namespace HIS.Core.AppointmentModel.Util

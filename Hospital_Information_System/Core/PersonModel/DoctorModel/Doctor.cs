@@ -3,7 +3,7 @@ using HIS.Core.Foundation;
 using HIS.Core.PersonModel;
 using Newtonsoft.Json;
 
-namespace HIS.Core.DoctorModel
+namespace HIS.Core.PersonModel.DoctorModel
 {
     public class Doctor : Entity
     {
