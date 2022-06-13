@@ -9,6 +9,11 @@ namespace HIS.Core.PollModel.AppointmentPollModel
         [JsonConverter(typeof(AppointmentJSONReferenceConverter))]
         public Appointment Appointment { get; set; }
 
+        public AppointmentPoll()
+        {
+
+        }
+
         public AppointmentPoll(Dictionary<string, int> questionnaire, string comment, Appointment appointment) : base(questionnaire, comment)
         {
             Appointment = appointment;

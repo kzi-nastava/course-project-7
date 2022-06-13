@@ -16,10 +16,14 @@ namespace HIS.Core.PollModel
 
         public string Comment { get; set; }
 
+        public Poll()
+        {
+
+        }
+
         public Poll(Dictionary<string, int> questionnaire, string comment)
         {
-            // TODO: Why can't I put this here?
-            //ValidateQuestionnaire(questionnaire);
+            ValidateQuestionnaire(questionnaire);
             _questionnaire = questionnaire;
             Comment = comment;
         }

@@ -9,6 +9,11 @@ namespace HIS.Core.PollModel.HospitalPollModel
         [JsonConverter(typeof(PatientJSONReferenceConverter))]
         public Patient Pollee { get; set; }
 
+        public HospitalPoll()
+        {
+
+        }
+
         public HospitalPoll(Dictionary<string, int> questionnaire, string comment, Patient pollee) : base(questionnaire, comment)
         {
             Pollee = pollee;
