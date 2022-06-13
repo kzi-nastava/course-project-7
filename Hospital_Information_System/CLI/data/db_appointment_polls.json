@@ -12,7 +12,7 @@
   {
     "_questionnaire": {
       "Service quality": 4,
-      "Would recommend": 4
+      "Would recommend": 3
     },
     "Appointment": 1,
     "Comment": "",
@@ -31,7 +31,7 @@
   },
   {
     "_questionnaire": {
-      "Service quality": 4,
+      "Service quality": 2,
       "Would recommend": 4
     },
     "Appointment": 3,
@@ -42,7 +42,7 @@
   {
     "_questionnaire": {
       "Service quality": 3,
-      "Would recommend": 3
+      "Would recommend": 4
     },
     "Appointment": 4,
     "Comment": "",
@@ -62,7 +62,7 @@
   {
     "_questionnaire": {
       "Service quality": 5,
-      "Would recommend": 5
+      "Would recommend": 3
     },
     "Appointment": 8,
     "Comment": "",
@@ -72,7 +72,7 @@
   {
     "_questionnaire": {
       "Service quality": 4,
-      "Would recommend": 4
+      "Would recommend": 3
     },
     "Appointment": 9,
     "Comment": "",
@@ -92,7 +92,7 @@
   {
     "_questionnaire": {
       "Service quality": 4,
-      "Would recommend": 4
+      "Would recommend": 2
     },
     "Appointment": 11,
     "Comment": "",
@@ -101,7 +101,7 @@
   },
   {
     "_questionnaire": {
-      "Service quality": 3,
+      "Service quality": 2,
       "Would recommend": 3
     },
     "Appointment": 13,
@@ -122,7 +122,7 @@
   {
     "_questionnaire": {
       "Service quality": 5,
-      "Would recommend": 5
+      "Would recommend": 1
     },
     "Appointment": 15,
     "Comment": "",
@@ -132,7 +132,7 @@
   {
     "_questionnaire": {
       "Service quality": 5,
-      "Would recommend": 5
+      "Would recommend": 1
     },
     "Appointment": 16,
     "Comment": "",
@@ -151,7 +151,7 @@
   },
   {
     "_questionnaire": {
-      "Service quality": 5,
+      "Service quality": 1,
       "Would recommend": 4
     },
     "Appointment": 19,

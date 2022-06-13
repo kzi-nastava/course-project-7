@@ -1,5 +1,6 @@
 ﻿using HIS.Core.PersonModel.DoctorModel;
 using HIS.Core.PersonModel.UserAccountModel;
+using HIS.Core.PollModel;
 using HIS.Core.PollModel.AppointmentPollModel;
 using HIS.Core.PollModel.HospitalPollModel;
 using System;
@@ -11,6 +12,8 @@ namespace HIS.CLI.View
 {
 	internal class PollSummaryView : View
 	{
+		// TODO: Some of the methods belong in a service. 
+
 		private IHospitalPollService _hospitalPollService;
 		private IAppointmentPollService _appointmentPollService;
 		private IDoctorService _doctorService;
@@ -27,6 +30,38 @@ namespace HIS.CLI.View
 			ViewHospitalPoll();
 			PrintHospitalAverageRatings();
 			PrintAllComments();
+
+			PrintDoctorAverageRatings();
+		}
+
+		private void PrintDoctorAverageRatings()
+		{
+			var doctorPolls = GetAppointmentPollsByDoctor();
+			foreach (var doctorPollsPair in doctorPolls)
+			{
+				var ratingsForThisDoctor = ReduceToRatings(doctorPollsPair.Value);
+
+				Print($"{doctorPollsPair.Key}");
+				foreach (var questionRatingPair in ratingsForThisDoctor)
+				{
+					Print($"\t{questionRatingPair.Key}: {questionRatingPair.Value.Average()}");
+				}
+			}
+		}
+
+		private Dictionary<Doctor, List<AppointmentPoll>> GetAppointmentPollsByDoctor()
+		{
+			var doctorPolls = new Dictionary<Doctor, List<AppointmentPoll>>();
+			foreach (var poll in _appointmentPollService.GetAll())
+			{
+				Doctor doctor = poll.Appointment.Doctor;
+
+				if (!doctorPolls.ContainsKey(doctor))
+					doctorPolls[doctor] = new List<AppointmentPoll>();
+				doctorPolls[doctor].Add(poll);
+			}
+
+			return doctorPolls;
 		}
 
 		private void ViewHospitalPoll()
@@ -44,16 +79,16 @@ namespace HIS.CLI.View
 
 		private void PrintHospitalAverageRatings()
 		{
-			foreach (var kvp in GetHospitalPollTransposedRatings())
+			foreach (var kvp in ReduceToRatings(_hospitalPollService.GetAll()))
 			{
 				Print($"{kvp.Key}: {kvp.Value.Average()} ({kvp.Value.Count()} ratings)");
 			}
 		}
 
-		private Dictionary<string, IList<double>> GetHospitalPollTransposedRatings()
+		private Dictionary<string, IList<double>> ReduceToRatings(IEnumerable<Poll> polls)
 		{
 			var summaryAverageCollected = new Dictionary<string, IList<double>>();
-			foreach (var poll in _hospitalPollService.GetAll())
+			foreach (var poll in polls)
 			{
 				var questions = poll.GetQuestions();
 
