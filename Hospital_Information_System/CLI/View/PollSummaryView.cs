@@ -16,13 +16,11 @@ namespace HIS.CLI.View
 
 		private IHospitalPollService _hospitalPollService;
 		private IAppointmentPollService _appointmentPollService;
-		private IDoctorService _doctorService;
 
-		public PollSummaryView(IHospitalPollService hospitalPollService, IAppointmentPollService appointmentPollService, IDoctorService doctorService, UserAccount account) : base(account)
+		public PollSummaryView(IHospitalPollService hospitalPollService, IAppointmentPollService appointmentPollService, UserAccount account) : base(account)
 		{
 			_hospitalPollService = hospitalPollService;
 			_appointmentPollService = appointmentPollService;
-			_doctorService = doctorService;
 		}
 
 		public void CmdHospitalPolls()

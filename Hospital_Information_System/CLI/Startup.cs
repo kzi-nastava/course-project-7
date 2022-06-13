@@ -99,7 +99,7 @@ namespace HIS.CLI
 			PollView pollView = new PollView(user);
 			AppointmentPollView appointmentPollView = new AppointmentPollView(appointmentPollService, patientService, appointmentService, pollView, user);
 			HospitalPollView hospitalPollView = new HospitalPollView(hospitalPollService, patientService, pollView, user);
-			PollSummaryView pollSummaryView = new PollSummaryView(hospitalPollService, appointmentPollService, doctorService, user);
+			PollSummaryView pollSummaryView = new PollSummaryView(hospitalPollService, appointmentPollService, user);
 
 			try
 			{
