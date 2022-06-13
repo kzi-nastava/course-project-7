@@ -1,6 +1,8 @@
 ﻿using HIS.Core.AppointmentModel;
 using HIS.Core.AppointmentModel.Util;
 using HIS.Core.DoctorModel;
+using HIS.Core.ModificationRequestModel.DeleteRequestModel;
+using HIS.Core.ModificationRequestModel.UpdateRequestModel;
 using HIS.Core.PatientModel;
 using HIS.Core.UserAccountModel;
 using HIS.Core.Util;
@@ -14,11 +16,15 @@ namespace HIS.Core.AppointmentModel
     {
         private readonly IAppointmentRepository _repo;
         private readonly IUserAccountService _userAccountService;
+        private readonly IDeleteRequestService _deleteRequestService;
+        private readonly IUpdateRequestService _updateRequestService;
 
-		public AppointmentService(IAppointmentRepository repo, IUserAccountService userAccountService)
+        public AppointmentService(IAppointmentRepository repo, IUserAccountService userAccountService, IDeleteRequestService deleteRequestService, IUpdateRequestService updateRequestService)
         {
             _repo = repo;
             _userAccountService = userAccountService;
+            _deleteRequestService = deleteRequestService;
+            _updateRequestService = updateRequestService;
         }
 
         public IEnumerable<Appointment> GetAll()
@@ -60,7 +66,7 @@ namespace HIS.Core.AppointmentModel
                 var proposedAppointment = new Appointment();
                 Copy(proposedAppointment, appointment, AppointmentPropertyHelpers.GetProperties());
                 Copy(proposedAppointment, updatedAppointment, propertiesToUpdate);
-                //IS.Instance.UpdateRequestRepo.Add(new UpdateRequest(user, appointment, proposedAppointment));
+                _ = _updateRequestService.Add(new UpdateRequest(user, appointment, proposedAppointment));
             }
             else
             {
@@ -74,7 +80,7 @@ namespace HIS.Core.AppointmentModel
             _userAccountService.AddModifiedAppointmentTimestamp(user, DateTime.Now);
             if (MustRequestModification(appointment, user))
             {
-                //IS.Instance.DeleteRequestRepo.Add(new DeleteRequest(user, appointment));
+                _ = _deleteRequestService.Add(new DeleteRequest(user, appointment));
             }
             else
             {
