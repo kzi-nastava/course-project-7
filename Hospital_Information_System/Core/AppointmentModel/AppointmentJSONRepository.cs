@@ -20,8 +20,9 @@ namespace HIS.Core.AppointmentModel
         {
             _fname = fname;
             _settings = settings;
-            AppointmentJSONReferenceConverter.Repo = this;
-            _appointments = JsonConvert.DeserializeObject<List<Appointment>>(File.ReadAllText(fname), _settings);
+			AppointmentJSONReferenceConverter.Repo = this;
+			AppointmentJSONIListConverter.Repo = this;
+			_appointments = JsonConvert.DeserializeObject<List<Appointment>>(File.ReadAllText(fname), _settings);
         }
 
 		public int GetNextId()

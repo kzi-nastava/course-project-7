@@ -16,6 +16,7 @@ namespace HIS.Core.MedicationModel
 		{
 			_fname = fname;
 			_settings = settings;
+			MedicationJSONReferenceConverter.Repo = this;
 			_medication = JsonConvert.DeserializeObject<List<Medication>>(File.ReadAllText(fname), _settings);
 		}
 

@@ -11,6 +11,17 @@ using HIS.Core.RoomModel.RoomAvailability;
 using HIS.Core.MedicationModel.IngredientModel;
 using HIS.Core.MedicationModel;
 using HIS.Core.MedicationModel.MedicationRequestModel;
+using HIS.Core.AppointmentModel;
+using HIS.Core.PersonModel.UserAccountModel;
+using HIS.Core.ModificationRequestModel.DeleteRequestModel;
+using HIS.Core.ModificationRequestModel.UpdateRequestModel;
+using HIS.Core.PersonModel.PatientModel.MedicalRecordModel;
+using HIS.Core.PersonModel.DoctorModel;
+using HIS.Core.PersonModel.DoctorModel.DoctorAvailability;
+using HIS.Core.PersonModel.PatientModel;
+using HIS.Core.PersonModel.PatientModel.PatientAvailability;
+using HIS.Core.PersonModel;
+using HIS.Core.MedicationModel.PrescriptionModel;
 
 namespace HIS.CLI
 {
@@ -29,15 +40,38 @@ namespace HIS.CLI
 			IIngredientRepository ingredientRepo = new IngredientJSONRepository(dataDir + "db_ingredients.json", jsonSettings);
 			IMedicationRepository medicationRepo = new MedicationJSONRepository(dataDir + "db_medications.json", jsonSettings);
 			IMedicationRequestRepository medicationRequestRepo = new MedicationRequestJSONRepository(dataDir + "db_medication_requests.json", jsonSettings);
+			IPersonRepository personRepo = new PersonJSONRepository(dataDir + "db_persons.json", jsonSettings);
+			IUserAccountRepository userAccountRepo = new UserAccountJSONRepository(dataDir + "db_user_accounts.json", jsonSettings);
+			IPatientRepository patientRepo = new PatientJSONRepository(dataDir + "db_patients.json", jsonSettings);
+			IPrescriptionRepository prescriptionRepo = new PrescriptionJSONRepository(dataDir + "db_prescriptions.json", jsonSettings);
+			IDoctorRepository doctorRepo = new DoctorJSONRepository(dataDir + "db_doctors.json", jsonSettings);
+			IAppointmentRepository appointmentRepo = new AppointmentJSONRepository(dataDir + "db_appointments.json", jsonSettings);
+			IMedicalRecordRepository medicalRecordRepo = new MedicalRecordJSONRepository(dataDir + "db_medical_records.json", jsonSettings);
+			IDeleteRequestRepository deleteRequestRepo = new DeleteRequestJSONRepository(dataDir + "db_delete_requests.json", jsonSettings);
+			IUpdateRequestRepository updateRequestRepo = new UpdateRequestJSONRepository(dataDir + "db_update_requests.json", jsonSettings);
 
 			IRoomService roomService = new RoomService(roomRepo);
 			IEquipmentService equipmentService = new EquipmentService(equipmentRepo, roomService);
 			IEquipmentRelocationService equipmentRelocationService = new EquipmentRelocationService(relocationRepo, roomService, _tasks);
 			IRenovationService renovationService = new RenovationService(renovationRepo, _tasks, roomService);
-			IRoomAvailabilityService roomAvailabilityService = new RoomAvailabilityService(roomService, renovationService, null);
+			// Forward declare.
+			IAppointmentService appointmentService = new AppointmentService();
+			IRoomAvailabilityService roomAvailabilityService = new RoomAvailabilityService(roomService, renovationService, appointmentService);
 			IIngredientService ingredientService = new IngredientService(ingredientRepo);
 			IMedicationService medicationService = new MedicationService(medicationRepo);
 			IMedicationRequestService medicationRequestService = new MedicationRequestService(medicationRequestRepo);
+			IUserAccountService userAccountService = new UserAccountService(userAccountRepo);
+			IDeleteRequestService deleteRequestService = new DeleteRequestService(deleteRequestRepo);
+			IUpdateRequestService updateRequestService = new UpdateRequestService(updateRequestRepo);
+			IMedicalRecordService medicalRecordService = new MedicalRecordService(medicalRecordRepo);
+			IDoctorService doctorService = new DoctorService(doctorRepo);
+			IDoctorAvailabilityService doctorAvailabilityService = new DoctorAvailabilityService(doctorService, appointmentService);
+			IPatientService patientService = new PatientService(patientRepo); ;
+			IPatientAvailabilityService patientAvailabilityService = new PatientAvailabilityService(patientService, appointmentService);
+
+			// Now we have everything we need to fully create appointmentService.
+			appointmentService.Copy(new AppointmentService(appointmentRepo, userAccountService, deleteRequestService, updateRequestService,
+				medicalRecordService, roomAvailabilityService, doctorAvailabilityService, patientAvailabilityService));
 
 			RoomView roomView = new RoomView(roomService, null);
 			EquipmentView equipmentView = new EquipmentView(equipmentService, null);
@@ -45,6 +79,8 @@ namespace HIS.CLI
 			RenovationView renovationView = new RenovationView(renovationService, roomService, roomAvailabilityService, roomView, null);
 			IngredientView ingredientView = new IngredientView(ingredientService, medicationService, medicationRequestService, null);
 			MedicationView medicationView = new MedicationView(medicationService, ingredientService, medicationRequestService, null);
+			AppointmentView appointmentView = new AppointmentView(appointmentService, doctorService, doctorAvailabilityService,
+				patientService, patientAvailabilityService, roomService, roomAvailabilityService, null);
 
 			try
 			{
@@ -75,6 +111,15 @@ namespace HIS.CLI
 			ingredientRepo.Save();
 			medicationRepo.Save();
 			medicationRequestRepo.Save();
+			personRepo.Save();
+			userAccountRepo.Save();
+			patientRepo.Save(); ;
+			prescriptionRepo.Save();
+			doctorRepo.Save();
+			appointmentRepo.Save();
+			medicalRecordRepo.Save();
+			deleteRequestRepo.Save();
+			updateRequestRepo.Save();
 		}
 	}
 }
