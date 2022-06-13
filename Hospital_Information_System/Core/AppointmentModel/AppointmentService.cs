@@ -185,7 +185,7 @@ namespace HIS.Core.AppointmentModel
 
         public IEnumerable<Appointment> GetPollable(Patient patient)
         {
-            return GetPast(patient).Where(a => _appointmentPollService.GetAll().Where(ap => ap.Appointment == a) == null);
+            return GetPast(patient).Where(a => _appointmentPollService.GetAll().FirstOrDefault(ap => ap.Appointment == a) == null);
         }
     }
 }
