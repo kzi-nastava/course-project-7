@@ -21,11 +21,5 @@ namespace HIS.Core.PersonModel.DoctorModel
         {
             return $"Doctor{{Id = {Id}, Person = {Person.Id}, Specialty = {Specialty}}}";
         }
-
-        public string VerboseToString()
-        {
-            // TODO: Implement ratings.
-            return $"Doctor{{Id = {Id}, First name = {Person.FirstName}, Last name = {Person.LastName}, Specialty = {Specialty}, Rating = {1 /*Math.Round(DoctorController.CalculateRating(this), 2)*/}}}";
-        }
     }
 }

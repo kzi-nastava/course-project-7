@@ -37,7 +37,7 @@ namespace HIS.CLI.View
             }
             foreach (Doctor d in doctors)
             {
-                Console.WriteLine(d.VerboseToString());
+                Console.WriteLine(_service.VerboseToString(d));
             }
         }
 
@@ -52,7 +52,7 @@ namespace HIS.CLI.View
             {
                 IEnumerable<Doctor> doctors = SearchImpl();
                 Console.WriteLine(hintSelectDoctor);
-                Doctor doctor = EasyInput<Doctor>.Select(doctors, d => d.VerboseToString(), _cancel);
+                Doctor doctor = EasyInput<Doctor>.Select(doctors, d => _service.VerboseToString(d), _cancel);
 
                 var refAppointment = new Appointment()
                 {
@@ -86,7 +86,7 @@ namespace HIS.CLI.View
                 ["Sort by first name"] = new DoctorCompareByFirstName(),
                 ["Sort by last name"] = new DoctorCompareByLastName(),
                 ["Sort by specialty"] = new DoctorCompareBySpecialty(),
-                ["Sort by rating"] = new DoctorCompareByRatingDesc(),
+                ["Sort by rating"] = new DoctorCompareByRatingDesc(_service),
             };
             Console.WriteLine(hintSortBy);
             var sortChoice = EasyInput<string>.Select(sortBy.Keys.ToList(), _cancel);

@@ -1,4 +1,5 @@
 ﻿using HIS.Core.PersonModel.DoctorModel.DoctorComparers;
+using HIS.Core.PollModel.AppointmentPollModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,12 @@ namespace HIS.Core.PersonModel.DoctorModel
 	public class DoctorService : IDoctorService
 	{
 		private readonly IDoctorRepository _repo;
+        private readonly IAppointmentPollService _appointmentPollService;
 
-		public DoctorService(IDoctorRepository repo)
+		public DoctorService(IDoctorRepository repo, IAppointmentPollService appointmentPollService)
 		{
 			_repo = repo;
+            _appointmentPollService = appointmentPollService;
 		}
 
 		public IEnumerable<Doctor> GetAll()
@@ -43,6 +46,16 @@ namespace HIS.Core.PersonModel.DoctorModel
         public IEnumerable<Doctor> MatchByString(string query, DoctorComparer comparer, Func<Doctor, string> toStr)
         {
             return _repo.MatchByString(query, comparer, toStr);
+        }
+
+        public double CalculateRating(Doctor doctor)
+        {
+            return _appointmentPollService.GetAll(doctor).Average(r => r.GetRating(AppointmentPollHelpers.QServiceQuality));
+        }
+
+        public string VerboseToString(Doctor doctor)
+        {
+            return $"Doctor{{Id = {doctor.Id}, First name = {doctor.Person.FirstName}, Last name = {doctor.Person.LastName}, Specialty = {doctor.Specialty}, Rating = {Math.Round(CalculateRating(doctor), 2)}}}";
         }
     }
 }

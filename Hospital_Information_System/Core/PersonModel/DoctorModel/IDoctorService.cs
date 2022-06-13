@@ -13,5 +13,7 @@ namespace HIS.Core.PersonModel.DoctorModel
         IEnumerable<Doctor> MatchByFirstName(string query, DoctorComparer comparer);
         IEnumerable<Doctor> MatchByLastName(string query, DoctorComparer comparer);
         IEnumerable<Doctor> MatchBySpecialty(string query, DoctorComparer comparer);
+        double CalculateRating(Doctor doctor);
+        string VerboseToString(Doctor doctor);
     }
 }
