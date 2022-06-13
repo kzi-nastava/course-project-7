@@ -13,10 +13,12 @@ namespace HIS.Core.AppointmentModel
     public class AppointmentService : IAppointmentService
     {
         private readonly IAppointmentRepository _repo;
+        private readonly IUserAccountService _userAccountService;
 
-		public AppointmentService(IAppointmentRepository repo)
+		public AppointmentService(IAppointmentRepository repo, IUserAccountService userAccountService)
         {
             _repo = repo;
+            _userAccountService = userAccountService;
         }
 
         public IEnumerable<Appointment> GetAll()
@@ -42,7 +44,7 @@ namespace HIS.Core.AppointmentModel
         public void Add(Appointment appointment, UserAccount user)
         {
             // TODO: Implement.
-            //UserAccountController.AddCreatedAppointmentTimestamp(user, DateTime.Now);
+            _userAccountService.AddCreatedAppointmentTimestamp(user, DateTime.Now);
             //MedicalRecord patientsRecord = MedicalRecordController.GetPatientsMedicalRecord(appointment.Patient);
             appointment.Anamnesis = "";
             //patientsRecord.Examinations.Add(appointment);
@@ -52,7 +54,7 @@ namespace HIS.Core.AppointmentModel
         public void Update(Appointment appointment, Appointment updatedAppointment, IEnumerable<AppointmentProperty> propertiesToUpdate, UserAccount user)
         {
             // TODO: Implement.
-            //UserAccountController.AddModifiedAppointmentTimestamp(user, DateTime.Now);
+            _userAccountService.AddModifiedAppointmentTimestamp(user, DateTime.Now);
             if (MustRequestModification(appointment, user))
             {
                 var proposedAppointment = new Appointment();
@@ -69,7 +71,7 @@ namespace HIS.Core.AppointmentModel
         public void Remove(Appointment appointment, UserAccount user)
         {
             // TODO: Implement.
-            //UserAccountController.AddModifiedAppointmentTimestamp(user, DateTime.Now);
+            _userAccountService.AddModifiedAppointmentTimestamp(user, DateTime.Now);
             if (MustRequestModification(appointment, user))
             {
                 //IS.Instance.DeleteRequestRepo.Add(new DeleteRequest(user, appointment));
