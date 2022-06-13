@@ -1,5 +1,4 @@
-﻿using HIS.Core;
-using HIS.Core.PersonModel.UserAccountModel;
+﻿using HIS.Core.PersonModel.UserAccountModel;
 using HIS.Core.RoomModel;
 using HIS.Core.Util;
 using System;

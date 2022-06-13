@@ -9,9 +9,9 @@ namespace HIS.CLI.View
 		protected UserAccount _user;
 
 		public View(UserAccount user)
-        {
+		{
 			_user = user;
-        }
+		}
 
 		protected void Hint(string value)
 		{

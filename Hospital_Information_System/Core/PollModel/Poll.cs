@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace HIS.Core.PollModel
@@ -44,6 +45,11 @@ namespace HIS.Core.PollModel
             return _questionnaire[question];
         }
 
+        public IList<string> GetQuestions()
+		{
+            return _questionnaire.Keys.ToList();
+		}
+
         private void ValidateQuestionnaire(Dictionary<string, int> questionnaire)
         {
             foreach (KeyValuePair<string, int> pair in questionnaire)
@@ -59,5 +65,10 @@ namespace HIS.Core.PollModel
                 throw new ArgumentException($"{question}: {ErrInvalidRating}");
             }
         }
-    }
+
+		public override string ToString()
+		{
+            return $"Poll{{Questionnaire={{{_questionnaire.Select(kv => $"{kv.Key}: {kv.Value}").Aggregate((s1, s2) => $"{s1}, {s2}")}}}, Comment={Comment}}}";
+		}
+	}
 }
