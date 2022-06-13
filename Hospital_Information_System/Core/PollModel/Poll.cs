@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace HIS.Core.PollModel
@@ -43,6 +44,11 @@ namespace HIS.Core.PollModel
         {
             return _questionnaire[question];
         }
+
+        public IList<string> GetQuestions()
+		{
+            return _questionnaire.Keys.ToList();
+		}
 
         private void ValidateQuestionnaire(Dictionary<string, int> questionnaire)
         {
