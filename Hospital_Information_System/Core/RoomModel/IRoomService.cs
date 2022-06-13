@@ -10,6 +10,7 @@ namespace HIS.Core.RoomModel
 		public void Remove(Room r);
 		public IEnumerable<Room> GetModifiable();
 		public IEnumerable<Room> GetOtherModifiableOnSameFloor(Room comparedTo);
+		public IEnumerable<Room> GetExaminationRooms();
 		public void Copy(Room src, Room dest, IEnumerable<RoomProperty> properties);
 		Room GetWarehouse();
 		public void Move(Equipment equipment, int amount, Room src, Room dest);

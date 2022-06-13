@@ -10,5 +10,6 @@ namespace HIS.Core.RoomModel.RenovationModel
 		public void Remove(Renovation r);
 		public IEnumerable<Renovation> GetAll();
 		public IEnumerable<Renovation> GetAll(Room r);
+		bool IsRenovating(Room room, DateTime start, DateTime end);
 	}
 }

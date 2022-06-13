@@ -34,7 +34,7 @@ namespace HIS.CLI
 			IEquipmentService equipmentService = new EquipmentService(equipmentRepo, roomService);
 			IEquipmentRelocationService equipmentRelocationService = new EquipmentRelocationService(relocationRepo, roomService, _tasks);
 			IRenovationService renovationService = new RenovationService(renovationRepo, _tasks, roomService);
-			IRoomAvailabilityService roomAvailabilityService = new RoomAvailabilityService(roomService, renovationService);
+			IRoomAvailabilityService roomAvailabilityService = new RoomAvailabilityService(roomService, renovationService, null);
 			IIngredientService ingredientService = new IngredientService(ingredientRepo);
 			IMedicationService medicationService = new MedicationService(medicationRepo);
 			IMedicationRequestService medicationRequestService = new MedicationRequestService(medicationRequestRepo);

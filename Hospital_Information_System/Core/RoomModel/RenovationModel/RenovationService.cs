@@ -1,4 +1,5 @@
 ﻿using HIS.Core.Foundation;
+using HIS.Core.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,6 +41,13 @@ namespace HIS.Core.RoomModel.RenovationModel
 		public IEnumerable<Renovation> GetAll(Room r)
 		{
 			return _repo.Get(r);
+		}
+
+		public bool IsRenovating(Room room, DateTime start, DateTime end)
+		{
+			return _repo.GetAll().Count(ren =>
+				ren.Room == room &&
+				new DateTimeRange(start, end).Intersects(ren.TimeRange)) > 0;
 		}
 
 		#region tasks
@@ -113,6 +121,6 @@ namespace HIS.Core.RoomModel.RenovationModel
 		{
 			_taskQueue.Add(() => Perform(e), e.TimeRange.End);
 		}
-		#endregion
-	}
+        #endregion
+    }
 }

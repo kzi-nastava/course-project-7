@@ -8,6 +8,8 @@ using HIS.Core.PersonModel.PatientModel.MedicalRecordModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HIS.Core.RoomModel;
+using HIS.Core.RoomModel.RoomAvailability;
 
 namespace HIS.Core.AppointmentModel
 {
@@ -18,14 +20,17 @@ namespace HIS.Core.AppointmentModel
         private readonly IDeleteRequestService _deleteRequestService;
         private readonly IUpdateRequestService _updateRequestService;
         private readonly IMedicalRecordService _medicalRecordService;
+        private readonly IRoomAvailabilityService _roomAvailabilityService;
 
-        public AppointmentService(IAppointmentRepository repo, IUserAccountService userAccountService, IDeleteRequestService deleteRequestService, IUpdateRequestService updateRequestService, IMedicalRecordService medicalRecordService)
+        public AppointmentService(IAppointmentRepository repo, IUserAccountService userAccountService, IDeleteRequestService deleteRequestService, IUpdateRequestService updateRequestService,
+            IMedicalRecordService medicalRecordService, IRoomAvailabilityService roomAvailabilityService)
         {
             _repo = repo;
             _userAccountService = userAccountService;
             _deleteRequestService = deleteRequestService;
             _updateRequestService = updateRequestService;
             _medicalRecordService = medicalRecordService;
+            _roomAvailabilityService = roomAvailabilityService;
         }
 
         public IEnumerable<Appointment> GetAll()
@@ -134,7 +139,7 @@ namespace HIS.Core.AppointmentModel
             //            (PatientController.IsAvailable(sb.Patient, scheduledFor) ? sb.Patient : null) : PatientController.FindFirstAvailablePatient(scheduledFor);
             //        if (patient == null) continue;
 
-            //        Room room = RoomController.FindFirstAvailableExaminationRoom(scheduledFor);
+            //        Room room = _roomAvailabilityService.FindFirstAvailableExaminationRoom(scheduledFor);
             //        if (room == null) continue;
 
             //        return new Appointment(doctor, patient, room, scheduledFor);
