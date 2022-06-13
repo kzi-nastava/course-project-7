@@ -24,11 +24,15 @@ namespace HIS.CLI.View
 
 		public void CmdHospitalPolls()
 		{
+			ViewHospitalPoll();
 			PrintHospitalAverageRatings();
 			PrintAllComments();
-
 		}
 
+		private void ViewHospitalPoll()
+		{
+			Print(EasyInput<HospitalPoll>.Select(_hospitalPollService.GetAll(), poll => poll.Pollee.ToString() + ": " + poll.Comment, _cancel).ToString());
+		}
 
 		private void PrintAllComments()
 		{
@@ -40,9 +44,7 @@ namespace HIS.CLI.View
 
 		private void PrintHospitalAverageRatings()
 		{
-			var ratings = GetHospitalPollTransposedRatings();
-
-			foreach (var kvp in ratings)
+			foreach (var kvp in GetHospitalPollTransposedRatings())
 			{
 				Print($"{kvp.Key}: {kvp.Value.Average()} ({kvp.Value.Count()} ratings)");
 			}

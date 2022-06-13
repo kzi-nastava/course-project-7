@@ -18,5 +18,10 @@ namespace HIS.Core.PollModel.AppointmentPollModel
         {
             Appointment = appointment;
         }
-    }
+
+		public override string ToString()
+		{
+            return $"HospitalPoll{{Appointment={Appointment}, {base.ToString()}}}";
+        }
+	}
 }

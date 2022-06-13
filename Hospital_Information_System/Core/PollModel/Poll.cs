@@ -65,5 +65,10 @@ namespace HIS.Core.PollModel
                 throw new ArgumentException($"{question}: {ErrInvalidRating}");
             }
         }
-    }
+
+		public override string ToString()
+		{
+            return $"Poll{{Questionnaire={{{_questionnaire.Select(kv => $"{kv.Key}: {kv.Value}").Aggregate((s1, s2) => $"{s1}, {s2}")}}}, Comment={Comment}}}";
+		}
+	}
 }
