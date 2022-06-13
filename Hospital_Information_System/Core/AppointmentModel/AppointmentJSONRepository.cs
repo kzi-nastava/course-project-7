@@ -1,7 +1,7 @@
 ﻿using HIS.Core.DoctorModel;
 using HIS.Core.PatientModel;
 using HIS.Core.UserAccountModel;
-using HIS.Core.Util;
+using HIS.Core.AppointmentModel.Util;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -15,8 +15,6 @@ namespace HIS.Core.AppointmentModel
         private readonly IList<Appointment> _appointments;
         private readonly string _fname;
         private readonly JsonSerializerSettings _settings;
-
-		private const int daysBeforeAppointmentUnmodifiable = 1;
 
 		public AppointmentJSONRepository(string fname, JsonSerializerSettings settings)
         {
@@ -90,7 +88,7 @@ namespace HIS.Core.AppointmentModel
 			if (user.Type == UserAccount.AccountType.PATIENT)
 			{
 				TimeSpan difference = appointment.ScheduledFor - DateTime.Now;
-				return difference.TotalDays >= daysBeforeAppointmentUnmodifiable;
+				return difference.TotalDays >= AppointmentConstants.DaysBeforeAppointmentUnmodifiable;
 			}
 			else
 			{

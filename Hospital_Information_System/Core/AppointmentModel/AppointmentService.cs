@@ -1,6 +1,5 @@
 ﻿using HIS.Core.AppointmentModel;
 using HIS.Core.AppointmentModel.Util;
-using HIS.Core.AppointmentModel.Util;
 using HIS.Core.DoctorModel;
 using HIS.Core.PatientModel;
 using HIS.Core.UserAccountModel;
@@ -14,9 +13,6 @@ namespace HIS.Core.AppointmentModel
     public class AppointmentService : IAppointmentService
     {
         private readonly IAppointmentRepository _repo;
-
-        private const int lengthOfAppointmentInMinutes = 15;
-        private const int daysBeforeModificationNeedsRequest = 2;
 
 		public AppointmentService(IAppointmentRepository repo)
         {
@@ -91,7 +87,7 @@ namespace HIS.Core.AppointmentModel
             if (user.Type == UserAccount.AccountType.PATIENT)
             {
                 TimeSpan difference = appointment.ScheduledFor - DateTime.Now;
-                return difference.TotalDays < daysBeforeModificationNeedsRequest;
+                return difference.TotalDays < AppointmentConstants.DaysBeforeModificationNeedsRequest;
             }
             else
             {
@@ -102,7 +98,7 @@ namespace HIS.Core.AppointmentModel
         public bool AreColliding(DateTime schedule1, DateTime schedule2)
         {
             TimeSpan difference = schedule1 - schedule2;
-            return Math.Abs(difference.TotalMinutes) < lengthOfAppointmentInMinutes;
+            return Math.Abs(difference.TotalMinutes) < AppointmentConstants.LengthOfAppointmentInMinutes;
         }
 
         public void Copy(Appointment target, Appointment source, IEnumerable<AppointmentProperty> whichProperties)

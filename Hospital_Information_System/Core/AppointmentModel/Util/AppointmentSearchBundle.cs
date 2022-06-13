@@ -1,8 +1,6 @@
 ﻿using HIS.Core.DoctorModel;
 using HIS.Core.PatientModel;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace HIS.Core.AppointmentModel.Util
 {
