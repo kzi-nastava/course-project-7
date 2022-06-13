@@ -12,8 +12,6 @@ namespace HIS.CLI.View
 {
 	internal class PollSummaryView : View
 	{
-		// TODO: Some of the methods belong in a service. 
-
 		private IHospitalPollService _hospitalPollService;
 		private IAppointmentPollService _appointmentPollService;
 
@@ -35,7 +33,7 @@ namespace HIS.CLI.View
 
 		private void PrintTop3()
 		{
-			var doctorRatingsSorted = GetDoctorTotalAverageRatingsSorted().ToList();
+			var doctorRatingsSorted = _appointmentPollService.GetTotalAverageRatingsByDoctor().OrderByDescending(kv => kv.Value).ToList();
 			int topN = 3;
 
 			if (doctorRatingsSorted.Count() <= topN)
@@ -61,12 +59,6 @@ namespace HIS.CLI.View
 					Print($"{docRating.Key}: {docRating.Value}");
 				}
 			}
-		}
-
-		private IOrderedEnumerable<KeyValuePair<Doctor, double>> GetDoctorTotalAverageRatingsSorted()
-		{
-			// for each doctor [ for each poll of that doctor [ reduce to ratings and find average rating for that poll ] find the average rating of all polls for that doctor ] sort by rating
-			return _appointmentPollService.GetAppointmentPollsByDoctor().Select(kv => new KeyValuePair<Doctor, double>(kv.Key, PollHelpers.ReduceToRatings(kv.Value).Select(kvp => kvp.Value.Average()).ToList().Average())).OrderByDescending(kv => kv.Value);
 		}
 
 		private void PrintDoctorRatings()

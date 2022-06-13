@@ -1,6 +1,7 @@
 ﻿using HIS.Core.PersonModel.DoctorModel;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace HIS.Core.PollModel.AppointmentPollModel
@@ -42,6 +43,12 @@ namespace HIS.Core.PollModel.AppointmentPollModel
 			}
 
 			return doctorPolls;
+		}
+
+		public IEnumerable<KeyValuePair<Doctor, double>> GetTotalAverageRatingsByDoctor()
+		{
+			// for each doctor [ for each poll of that doctor [ reduce to ratings and find average rating for that poll ] find the average rating of all polls for that doctor ] sort by rating
+			return GetAppointmentPollsByDoctor().Select(kv => new KeyValuePair<Doctor, double>(kv.Key, PollHelpers.ReduceToRatings(kv.Value).Select(kvp => kvp.Value.Average()).ToList().Average()));
 		}
 	}
 }
