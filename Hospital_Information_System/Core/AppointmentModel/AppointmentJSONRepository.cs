@@ -84,7 +84,6 @@ namespace HIS.Core.AppointmentModel
 			}
 		}
 
-		// TODO: Put elsewhere?
 		private bool CanModify(Appointment appointment, UserAccount user)
 		{
 			if (user.Type == UserAccount.AccountType.PATIENT)
