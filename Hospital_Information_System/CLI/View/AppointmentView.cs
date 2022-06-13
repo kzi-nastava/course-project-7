@@ -293,5 +293,160 @@ namespace HIS.CLI.View
                 },
                 _cancel);
         }
+
+        internal void CreateRecommendedAppointment()
+        {
+            try
+            {
+                AppointmentSearchBundle sb = InputSearchBundle();
+                AppointmentProperty priority = InputPrioritizedProperty();
+
+                Appointment appointment = GetRecommendedAppointment(sb, priority);
+                Console.WriteLine(appointment.ToString());
+                Console.WriteLine(askCreateAppointment);
+                if (EasyInput<bool>.YesNo(_cancel))
+                {
+                    _service.Add(appointment, _user);
+                }
+            }
+            catch (NothingToSelectException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        private AppointmentSearchBundle InputSearchBundle()
+        {
+            Doctor doctor = InputDoctor(null);
+            Patient patient = InputPatient(null);
+            TimeSpan start = InputStartOfRange();
+            TimeSpan end = InputEndOfRange(start);
+            DateTime latestDate = InputLatestDate();
+
+            return new AppointmentSearchBundle(doctor, patient, start, end, latestDate);
+        }
+
+        private Appointment GetRecommendedAppointment(AppointmentSearchBundle sb, AppointmentProperty priority)
+        {
+            return GetOptimalAppointment(sb) ?? GetPrioritizedAppointment(sb, priority) ?? GetDesperateAppointment(sb);
+        }
+
+        private Appointment GetOptimalAppointment(AppointmentSearchBundle sb)
+        {
+            return _service.FindRecommendedAppointment(sb);
+        }
+        private Appointment GetPrioritizedAppointment(AppointmentSearchBundle sb, AppointmentProperty priority)
+        {
+            Console.WriteLine(hintOptimalSearchFailed);
+
+            AppointmentSearchBundle sbPrioritized;
+            if (priority == AppointmentProperty.DOCTOR)
+            {
+                sbPrioritized = AppointmentSearchBundle.IgnoreInterval(sb);
+            }
+            else
+            {
+                sbPrioritized = AppointmentSearchBundle.IgnoreDoctor(sb);
+            }
+            return _service.FindRecommendedAppointment(sbPrioritized);
+        }
+
+        private Appointment GetDesperateAppointment(AppointmentSearchBundle sb)
+        {
+            Console.WriteLine(hintPrioritySearchFailed);
+
+            var desperateAppointments = new List<Appointment>();
+            var desperateAppointment = new Appointment();
+
+            void processDesperate(Func<AppointmentSearchBundle, AppointmentSearchBundle> newSb, string hint)
+            {
+                desperateAppointment = _service.FindRecommendedAppointment(newSb(sb));
+                if (desperateAppointment != null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine(hint);
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.WriteLine(desperateAppointment.ToString());
+                    desperateAppointments.Add(desperateAppointment);
+                }
+            }
+
+            // Closest respecting only doctor
+            processDesperate(AppointmentSearchBundle.RespectOnlyDoctorAndPatient, hintDesperateSearchRespectDoctorOnly);
+
+            // Closest respecting only time interval
+            processDesperate(AppointmentSearchBundle.RespectOnlyIntervalAndPatient, hintDesperateSearchRespectIntervalOnly);
+
+            // Closest respecting only latest date.
+            processDesperate(AppointmentSearchBundle.RespectOnlyLatestDateAndPatient, hintDesperateSearchRespectDateOnly);
+
+            // Closest optimal when ignoring latest date.
+            processDesperate(AppointmentSearchBundle.IgnoreLatestDate, hintDesperateSearchIgnoreDate);
+
+            // Closest overall.
+            processDesperate(AppointmentSearchBundle.RespectOnlyPatient, hintDesperateSearchClosestOverall);
+
+            Console.WriteLine(hintSelectAppointment);
+            return EasyInput<Appointment>.Select(desperateAppointments, _cancel);
+        }
+
+        private TimeSpan InputStartOfRange()
+        {
+            Console.WriteLine(hintGetStartOfRange);
+            return EasyInput<TimeSpan>.Get(
+                new List<Func<TimeSpan, bool>>()
+                {
+                    ts => AppointmentSearchBundle.TsInDay(ts),
+                    ts => AppointmentSearchBundle.TsZeroSeconds(ts),
+                },
+                new string[]
+                {
+                    AppointmentSearchBundle.ErrTimeSpanNotInDay,
+                    AppointmentSearchBundle.ErrTimeSpanHasSeconds,
+                },
+                _cancel,
+                TimeSpan.Parse);
+        }
+
+        private TimeSpan InputEndOfRange(TimeSpan start)
+        {
+            Console.WriteLine(hintGetEndOfRange);
+            return EasyInput<TimeSpan>.Get(
+                new List<Func<TimeSpan, bool>>()
+                {
+                    ts => AppointmentSearchBundle.TsInDay(ts),
+                    ts => AppointmentSearchBundle.TsZeroSeconds(ts),
+                    ts => AppointmentSearchBundle.TsIsAfter(ts, start),
+                },
+                new string[]
+                {
+                    AppointmentSearchBundle.ErrTimeSpanNotInDay,
+                    AppointmentSearchBundle.ErrTimeSpanHasSeconds,
+                    AppointmentSearchBundle.ErrEndBeforeStart,
+                },
+                _cancel,
+                TimeSpan.Parse);
+        }
+
+        private DateTime InputLatestDate()
+        {
+            Console.WriteLine(hintGetLatestDesiredDate);
+            return EasyInput<DateTime>.Get(
+                new List<Func<DateTime, bool>>()
+                {
+                    dt => AppointmentSearchBundle.DtNotTooSoon(dt),
+                },
+                new string[]
+                {
+                    AppointmentSearchBundle.ErrDateTooSoon,
+                },
+                _cancel);
+        }
+
+        private AppointmentProperty InputPrioritizedProperty()
+        {
+            Console.WriteLine(hintGetPrioritizedProperty);
+            return EasyInput<AppointmentProperty>.Select(AppointmentPropertyHelpers.GetPrioritizableProperties(), _cancel);
+        }
     }
 }
