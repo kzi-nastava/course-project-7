@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace HIS.Core.PersonModel.DoctorModel.DoctorComparer
+namespace HIS.Core.PersonModel.DoctorModel.DoctorComparers
 {
-    class DoctorCompareByFirstName : DoctorComparer
+    public class DoctorCompareByFirstName : DoctorComparer
     {
         public override int Compare([AllowNull] Doctor x, [AllowNull] Doctor y)
         {

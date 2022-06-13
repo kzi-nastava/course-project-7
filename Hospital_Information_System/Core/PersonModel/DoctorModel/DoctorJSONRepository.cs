@@ -1,5 +1,7 @@
-﻿using HIS.Core.Util;
+﻿using HIS.Core.PersonModel.DoctorModel.DoctorComparers;
+using HIS.Core.Util;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -51,5 +53,27 @@ namespace HIS.Core.PersonModel.DoctorModel
 		{
 			File.WriteAllText(_fname, JsonConvert.SerializeObject(_doctors, Formatting.Indented, _settings));
 		}
-	}
+
+        public IEnumerable<Doctor> MatchByString(string query, DoctorComparer comparer, Func<Doctor, string> toStr)
+		{
+			var matches = GetAll().ToList().FindAll(d => toStr(d).Contains(query.Trim(), StringComparison.OrdinalIgnoreCase));
+			matches.Sort(comparer);
+			return matches;
+		}
+
+        public IEnumerable<Doctor> MatchByFirstName(string query, DoctorComparer comparer)
+		{
+			return MatchByString(query, comparer, d => d.Person.FirstName);
+		}
+
+        public IEnumerable<Doctor> MatchByLastName(string query, DoctorComparer comparer)
+		{
+			return MatchByString(query, comparer, d => d.Person.LastName);
+		}
+
+        public IEnumerable<Doctor> MatchBySpecialty(string query, DoctorComparer comparer)
+		{
+			return MatchByString(query, comparer, d => d.Specialty.ToString());
+		}
+    }
 }

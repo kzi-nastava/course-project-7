@@ -24,8 +24,8 @@ namespace HIS.Core.PersonModel.DoctorModel
 
         public string VerboseToString()
         {
-            throw new NotImplementedException();
-            //return $"Doctor{{Id = {Id}, First name = {Person.FirstName}, Last name = {Person.LastName}, Specialty = {Specialty}, Rating = {Math.Round(DoctorController.CalculateRating(this), 2)}}}";
+            // TODO: Implement ratings.
+            return $"Doctor{{Id = {Id}, First name = {Person.FirstName}, Last name = {Person.LastName}, Specialty = {Specialty}, Rating = {1 /*Math.Round(DoctorController.CalculateRating(this), 2)*/}}}";
         }
     }
 }
