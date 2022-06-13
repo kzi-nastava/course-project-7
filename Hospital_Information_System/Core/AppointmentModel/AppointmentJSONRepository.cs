@@ -97,5 +97,10 @@ namespace HIS.Core.AppointmentModel
 				return true;
 			}
 		}
-	}
+
+        public IEnumerable<Appointment> GetPast(Patient patient)
+		{
+			return GetAll(patient).Where(a => a.ScheduledFor < DateTime.Now);
+		}
+    }
 }

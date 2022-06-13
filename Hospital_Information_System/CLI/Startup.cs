@@ -23,6 +23,8 @@ using HIS.Core.PersonModel.PatientModel.PatientAvailability;
 using HIS.Core.PersonModel;
 using HIS.Core.MedicationModel.PrescriptionModel;
 using HIS.Core.PersonModel.UserAccountModel.Util;
+using HIS.Core.PollModel.HospitalPollModel;
+using HIS.Core.PollModel.AppointmentPollModel;
 
 namespace HIS.CLI
 {
@@ -50,6 +52,8 @@ namespace HIS.CLI
 			IMedicalRecordRepository medicalRecordRepo = new MedicalRecordJSONRepository(dataDir + "db_medical_records.json", jsonSettings);
 			IDeleteRequestRepository deleteRequestRepo = new DeleteRequestJSONRepository(dataDir + "db_delete_requests.json", jsonSettings);
 			IUpdateRequestRepository updateRequestRepo = new UpdateRequestJSONRepository(dataDir + "db_update_requests.json", jsonSettings);
+			IHospitalPollRepository hospitalPollRepo = new HospitalPollJSONRepository(dataDir + "db_hospital_polls.json", jsonSettings);
+			IAppointmentPollRepository appointmentPollRepo = new AppointmentPollJSONRepository(dataDir + "db_appointment_polls.json", jsonSettings);
 
 			IRoomService roomService = new RoomService(roomRepo);
 			IEquipmentService equipmentService = new EquipmentService(equipmentRepo, roomService);
@@ -69,11 +73,13 @@ namespace HIS.CLI
 			IUpdateRequestService updateRequestService = new UpdateRequestService(updateRequestRepo);
 			IDoctorService doctorService = new DoctorService(doctorRepo);
 			IDoctorAvailabilityService doctorAvailabilityService = new DoctorAvailabilityService(doctorService, appointmentService);
+			IHospitalPollService hospitalPollService = new HospitalPollService(hospitalPollRepo);
+			IAppointmentPollService appointmentPollService = new AppointmentPollService(appointmentPollRepo);
 
 			// TODO: This can be avoided.
 			// Now we have everything we need to fully create appointmentService.
 			appointmentService.Copy(new AppointmentService(appointmentRepo, userAccountService, deleteRequestService, updateRequestService,
-				medicalRecordService, roomAvailabilityService, doctorAvailabilityService, patientAvailabilityService));
+				medicalRecordService, roomAvailabilityService, doctorAvailabilityService, patientAvailabilityService, appointmentPollService));
 
 			UserAccount user = userAccountService.AttemptLogin("janeka", "123");
 
@@ -87,6 +93,9 @@ namespace HIS.CLI
 				patientService, patientAvailabilityService, roomService, roomAvailabilityService, user);
 			MedicalRecordView medicalRecordView = new MedicalRecordView(medicalRecordService, patientService, user);
 			DoctorView doctorView = new DoctorView(doctorService, appointmentView, user);
+			PollView pollView = new PollView(user);
+			AppointmentPollView appointmentPollView = new AppointmentPollView(appointmentPollService, patientService, appointmentService, pollView, user);
+			HospitalPollView hospitalPollView = new HospitalPollView(hospitalPollService, patientService, pollView, user);
 
 			try
 			{
@@ -130,6 +139,8 @@ namespace HIS.CLI
 			medicalRecordRepo.Save();
 			deleteRequestRepo.Save();
 			updateRequestRepo.Save();
+			hospitalPollRepo.Save();
+			appointmentPollRepo.Save();
 		}
 	}
 }

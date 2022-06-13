@@ -14,7 +14,12 @@ namespace HIS.Core.PollModel.HospitalPollModel
 			_repo = repo;
 		}
 
-		public IEnumerable<HospitalPoll> GetAll()
+        public HospitalPoll Add(HospitalPoll poll)
+        {
+			return _repo.Add(poll);
+        }
+
+        public IEnumerable<HospitalPoll> GetAll()
 		{
 			return _repo.GetAll();
 		}

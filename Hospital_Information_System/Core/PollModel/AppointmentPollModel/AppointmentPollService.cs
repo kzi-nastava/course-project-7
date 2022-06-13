@@ -14,7 +14,12 @@ namespace HIS.Core.PollModel.AppointmentPollModel
 			_repo = repo;
 		}
 
-		public IEnumerable<AppointmentPoll> GetAll()
+        public AppointmentPoll Add(AppointmentPoll poll)
+        {
+			return _repo.Add(poll);
+        }
+
+        public IEnumerable<AppointmentPoll> GetAll()
 		{
 			return _repo.GetAll();
 		}

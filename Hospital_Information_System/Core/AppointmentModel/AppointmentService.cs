@@ -12,6 +12,7 @@ using HIS.Core.RoomModel;
 using HIS.Core.RoomModel.RoomAvailability;
 using HIS.Core.PersonModel.DoctorModel.DoctorAvailability;
 using HIS.Core.PersonModel.PatientModel.PatientAvailability;
+using HIS.Core.PollModel.AppointmentPollModel;
 
 namespace HIS.Core.AppointmentModel
 {
@@ -25,6 +26,7 @@ namespace HIS.Core.AppointmentModel
         private IRoomAvailabilityService _roomAvailabilityService;
         private IDoctorAvailabilityService _doctorAvailabilityService;
         private IPatientAvailabilityService _patientAvailabilityService;
+        private IAppointmentPollService _appointmentPollService;
 
         // Used for forward declaration
         public AppointmentService()
@@ -44,11 +46,12 @@ namespace HIS.Core.AppointmentModel
             _roomAvailabilityService = _other._roomAvailabilityService;
             _doctorAvailabilityService = _other._doctorAvailabilityService;
             _patientAvailabilityService = _other._patientAvailabilityService;
+            _appointmentPollService = _other._appointmentPollService;
         }
 
         public AppointmentService(IAppointmentRepository repo, IUserAccountService userAccountService, IDeleteRequestService deleteRequestService, IUpdateRequestService updateRequestService,
             IMedicalRecordService medicalRecordService, IRoomAvailabilityService roomAvailabilityService, IDoctorAvailabilityService doctorAvailabilityService,
-            IPatientAvailabilityService patientAvailabilityService)
+            IPatientAvailabilityService patientAvailabilityService, IAppointmentPollService appointmentPollService)
         {
             _repo = repo;
             _userAccountService = userAccountService;
@@ -58,6 +61,7 @@ namespace HIS.Core.AppointmentModel
             _roomAvailabilityService = roomAvailabilityService;
             _doctorAvailabilityService = doctorAvailabilityService;
             _patientAvailabilityService = patientAvailabilityService;
+            _appointmentPollService = appointmentPollService;
         }
 
         public IEnumerable<Appointment> GetAll()
@@ -172,6 +176,16 @@ namespace HIS.Core.AppointmentModel
                 }
             }
             return null;
+        }
+
+        public IEnumerable<Appointment> GetPast(Patient patient)
+        {
+            return _repo.GetPast(patient);
+        }
+
+        public IEnumerable<Appointment> GetPollable(Patient patient)
+        {
+            return GetPast(patient).Where(a => _appointmentPollService.GetAll().Where(ap => ap.Appointment == a) == null);
         }
     }
 }

@@ -14,6 +14,8 @@ namespace HIS.Core.AppointmentModel
         IEnumerable<Appointment> GetAll(Patient patient);
         IEnumerable<Appointment> GetAll(Doctor doctor);
         IEnumerable<Appointment> GetModifiable(UserAccount user);
+        IEnumerable<Appointment> GetPast(Patient patient);
+        IEnumerable<Appointment> GetPollable(Patient patient);
         void Add(Appointment appointment, UserAccount user);
         void Update(Appointment appointment, Appointment updatedAppointment, IEnumerable<AppointmentProperty> propertiesToUpdate, UserAccount user);
         void Remove(Appointment appointment, UserAccount user);

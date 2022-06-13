@@ -24,7 +24,7 @@
     "ScheduledFor": "2022-05-27T13:00:00",
     "Anamnesis": "abc",
     "Id": 2,
-    "Deleted": true
+    "Deleted": false
   },
   {
     "Doctor": 2,
@@ -78,7 +78,7 @@
     "ScheduledFor": "2022-05-02T17:00:00",
     "Anamnesis": "ijtmlkbfd",
     "Id": 8,
-    "Deleted": true
+    "Deleted": false
   },
   {
     "Doctor": 1,
