@@ -10,5 +10,6 @@ namespace HIS.Core.PollModel.AppointmentPollModel
         AppointmentPoll Add(AppointmentPoll poll);
         IEnumerable<AppointmentPoll> GetAll();
         IEnumerable<AppointmentPoll> GetAll(Doctor doctor);
+        Dictionary<Doctor, IList<AppointmentPoll>> GetAppointmentPollsByDoctor();
     }
 }

@@ -28,5 +28,20 @@ namespace HIS.Core.PollModel.AppointmentPollModel
         {
 			return _repo.GetAll(doctor);
         }
-    }
+
+		public Dictionary<Doctor, IList<AppointmentPoll>> GetAppointmentPollsByDoctor()
+		{
+			var doctorPolls = new Dictionary<Doctor, IList<AppointmentPoll>>();
+			foreach (var poll in GetAll())
+			{
+				Doctor doctor = poll.Appointment.Doctor;
+
+				if (!doctorPolls.ContainsKey(doctor))
+					doctorPolls[doctor] = new List<AppointmentPoll>();
+				doctorPolls[doctor].Add(poll);
+			}
+
+			return doctorPolls;
+		}
+	}
 }

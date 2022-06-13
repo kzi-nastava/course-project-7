@@ -25,9 +25,9 @@ namespace HIS.CLI.View
 
 		public void CmdHospitalPolls()
 		{
-			ViewHospitalPoll();
+			PrintSingleHospitalPoll();
 			PrintHospitalAverageRatings();
-			PrintAllComments();
+			PrintAllHospitalComments();
 
 			PrintDoctorRatings();
 			PrintTop3();
@@ -66,12 +66,12 @@ namespace HIS.CLI.View
 		private IOrderedEnumerable<KeyValuePair<Doctor, double>> GetDoctorTotalAverageRatingsSorted()
 		{
 			// for each doctor [ for each poll of that doctor [ reduce to ratings and find average rating for that poll ] find the average rating of all polls for that doctor ] sort by rating
-			return GetAppointmentPollsByDoctor().Select(kv => new KeyValuePair<Doctor, double>(kv.Key, PollHelpers.ReduceToRatings(kv.Value).Select(kvp => kvp.Value.Average()).ToList().Average())).OrderByDescending(kv => kv.Value);
+			return _appointmentPollService.GetAppointmentPollsByDoctor().Select(kv => new KeyValuePair<Doctor, double>(kv.Key, PollHelpers.ReduceToRatings(kv.Value).Select(kvp => kvp.Value.Average()).ToList().Average())).OrderByDescending(kv => kv.Value);
 		}
 
 		private void PrintDoctorRatings()
 		{
-			var doctorPolls = GetAppointmentPollsByDoctor();
+			var doctorPolls = _appointmentPollService.GetAppointmentPollsByDoctor();
 			foreach (var doctorPollsPair in doctorPolls)
 			{
 				var ratingsForThisDoctor = PollHelpers.ReduceToRatings(doctorPollsPair.Value);
@@ -92,27 +92,12 @@ namespace HIS.CLI.View
 			}
 		}
 
-		private Dictionary<Doctor, List<AppointmentPoll>> GetAppointmentPollsByDoctor()
-		{
-			var doctorPolls = new Dictionary<Doctor, List<AppointmentPoll>>();
-			foreach (var poll in _appointmentPollService.GetAll())
-			{
-				Doctor doctor = poll.Appointment.Doctor;
-
-				if (!doctorPolls.ContainsKey(doctor))
-					doctorPolls[doctor] = new List<AppointmentPoll>();
-				doctorPolls[doctor].Add(poll);
-			}
-
-			return doctorPolls;
-		}
-
-		private void ViewHospitalPoll()
+		private void PrintSingleHospitalPoll()
 		{
 			Print(EasyInput<HospitalPoll>.Select(_hospitalPollService.GetAll(), poll => poll.Pollee.ToString() + ": " + poll.Comment, _cancel).ToString());
 		}
 
-		private void PrintAllComments()
+		private void PrintAllHospitalComments()
 		{
 			foreach (var poll in _hospitalPollService.GetAll())
 			{
@@ -127,7 +112,5 @@ namespace HIS.CLI.View
 				Print($"{kvp.Key}: {kvp.Value.Average()} ({kvp.Value.Count()} ratings)");
 			}
 		}
-
-		
 	}
 }
