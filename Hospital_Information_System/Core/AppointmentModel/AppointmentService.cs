@@ -1,11 +1,10 @@
-﻿using HIS.Core.AppointmentModel;
-using HIS.Core.AppointmentModel.Util;
+﻿using HIS.Core.AppointmentModel.Util;
 using HIS.Core.PersonModel.DoctorModel;
 using HIS.Core.ModificationRequestModel.DeleteRequestModel;
 using HIS.Core.ModificationRequestModel.UpdateRequestModel;
 using HIS.Core.PersonModel.PatientModel;
 using HIS.Core.PersonModel.UserAccountModel;
-using HIS.Core.Util;
+using HIS.Core.PersonModel.PatientModel.MedicalRecordModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,13 +17,15 @@ namespace HIS.Core.AppointmentModel
         private readonly IUserAccountService _userAccountService;
         private readonly IDeleteRequestService _deleteRequestService;
         private readonly IUpdateRequestService _updateRequestService;
+        private readonly IMedicalRecordService _medicalRecordService;
 
-        public AppointmentService(IAppointmentRepository repo, IUserAccountService userAccountService, IDeleteRequestService deleteRequestService, IUpdateRequestService updateRequestService)
+        public AppointmentService(IAppointmentRepository repo, IUserAccountService userAccountService, IDeleteRequestService deleteRequestService, IUpdateRequestService updateRequestService, IMedicalRecordService medicalRecordService)
         {
             _repo = repo;
             _userAccountService = userAccountService;
             _deleteRequestService = deleteRequestService;
             _updateRequestService = updateRequestService;
+            _medicalRecordService = medicalRecordService;
         }
 
         public IEnumerable<Appointment> GetAll()
@@ -49,17 +50,15 @@ namespace HIS.Core.AppointmentModel
 
         public void Add(Appointment appointment, UserAccount user)
         {
-            // TODO: Implement.
             _userAccountService.AddCreatedAppointmentTimestamp(user, DateTime.Now);
-            //MedicalRecord patientsRecord = MedicalRecordController.GetPatientsMedicalRecord(appointment.Patient);
+            MedicalRecord patientsRecord = _medicalRecordService.GetPatientsMedicalRecord(appointment.Patient);
             appointment.Anamnesis = "";
-            //patientsRecord.Examinations.Add(appointment);
+            patientsRecord.Examinations.Add(appointment);
             _repo.Add(appointment);
         }
 
         public void Update(Appointment appointment, Appointment updatedAppointment, IEnumerable<AppointmentProperty> propertiesToUpdate, UserAccount user)
         {
-            // TODO: Implement.
             _userAccountService.AddModifiedAppointmentTimestamp(user, DateTime.Now);
             if (MustRequestModification(appointment, user))
             {
@@ -76,7 +75,6 @@ namespace HIS.Core.AppointmentModel
 
         public void Remove(Appointment appointment, UserAccount user)
         {
-            // TODO: Implement.
             _userAccountService.AddModifiedAppointmentTimestamp(user, DateTime.Now);
             if (MustRequestModification(appointment, user))
             {
@@ -85,8 +83,8 @@ namespace HIS.Core.AppointmentModel
             else
             {
                 _repo.Remove(appointment);
-                //MedicalRecord patientsRecord = MedicalRecordController.GetPatientsMedicalRecord(appointment.Patient);
-                //patientsRecord.Examinations.Remove(appointment);
+                MedicalRecord patientsRecord = _medicalRecordService.GetPatientsMedicalRecord(appointment.Patient);
+                patientsRecord.Examinations.Remove(appointment);
             }
         }
 
