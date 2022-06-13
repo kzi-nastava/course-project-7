@@ -26,7 +26,7 @@ namespace HIS.CLI.View
             _pollView = pollView;
         }
 
-        internal void CreatePoll()
+        internal void CmdCreate()
         {
             try
             {

@@ -94,7 +94,7 @@ namespace HIS.CLI.View
             _service.Add(appointment, _user);
         }
 
-        internal void CreateAppointment()
+        internal void CmdCreate()
         {
             try
             {
@@ -107,7 +107,7 @@ namespace HIS.CLI.View
             }
         }
 
-        internal void ReadAppointments()
+        internal void CmdRead()
         {
             IEnumerable<Appointment> allAppointments = new List<Appointment>();
             if (_user.Type == UserAccount.AccountType.PATIENT)
@@ -126,7 +126,7 @@ namespace HIS.CLI.View
             }
         }
 
-        internal void UpdateAppointment()
+        internal void CmdUpdate()
         {
             try
             {
@@ -143,7 +143,7 @@ namespace HIS.CLI.View
             }
         }
 
-        internal void DeleteAppointment()
+        internal void CmdDelete()
         {
             try
             {
@@ -294,7 +294,7 @@ namespace HIS.CLI.View
                 _cancel);
         }
 
-        internal void CreateRecommendedAppointment()
+        internal void CmdCreateRecommended()
         {
             try
             {

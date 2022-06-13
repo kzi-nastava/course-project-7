@@ -58,7 +58,7 @@ namespace HIS.CLI.View
             _patientService = patientService;
         }
 
-        internal void Search()
+        internal void CmdSearch()
         {
             if (_user.Type != UserAccount.AccountType.PATIENT)
             {
@@ -86,7 +86,7 @@ namespace HIS.CLI.View
             }
         }
 
-        internal void ChangeMinutesBeforeNotification()
+        internal void CmdChangeMinutesBeforeNotification()
         {
             if (_user.Type != UserAccount.AccountType.PATIENT)
             {

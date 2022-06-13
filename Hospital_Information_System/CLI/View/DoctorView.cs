@@ -27,7 +27,7 @@ namespace HIS.CLI.View
             _appointmentView = appointmentView;
         }
 
-        internal void Search()
+        internal void CmdSearch()
         {
             IEnumerable<Doctor> doctors = SearchImpl();
             if (doctors == null)
@@ -41,7 +41,7 @@ namespace HIS.CLI.View
             }
         }
 
-        internal void AppointFromSearch()
+        internal void CmdAppointFromSearch()
         {
             if (_user.Type != UserAccount.AccountType.PATIENT)
             {
