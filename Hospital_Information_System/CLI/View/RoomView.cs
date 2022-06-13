@@ -1,4 +1,5 @@
 ﻿using HIS.Core;
+using HIS.Core.PersonModel.UserAccountModel;
 using HIS.Core.RoomModel;
 using HIS.Core.Util;
 using System;
@@ -20,7 +21,7 @@ namespace HIS.CLI.View
 		private readonly IEnumerable<RoomType> _types;
 		private readonly IEnumerable<RoomProperty> _modifiableProperties;
 
-		internal RoomView(IRoomService roomService)
+		internal RoomView(IRoomService roomService, UserAccount user) : base(user)
 		{
 			_service = roomService;
 			_types = Utility.GetEnumValues<RoomType>();

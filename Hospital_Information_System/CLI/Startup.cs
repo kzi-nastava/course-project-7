@@ -39,12 +39,12 @@ namespace HIS.CLI
 			IMedicationService medicationService = new MedicationService(medicationRepo);
 			IMedicationRequestService medicationRequestService = new MedicationRequestService(medicationRequestRepo);
 
-			RoomView roomView = new RoomView(roomService);
-			EquipmentView equipmentView = new EquipmentView(equipmentService);
-			EquipmentRelocationView equipmentRelocationView = new EquipmentRelocationView(equipmentRelocationService, roomService);
-			RenovationView renovationView = new RenovationView(renovationService, roomService, roomAvailabilityService, roomView);
-			IngredientView ingredientView = new IngredientView(ingredientService, medicationService, medicationRequestService);
-			MedicationView medicationView = new MedicationView(medicationService, ingredientService, medicationRequestService);
+			RoomView roomView = new RoomView(roomService, null);
+			EquipmentView equipmentView = new EquipmentView(equipmentService, null);
+			EquipmentRelocationView equipmentRelocationView = new EquipmentRelocationView(equipmentRelocationService, roomService, null);
+			RenovationView renovationView = new RenovationView(renovationService, roomService, roomAvailabilityService, roomView, null);
+			IngredientView ingredientView = new IngredientView(ingredientService, medicationService, medicationRequestService, null);
+			MedicationView medicationView = new MedicationView(medicationService, ingredientService, medicationRequestService, null);
 
 			try
 			{

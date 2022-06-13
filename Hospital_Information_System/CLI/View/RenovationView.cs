@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using HIS.Core.EquipmentModel;
+using HIS.Core.PersonModel.UserAccountModel;
 using HIS.Core.RoomModel;
 using HIS.Core.RoomModel.RenovationModel;
 using HIS.Core.RoomModel.RoomAvailability;
@@ -29,7 +30,7 @@ namespace HIS.CLI.View
 		private readonly IRoomAvailabilityService _roomAvailabilityService;
 		private readonly RoomView _roomView;
 
-		internal RenovationView(IRenovationService service, IRoomService roomService, IRoomAvailabilityService roomAvailabilityService, RoomView roomView)
+		internal RenovationView(IRenovationService service, IRoomService roomService, IRoomAvailabilityService roomAvailabilityService, RoomView roomView, UserAccount user) : base(user)
 		{
 			_service = service;
 			_roomService = roomService;
