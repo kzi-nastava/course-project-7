@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using HIS.Core.RoomModel;
 using HIS.Core.RoomModel.RoomAvailability;
+using HIS.Core.PersonModel.DoctorModel.DoctorAvailability;
+using HIS.Core.PersonModel.PatientModel.PatientAvailability;
 
 namespace HIS.Core.AppointmentModel
 {
@@ -21,9 +23,12 @@ namespace HIS.Core.AppointmentModel
         private readonly IUpdateRequestService _updateRequestService;
         private readonly IMedicalRecordService _medicalRecordService;
         private readonly IRoomAvailabilityService _roomAvailabilityService;
+        private readonly IDoctorAvailabilityService _doctorAvailabilityService;
+        private readonly IPatientAvailabilityService _patientAvailabilityService;
 
         public AppointmentService(IAppointmentRepository repo, IUserAccountService userAccountService, IDeleteRequestService deleteRequestService, IUpdateRequestService updateRequestService,
-            IMedicalRecordService medicalRecordService, IRoomAvailabilityService roomAvailabilityService)
+            IMedicalRecordService medicalRecordService, IRoomAvailabilityService roomAvailabilityService, IDoctorAvailabilityService doctorAvailabilityService,
+            IPatientAvailabilityService patientAvailabilityService)
         {
             _repo = repo;
             _userAccountService = userAccountService;
@@ -31,6 +36,8 @@ namespace HIS.Core.AppointmentModel
             _updateRequestService = updateRequestService;
             _medicalRecordService = medicalRecordService;
             _roomAvailabilityService = roomAvailabilityService;
+            _doctorAvailabilityService = doctorAvailabilityService;
+            _patientAvailabilityService = patientAvailabilityService;
         }
 
         public IEnumerable<Appointment> GetAll()
@@ -123,28 +130,27 @@ namespace HIS.Core.AppointmentModel
 
         public Appointment FindRecommendedAppointment(AppointmentSearchBundle sb)
         {
-            // TODO: Implement.
-            //for (DateTime currDt = DateTime.Today; currDt < sb.By.Date; currDt = currDt.AddDays(1))
-            //{
-            //    for (TimeSpan currTs = sb.Start; currTs <= sb.End; currTs = currTs.Add(TimeSpan.FromMinutes(1)))
-            //    {
-            //        DateTime scheduledFor = currDt.Add(currTs);
-            //        if (scheduledFor < DateTime.Now) continue;
+            for (DateTime currDt = DateTime.Today; currDt < sb.By.Date; currDt = currDt.AddDays(1))
+            {
+                for (TimeSpan currTs = sb.Start; currTs <= sb.End; currTs = currTs.Add(TimeSpan.FromMinutes(1)))
+                {
+                    DateTime scheduledFor = currDt.Add(currTs);
+                    if (scheduledFor < DateTime.Now) continue;
 
-            //        Doctor doctor = (sb.Doctor != null) ?
-            //            (DoctorController.IsAvailable(sb.Doctor, scheduledFor) ? sb.Doctor : null) : DoctorController.FindFirstAvailableDoctor(scheduledFor);
-            //        if (doctor == null) continue;
+                    Doctor doctor = (sb.Doctor != null) ?
+                        (_doctorAvailabilityService.IsAvailable(sb.Doctor, scheduledFor) ? sb.Doctor : null) : _doctorAvailabilityService.FindFirstAvailableDoctor(scheduledFor);
+                    if (doctor == null) continue;
 
-            //        Patient patient = (sb.Patient != null) ?
-            //            (PatientController.IsAvailable(sb.Patient, scheduledFor) ? sb.Patient : null) : PatientController.FindFirstAvailablePatient(scheduledFor);
-            //        if (patient == null) continue;
+                    Patient patient = (sb.Patient != null) ?
+                        (_patientAvailabilityService.IsAvailable(sb.Patient, scheduledFor) ? sb.Patient : null) : _patientAvailabilityService.FindFirstAvailablePatient(scheduledFor);
+                    if (patient == null) continue;
 
-            //        Room room = _roomAvailabilityService.FindFirstAvailableExaminationRoom(scheduledFor);
-            //        if (room == null) continue;
+                    Room room = _roomAvailabilityService.FindFirstAvailableExaminationRoom(scheduledFor);
+                    if (room == null) continue;
 
-            //        return new Appointment(doctor, patient, room, scheduledFor);
-            //    }
-            //}
+                    return new Appointment(doctor, patient, room, scheduledFor);
+                }
+            }
             return null;
         }
     }
