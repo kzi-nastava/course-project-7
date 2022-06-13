@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using HIS.Core.PersonModel.PatientModel.MedicalRecordModel;
 using HIS.Core.PersonModel.UserAccountModel.Util;
 
 namespace HIS.Core.PersonModel.UserAccountModel
@@ -7,10 +8,12 @@ namespace HIS.Core.PersonModel.UserAccountModel
 	public class UserAccountService : IUserAccountService
 	{
 		private readonly IUserAccountRepository _repo;
+        private readonly IMedicalRecordService _medicalRecordService;
 
-		public UserAccountService(IUserAccountRepository repo)
+		public UserAccountService(IUserAccountRepository repo, IMedicalRecordService medicalRecordService)
 		{
 			_repo = repo;
+            _medicalRecordService = medicalRecordService;
 		}
 
         public IEnumerable<UserAccount> GetAll()
@@ -25,8 +28,7 @@ namespace HIS.Core.PersonModel.UserAccountModel
                 if (ua.Username == username && ua.Password == password)
                 {
                     if (ua.Blocked != UserAccount.BlockedBy.NONE) throw new InvalidLoginAttemptException("Account is blocked");
-                    // TODO: Implement.
-                    //MedicalRecordController.AddNotifsIfNecessary(ua);
+                    _medicalRecordService.AddNotifsIfNecessary(ua);
                     return ua;
                 }
             }

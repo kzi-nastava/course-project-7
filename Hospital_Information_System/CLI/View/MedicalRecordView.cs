@@ -5,6 +5,7 @@ using HIS.Core.PersonModel.PatientModel.MedicalRecordModel;
 using HIS.Core.PersonModel.UserAccountModel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace HIS.CLI.View
@@ -83,6 +84,27 @@ namespace HIS.CLI.View
             {
                 Console.WriteLine(match.AnamnesisFocusedToString());
             }
+        }
+
+        internal void ChangeMinutesBeforeNotification()
+        {
+            if (_user.Type != UserAccount.AccountType.PATIENT)
+            {
+                return;
+            }
+
+            Patient patient = _patientService.GetPatientFromPerson(_user.Person);
+            Debug.Assert(patient != null);
+            MedicalRecord record = _service.GetPatientsMedicalRecord(patient);
+            Debug.Assert(record != null);
+
+            Console.WriteLine(hintGetMinutes);
+            int newMinutes = EasyInput<int>.Get(
+                new List<Func<int, bool>> { m => m > 0 },
+                new string[] { errMinutesMustBePositiveNumber, },
+                _cancel);
+
+            record.MinutesBeforeNotification = newMinutes;
         }
     }
 }

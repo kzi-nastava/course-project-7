@@ -61,14 +61,14 @@ namespace HIS.CLI
 			IIngredientService ingredientService = new IngredientService(ingredientRepo);
 			IMedicationService medicationService = new MedicationService(medicationRepo);
 			IMedicationRequestService medicationRequestService = new MedicationRequestService(medicationRequestRepo);
-			IUserAccountService userAccountService = new UserAccountService(userAccountRepo);
-			IDeleteRequestService deleteRequestService = new DeleteRequestService(deleteRequestRepo);
-			IUpdateRequestService updateRequestService = new UpdateRequestService(updateRequestRepo);
-			IMedicalRecordService medicalRecordService = new MedicalRecordService(medicalRecordRepo);
-			IDoctorService doctorService = new DoctorService(doctorRepo);
-			IDoctorAvailabilityService doctorAvailabilityService = new DoctorAvailabilityService(doctorService, appointmentService);
 			IPatientService patientService = new PatientService(patientRepo); ;
 			IPatientAvailabilityService patientAvailabilityService = new PatientAvailabilityService(patientService, appointmentService);
+			IMedicalRecordService medicalRecordService = new MedicalRecordService(medicalRecordRepo, patientService);
+			IUserAccountService userAccountService = new UserAccountService(userAccountRepo, medicalRecordService);
+			IDeleteRequestService deleteRequestService = new DeleteRequestService(deleteRequestRepo);
+			IUpdateRequestService updateRequestService = new UpdateRequestService(updateRequestRepo);
+			IDoctorService doctorService = new DoctorService(doctorRepo);
+			IDoctorAvailabilityService doctorAvailabilityService = new DoctorAvailabilityService(doctorService, appointmentService);
 
 			// TODO: This can be avoided.
 			// Now we have everything we need to fully create appointmentService.
