@@ -37,12 +37,12 @@ namespace HIS.CLI.View
 
                 Patient patient = _patientService.GetPatientFromPerson(_user.Person);
 
-                Console.WriteLine(hintSelectAppointment);
+                Hint(hintSelectAppointment);
                 Appointment appointment = EasyInput<Appointment>.Select(_appointmentService.GetPollable(patient), _cancel);
 
                 Dictionary<string, int> questionnaire = _pollView.GenerateQuestionnaire(AppointmentPollHelpers.Questions);
 
-                Console.WriteLine(hintComment);
+                Hint(hintComment);
                 string comment = EasyInput<string>.Get(_cancel);
 
                 var poll = new AppointmentPoll(questionnaire, comment, appointment);
@@ -51,7 +51,7 @@ namespace HIS.CLI.View
             }
             catch (NothingToSelectException e)
             {
-                Console.WriteLine(e.Message);
+                Error(e.Message);
             }
         }
     }

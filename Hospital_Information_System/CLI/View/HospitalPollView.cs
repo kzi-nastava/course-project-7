@@ -31,7 +31,7 @@ namespace HIS.CLI.View
 
             Dictionary<string, int> questionnaire = _pollView.GenerateQuestionnaire(HospitalPollHelpers.Questions);
 
-            Console.WriteLine(hintComment);
+            Hint(hintComment);
             string comment = EasyInput<string>.Get(_cancel);
 
             Patient patient = _patientService.GetPatientFromPerson(_user.Person);

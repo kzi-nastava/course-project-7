@@ -18,7 +18,7 @@ namespace HIS.CLI.View
             var questionnaire = new Dictionary<string, int>();
             foreach (string question in questions)
             {
-                Console.WriteLine(question);
+                Hint(question);
                 int rating = EasyInput<int>.Get(
                     new List<Func<int, bool>> { r => Poll.IsValidRating(r) },
                     new string[] { Poll.ErrInvalidRating },

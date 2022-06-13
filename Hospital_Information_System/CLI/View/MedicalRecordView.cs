@@ -65,7 +65,7 @@ namespace HIS.CLI.View
                 return;
             }
 
-            Console.WriteLine(hintSearchQuery);
+            Hint(hintSearchQuery);
             string query = Console.ReadLine();
 
             var sortBy = new Dictionary<string, AppointmentComparer>()
@@ -74,7 +74,7 @@ namespace HIS.CLI.View
                 ["Sort by doctor"] = new AppointmentCompareByDoctor(),
                 ["Sort by doctor specialty"] = new AppointmentCompareByDoctorSpecialty(),
             };
-            Console.WriteLine(hintSearchSortBy);
+            Hint(hintSearchSortBy);
             var sortChoice = EasyInput<string>.Select(sortBy.Keys.ToList(), _cancel);
 
             Patient patient = _patientService.GetPatientFromPerson(_user.Person);
@@ -82,7 +82,7 @@ namespace HIS.CLI.View
 
             foreach (Appointment match in matches)
             {
-                Console.WriteLine(match.AnamnesisFocusedToString());
+                Print(match.AnamnesisFocusedToString());
             }
         }
 
@@ -98,7 +98,7 @@ namespace HIS.CLI.View
             MedicalRecord record = _service.GetPatientsMedicalRecord(patient);
             Debug.Assert(record != null);
 
-            Console.WriteLine(hintGetMinutes);
+            Hint(hintGetMinutes);
             int newMinutes = EasyInput<int>.Get(
                 new List<Func<int, bool>> { m => m > 0 },
                 new string[] { errMinutesMustBePositiveNumber, },

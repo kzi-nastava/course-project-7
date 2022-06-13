@@ -32,12 +32,12 @@ namespace HIS.CLI.View
             IEnumerable<Doctor> doctors = SearchImpl();
             if (doctors == null)
             {
-                Console.WriteLine(hintNoDoctorMatches);
+                Hint(hintNoDoctorMatches);
                 return;
             }
             foreach (Doctor d in doctors)
             {
-                Console.WriteLine(_service.VerboseToString(d));
+                Print(_service.VerboseToString(d));
             }
         }
 
@@ -51,7 +51,7 @@ namespace HIS.CLI.View
             try
             {
                 IEnumerable<Doctor> doctors = SearchImpl();
-                Console.WriteLine(hintSelectDoctor);
+                Hint(hintSelectDoctor);
                 Doctor doctor = EasyInput<Doctor>.Select(doctors, d => _service.VerboseToString(d), _cancel);
 
                 var refAppointment = new Appointment()
@@ -63,7 +63,7 @@ namespace HIS.CLI.View
             }
             catch (NothingToSelectException e)
             {
-                Console.WriteLine(e.Message);
+                Error(e.Message);
             }
         }
 
@@ -75,10 +75,10 @@ namespace HIS.CLI.View
                 ["Match by last name"] = _service.MatchByLastName,
                 ["Match by specialty"] = _service.MatchBySpecialty,
             };
-            Console.WriteLine(hintMatchBy);
+            Hint(hintMatchBy);
             var matchChoice = EasyInput<string>.Select(matchBy.Keys.ToList(), _cancel);
 
-            Console.WriteLine(hintSearchQuery);
+            Hint(hintSearchQuery);
             string query = Console.ReadLine();
 
             var sortBy = new Dictionary<string, DoctorComparer>()
@@ -88,7 +88,7 @@ namespace HIS.CLI.View
                 ["Sort by specialty"] = new DoctorCompareBySpecialty(),
                 ["Sort by rating"] = new DoctorCompareByRatingDesc(_service),
             };
-            Console.WriteLine(hintSortBy);
+            Hint(hintSortBy);
             var sortChoice = EasyInput<string>.Select(sortBy.Keys.ToList(), _cancel);
 
             return matchBy[matchChoice](query, sortBy[sortChoice]);

@@ -99,11 +99,11 @@ namespace HIS.CLI.View
             try
             {
                 CreateWithPredefinedProperties(new List<AppointmentProperty>(), new Appointment());
-                Console.WriteLine(hintAppointmentScheduled);
+                Hint(hintAppointmentScheduled);
             }
             catch (NothingToSelectException e)
             {
-                Console.WriteLine(e.Message);
+                Error(e.Message);
             }
         }
 
@@ -122,7 +122,7 @@ namespace HIS.CLI.View
 
             foreach (var app in allAppointments)
             {
-                Console.WriteLine(app.ToString());
+                Print(app.ToString());
             }
         }
 
@@ -135,11 +135,11 @@ namespace HIS.CLI.View
                 var updatedAppointment = new Appointment();
                 InputAppointment(propertiesToUpdate, updatedAppointment, appointment);
                 _service.Update(appointment, updatedAppointment, propertiesToUpdate, _user);
-                Console.WriteLine(hintAppointmentUpdated);
+                Hint(hintAppointmentUpdated);
             }
             catch (NothingToSelectException e)
             {
-                Console.WriteLine(e.Message);
+                Error(e.Message);
             }
         }
 
@@ -151,18 +151,18 @@ namespace HIS.CLI.View
                 foreach (Appointment appointment in appointmentsToDelete)
                 {
                     _service.Remove(appointment, _user);
-                    Console.WriteLine(hintAppointmentDeleted);
+                    Hint(hintAppointmentDeleted);
                 }
             }
             catch (NothingToSelectException e)
             {
-                Console.WriteLine(e.Message);
+                Error(e.Message);
             }
         }
 
         private IEnumerable<AppointmentProperty> SelectModifiableProperties()
         {
-            Console.WriteLine(hintSelectProperties);
+            Hint(hintSelectProperties);
             return EasyInput<AppointmentProperty>.SelectMultiple(
                 AppointmentPropertyHelpers.GetModifiableProperties(_user).ToList(),
                 ap => ap.ToString(),
@@ -172,14 +172,14 @@ namespace HIS.CLI.View
 
         private Appointment SelectModifiableAppointment()
         {
-            Console.WriteLine(hintSelectAppointment);
+            Hint(hintSelectAppointment);
             return EasyInput<Appointment>.Select(
                 _service.GetModifiable(_user), _cancel);
         }
 
         private List<Appointment> SelectModifiableAppointments()
         {
-            Console.WriteLine(hintSelectAppointments);
+            Hint(hintSelectAppointments);
             return EasyInput<Appointment>.SelectMultiple(
                 _service.GetModifiable(_user).ToList(), _cancel).ToList();
         }
@@ -215,7 +215,7 @@ namespace HIS.CLI.View
             }
             else
             {
-                Console.WriteLine(hintSelectDoctor);
+                Hint(hintSelectDoctor);
                 return EasyInput<Doctor>.Select(_doctorAvailabilityService.GetAvailable(referenceAppointment), _cancel);
             }
         }
@@ -229,7 +229,7 @@ namespace HIS.CLI.View
             }
             else
             {
-                Console.WriteLine(hintSelectPatient);
+                Hint(hintSelectPatient);
                 return EasyInput<Patient>.Select(_patientAvailabilityService.GetAvailable(referenceAppointment), _cancel);
             }
         }
@@ -243,7 +243,7 @@ namespace HIS.CLI.View
             }
             else
             {
-                Console.WriteLine(hintSelectExaminationRoom);
+                Hint(hintSelectExaminationRoom);
                 return EasyInput<Room>.Select(_roomAvailabilityService.GetAvailableExaminationRooms(referenceAppointment), _cancel);
             }
         }
@@ -275,7 +275,7 @@ namespace HIS.CLI.View
                 roomReferenceAppointment = null;
             }
 
-            Console.WriteLine(hintGetScheduledFor);
+            Hint(hintGetScheduledFor);
             return EasyInput<DateTime>.Get(
                 new List<Func<DateTime, bool>>()
                 {
@@ -302,8 +302,8 @@ namespace HIS.CLI.View
                 AppointmentProperty priority = InputPrioritizedProperty();
 
                 Appointment appointment = GetRecommendedAppointment(sb, priority);
-                Console.WriteLine(appointment.ToString());
-                Console.WriteLine(askCreateAppointment);
+                Print(appointment.ToString());
+                Hint(askCreateAppointment);
                 if (EasyInput<bool>.YesNo(_cancel))
                 {
                     _service.Add(appointment, _user);
@@ -311,7 +311,7 @@ namespace HIS.CLI.View
             }
             catch (NothingToSelectException e)
             {
-                Console.WriteLine(e.Message);
+                Error(e.Message);
             }
         }
 
@@ -337,7 +337,7 @@ namespace HIS.CLI.View
         }
         private Appointment GetPrioritizedAppointment(AppointmentSearchBundle sb, AppointmentProperty priority)
         {
-            Console.WriteLine(hintOptimalSearchFailed);
+            Hint(hintOptimalSearchFailed);
 
             AppointmentSearchBundle sbPrioritized;
             if (priority == AppointmentProperty.DOCTOR)
@@ -353,7 +353,7 @@ namespace HIS.CLI.View
 
         private Appointment GetDesperateAppointment(AppointmentSearchBundle sb)
         {
-            Console.WriteLine(hintPrioritySearchFailed);
+            Hint(hintPrioritySearchFailed);
 
             var desperateAppointments = new List<Appointment>();
             var desperateAppointment = new Appointment();
@@ -364,9 +364,9 @@ namespace HIS.CLI.View
                 if (desperateAppointment != null)
                 {
                     Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine(hint);
+                    Print(hint);
                     Console.ForegroundColor = ConsoleColor.Gray;
-                    Console.WriteLine(desperateAppointment.ToString());
+                    Print(desperateAppointment.ToString());
                     desperateAppointments.Add(desperateAppointment);
                 }
             }
@@ -386,13 +386,13 @@ namespace HIS.CLI.View
             // Closest overall.
             processDesperate(AppointmentSearchBundle.RespectOnlyPatient, hintDesperateSearchClosestOverall);
 
-            Console.WriteLine(hintSelectAppointment);
+            Hint(hintSelectAppointment);
             return EasyInput<Appointment>.Select(desperateAppointments, _cancel);
         }
 
         private TimeSpan InputStartOfRange()
         {
-            Console.WriteLine(hintGetStartOfRange);
+            Hint(hintGetStartOfRange);
             return EasyInput<TimeSpan>.Get(
                 new List<Func<TimeSpan, bool>>()
                 {
@@ -410,7 +410,7 @@ namespace HIS.CLI.View
 
         private TimeSpan InputEndOfRange(TimeSpan start)
         {
-            Console.WriteLine(hintGetEndOfRange);
+            Hint(hintGetEndOfRange);
             return EasyInput<TimeSpan>.Get(
                 new List<Func<TimeSpan, bool>>()
                 {
@@ -430,7 +430,7 @@ namespace HIS.CLI.View
 
         private DateTime InputLatestDate()
         {
-            Console.WriteLine(hintGetLatestDesiredDate);
+            Hint(hintGetLatestDesiredDate);
             return EasyInput<DateTime>.Get(
                 new List<Func<DateTime, bool>>()
                 {
@@ -445,7 +445,7 @@ namespace HIS.CLI.View
 
         private AppointmentProperty InputPrioritizedProperty()
         {
-            Console.WriteLine(hintGetPrioritizedProperty);
+            Hint(hintGetPrioritizedProperty);
             return EasyInput<AppointmentProperty>.Select(AppointmentPropertyHelpers.GetPrioritizableProperties(), _cancel);
         }
     }
