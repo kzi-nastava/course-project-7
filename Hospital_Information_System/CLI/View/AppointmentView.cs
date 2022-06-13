@@ -1,4 +1,5 @@
 ﻿using HIS.Core.AppointmentModel;
+using HIS.Core.AppointmentModel.AppointmentAvailability;
 using HIS.Core.AppointmentModel.Util;
 using HIS.Core.PersonModel.DoctorModel;
 using HIS.Core.PersonModel.DoctorModel.DoctorAvailability;
@@ -17,6 +18,7 @@ namespace HIS.CLI.View
     internal class AppointmentView : View
 	{
 		private readonly IAppointmentService _service;
+        private readonly IAppointmentAvailabilityService _appointmentAvailabilityService;
         private readonly IDoctorService _doctorService;
         private readonly IDoctorAvailabilityService _doctorAvailabilityService;
         private readonly IPatientService _patientService;
@@ -74,10 +76,11 @@ namespace HIS.CLI.View
 
         private const string hintInputAnamnesis = "Input anamnesis (newLine to finish)";
 
-        public AppointmentView(IAppointmentService service, IDoctorService doctorService, IDoctorAvailabilityService doctorAvailabilityService, IPatientService patientService,
+        public AppointmentView(IAppointmentService service, IAppointmentAvailabilityService appointmentAvailabilityService, IDoctorService doctorService, IDoctorAvailabilityService doctorAvailabilityService, IPatientService patientService,
             IPatientAvailabilityService patientAvailabilityService, IRoomService roomService, IRoomAvailabilityService roomAvailabilityService, UserAccount user) : base(user)
 		{
 			_service = service;
+            _appointmentAvailabilityService = appointmentAvailabilityService;
             _doctorService = doctorService;
             _doctorAvailabilityService = doctorAvailabilityService;
             _patientService = patientService;
@@ -333,7 +336,7 @@ namespace HIS.CLI.View
 
         private Appointment GetOptimalAppointment(AppointmentSearchBundle sb)
         {
-            return _service.FindRecommendedAppointment(sb);
+            return _appointmentAvailabilityService.FindRecommendedAppointment(sb);
         }
         private Appointment GetPrioritizedAppointment(AppointmentSearchBundle sb, AppointmentProperty priority)
         {
@@ -348,7 +351,7 @@ namespace HIS.CLI.View
             {
                 sbPrioritized = AppointmentSearchBundle.IgnoreDoctor(sb);
             }
-            return _service.FindRecommendedAppointment(sbPrioritized);
+            return _appointmentAvailabilityService.FindRecommendedAppointment(sbPrioritized);
         }
 
         private Appointment GetDesperateAppointment(AppointmentSearchBundle sb)
@@ -360,7 +363,7 @@ namespace HIS.CLI.View
 
             void processDesperate(Func<AppointmentSearchBundle, AppointmentSearchBundle> newSb, string hint)
             {
-                desperateAppointment = _service.FindRecommendedAppointment(newSb(sb));
+                desperateAppointment = _appointmentAvailabilityService.FindRecommendedAppointment(newSb(sb));
                 if (desperateAppointment != null)
                 {
                     Console.ForegroundColor = ConsoleColor.Cyan;

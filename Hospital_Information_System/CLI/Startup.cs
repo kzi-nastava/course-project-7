@@ -25,6 +25,7 @@ using HIS.Core.MedicationModel.PrescriptionModel;
 using HIS.Core.PersonModel.UserAccountModel.Util;
 using HIS.Core.PollModel.HospitalPollModel;
 using HIS.Core.PollModel.AppointmentPollModel;
+using HIS.Core.AppointmentModel.AppointmentAvailability;
 
 namespace HIS.CLI
 {
@@ -59,14 +60,10 @@ namespace HIS.CLI
 			IEquipmentService equipmentService = new EquipmentService(equipmentRepo, roomService);
 			IEquipmentRelocationService equipmentRelocationService = new EquipmentRelocationService(relocationRepo, roomService, _tasks);
 			IRenovationService renovationService = new RenovationService(renovationRepo, _tasks, roomService);
-			// Forward declare.
-			IAppointmentService appointmentService = new AppointmentService();
-			IRoomAvailabilityService roomAvailabilityService = new RoomAvailabilityService(roomService, renovationService, appointmentService);
 			IIngredientService ingredientService = new IngredientService(ingredientRepo);
 			IMedicationService medicationService = new MedicationService(medicationRepo);
 			IMedicationRequestService medicationRequestService = new MedicationRequestService(medicationRequestRepo);
 			IPatientService patientService = new PatientService(patientRepo); ;
-			IPatientAvailabilityService patientAvailabilityService = new PatientAvailabilityService(patientService, appointmentService);
 			IMedicalRecordService medicalRecordService = new MedicalRecordService(medicalRecordRepo, patientService);
 			IUserAccountService userAccountService = new UserAccountService(userAccountRepo, medicalRecordService);
 			IDeleteRequestService deleteRequestService = new DeleteRequestService(deleteRequestRepo);
@@ -74,12 +71,11 @@ namespace HIS.CLI
 			IHospitalPollService hospitalPollService = new HospitalPollService(hospitalPollRepo);
 			IAppointmentPollService appointmentPollService = new AppointmentPollService(appointmentPollRepo);
 			IDoctorService doctorService = new DoctorService(doctorRepo, appointmentPollService);
+			IAppointmentService appointmentService = new AppointmentService(appointmentRepo, userAccountService, deleteRequestService, updateRequestService, medicalRecordService, appointmentPollService);
 			IDoctorAvailabilityService doctorAvailabilityService = new DoctorAvailabilityService(doctorService, appointmentService);
-
-			// TODO: This can be avoided.
-			// Now we have everything we need to fully create appointmentService.
-			appointmentService.Copy(new AppointmentService(appointmentRepo, userAccountService, deleteRequestService, updateRequestService,
-				medicalRecordService, roomAvailabilityService, doctorAvailabilityService, patientAvailabilityService, appointmentPollService));
+			IRoomAvailabilityService roomAvailabilityService = new RoomAvailabilityService(roomService, renovationService, appointmentService);
+			IPatientAvailabilityService patientAvailabilityService = new PatientAvailabilityService(patientService, appointmentService);
+			IAppointmentAvailabilityService appointmentAvailabilityService = new AppointmentAvailabilityService(roomAvailabilityService, doctorAvailabilityService, patientAvailabilityService);
 
 			// TODO: This is a temporary way of logging in.
 			UserAccount user = null;
@@ -96,7 +92,7 @@ namespace HIS.CLI
 			RenovationView renovationView = new RenovationView(renovationService, roomService, roomAvailabilityService, roomView, user);
 			IngredientView ingredientView = new IngredientView(ingredientService, medicationService, medicationRequestService, user);
 			MedicationView medicationView = new MedicationView(medicationService, ingredientService, medicationRequestService, user);
-			AppointmentView appointmentView = new AppointmentView(appointmentService, doctorService, doctorAvailabilityService,
+			AppointmentView appointmentView = new AppointmentView(appointmentService, appointmentAvailabilityService, doctorService, doctorAvailabilityService,
 				patientService, patientAvailabilityService, roomService, roomAvailabilityService, user);
 			MedicalRecordView medicalRecordView = new MedicalRecordView(medicalRecordService, patientService, user);
 			DoctorView doctorView = new DoctorView(doctorService, appointmentView, user);

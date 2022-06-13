@@ -9,7 +9,6 @@ namespace HIS.Core.AppointmentModel
 {
     public interface IAppointmentService
     {
-        void Copy(IAppointmentService other);
         IEnumerable<Appointment> GetAll();
         IEnumerable<Appointment> GetAll(Patient patient);
         IEnumerable<Appointment> GetAll(Doctor doctor);
@@ -22,6 +21,5 @@ namespace HIS.Core.AppointmentModel
         bool MustRequestModification(Appointment appointment, UserAccount user);
         bool AreColliding(DateTime schedule1, DateTime schedule2);
         void Copy(Appointment target, Appointment source, IEnumerable<AppointmentProperty> whichProperties);
-        Appointment FindRecommendedAppointment(AppointmentSearchBundle sb);
     }
 }

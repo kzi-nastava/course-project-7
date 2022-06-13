@@ -23,44 +23,16 @@ namespace HIS.Core.AppointmentModel
         private IDeleteRequestService _deleteRequestService;
         private IUpdateRequestService _updateRequestService;
         private IMedicalRecordService _medicalRecordService;
-        private IRoomAvailabilityService _roomAvailabilityService;
-        private IDoctorAvailabilityService _doctorAvailabilityService;
-        private IPatientAvailabilityService _patientAvailabilityService;
         private IAppointmentPollService _appointmentPollService;
 
-        // Used for forward declaration
-        public AppointmentService()
-        {
-
-        }
-
-        // Used for when we forward declare AppointmentService with the default constructor
-        public void Copy(IAppointmentService other)
-        {
-            AppointmentService _other = (AppointmentService)other;
-            _repo = _other._repo;
-            _userAccountService = _other._userAccountService;
-            _deleteRequestService = _other._deleteRequestService;
-            _updateRequestService = _other._updateRequestService;
-            _medicalRecordService = _other._medicalRecordService;
-            _roomAvailabilityService = _other._roomAvailabilityService;
-            _doctorAvailabilityService = _other._doctorAvailabilityService;
-            _patientAvailabilityService = _other._patientAvailabilityService;
-            _appointmentPollService = _other._appointmentPollService;
-        }
-
         public AppointmentService(IAppointmentRepository repo, IUserAccountService userAccountService, IDeleteRequestService deleteRequestService, IUpdateRequestService updateRequestService,
-            IMedicalRecordService medicalRecordService, IRoomAvailabilityService roomAvailabilityService, IDoctorAvailabilityService doctorAvailabilityService,
-            IPatientAvailabilityService patientAvailabilityService, IAppointmentPollService appointmentPollService)
+            IMedicalRecordService medicalRecordService, IAppointmentPollService appointmentPollService)
         {
             _repo = repo;
             _userAccountService = userAccountService;
             _deleteRequestService = deleteRequestService;
             _updateRequestService = updateRequestService;
             _medicalRecordService = medicalRecordService;
-            _roomAvailabilityService = roomAvailabilityService;
-            _doctorAvailabilityService = doctorAvailabilityService;
-            _patientAvailabilityService = patientAvailabilityService;
             _appointmentPollService = appointmentPollService;
         }
 
@@ -150,32 +122,6 @@ namespace HIS.Core.AppointmentModel
             if (whichProperties.Contains(AppointmentProperty.ROOM)) target.Room = source.Room;
             if (whichProperties.Contains(AppointmentProperty.SCHEDULED_FOR)) target.ScheduledFor = source.ScheduledFor;
             if (whichProperties.Contains(AppointmentProperty.ANAMNESIS)) target.Anamnesis = source.Anamnesis;
-        }
-
-        public Appointment FindRecommendedAppointment(AppointmentSearchBundle sb)
-        {
-            for (DateTime currDt = DateTime.Today; currDt < sb.By.Date; currDt = currDt.AddDays(1))
-            {
-                for (TimeSpan currTs = sb.Start; currTs <= sb.End; currTs = currTs.Add(TimeSpan.FromMinutes(1)))
-                {
-                    DateTime scheduledFor = currDt.Add(currTs);
-                    if (scheduledFor < DateTime.Now) continue;
-
-                    Doctor doctor = (sb.Doctor != null) ?
-                        (_doctorAvailabilityService.IsAvailable(sb.Doctor, scheduledFor) ? sb.Doctor : null) : _doctorAvailabilityService.FindFirstAvailableDoctor(scheduledFor);
-                    if (doctor == null) continue;
-
-                    Patient patient = (sb.Patient != null) ?
-                        (_patientAvailabilityService.IsAvailable(sb.Patient, scheduledFor) ? sb.Patient : null) : _patientAvailabilityService.FindFirstAvailablePatient(scheduledFor);
-                    if (patient == null) continue;
-
-                    Room room = _roomAvailabilityService.FindFirstAvailableExaminationRoom(scheduledFor);
-                    if (room == null) continue;
-
-                    return new Appointment(doctor, patient, room, scheduledFor);
-                }
-            }
-            return null;
         }
 
         public IEnumerable<Appointment> GetPast(Patient patient)
