@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using HIS.Core.EquipmentModel;
+﻿using HIS.Core.EquipmentModel;
 using HIS.Core.PersonModel.UserAccountModel;
 using HIS.Core.RoomModel;
 using HIS.Core.RoomModel.RenovationModel;
 using HIS.Core.RoomModel.RoomAvailability;
 using HIS.Core.Util;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace HIS.CLI.View
 {
@@ -152,7 +152,7 @@ namespace HIS.CLI.View
 		private void InputMerge(Renovation r)
 		{
 			var roomsOnSameFloor = _roomService.GetOtherModifiableOnSameFloor(r.Room);
-			Room room1 = EasyInput<Room>.Select(roomsOnSameFloor, _cancel);		
+			Room room1 = EasyInput<Room>.Select(roomsOnSameFloor, _cancel);
 			r.MergePairRoom = room1;
 		}
 	}

@@ -1,8 +1,6 @@
 ﻿using HIS.Core.PersonModel.DoctorModel;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace HIS.Core.PollModel.AppointmentPollModel
 {

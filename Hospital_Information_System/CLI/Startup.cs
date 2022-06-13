@@ -1,31 +1,31 @@
-﻿using System;
-using System.IO;
-using HIS.Core.Foundation;
-using HIS.Core.RoomModel;
-using HIS.Core.EquipmentModel;
-using HIS.CLI.View;
-using Newtonsoft.Json;
-using HIS.Core.EquipmentModel.EquipmentRelocationModel;
-using HIS.Core.RoomModel.RenovationModel;
-using HIS.Core.RoomModel.RoomAvailability;
-using HIS.Core.MedicationModel.IngredientModel;
-using HIS.Core.MedicationModel;
-using HIS.Core.MedicationModel.MedicationRequestModel;
+﻿using HIS.CLI.View;
 using HIS.Core.AppointmentModel;
-using HIS.Core.PersonModel.UserAccountModel;
+using HIS.Core.AppointmentModel.AppointmentAvailability;
+using HIS.Core.EquipmentModel;
+using HIS.Core.EquipmentModel.EquipmentRelocationModel;
+using HIS.Core.Foundation;
+using HIS.Core.MedicationModel;
+using HIS.Core.MedicationModel.IngredientModel;
+using HIS.Core.MedicationModel.MedicationRequestModel;
+using HIS.Core.MedicationModel.PrescriptionModel;
 using HIS.Core.ModificationRequestModel.DeleteRequestModel;
 using HIS.Core.ModificationRequestModel.UpdateRequestModel;
-using HIS.Core.PersonModel.PatientModel.MedicalRecordModel;
+using HIS.Core.PersonModel;
 using HIS.Core.PersonModel.DoctorModel;
 using HIS.Core.PersonModel.DoctorModel.DoctorAvailability;
 using HIS.Core.PersonModel.PatientModel;
+using HIS.Core.PersonModel.PatientModel.MedicalRecordModel;
 using HIS.Core.PersonModel.PatientModel.PatientAvailability;
-using HIS.Core.PersonModel;
-using HIS.Core.MedicationModel.PrescriptionModel;
+using HIS.Core.PersonModel.UserAccountModel;
 using HIS.Core.PersonModel.UserAccountModel.Util;
-using HIS.Core.PollModel.HospitalPollModel;
 using HIS.Core.PollModel.AppointmentPollModel;
-using HIS.Core.AppointmentModel.AppointmentAvailability;
+using HIS.Core.PollModel.HospitalPollModel;
+using HIS.Core.RoomModel;
+using HIS.Core.RoomModel.RenovationModel;
+using HIS.Core.RoomModel.RoomAvailability;
+using Newtonsoft.Json;
+using System;
+using System.IO;
 
 namespace HIS.CLI
 {
@@ -104,7 +104,7 @@ namespace HIS.CLI
 			try
 			{
 
-				pollSummaryView.CmdHospitalPolls();
+				pollSummaryView.CmdPrintDoctorTop3();
 
 				medicationView.CmdUpdateRequest();
 				// medicationView.CmdCreateAndSendForReview();
@@ -122,9 +122,9 @@ namespace HIS.CLI
 				Console.ResetColor();
 			}
 			catch (UserAccountForcefullyBlockedException e)
-            {
+			{
 				Console.WriteLine(e.Message);
-            }
+			}
 
 			Console.WriteLine("Press any key to exit...");
 			Console.ReadLine();

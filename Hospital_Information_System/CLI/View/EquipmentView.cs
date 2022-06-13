@@ -1,10 +1,9 @@
-﻿using HIS.Core;
-using HIS.Core.EquipmentModel;
+﻿using HIS.Core.EquipmentModel;
+using HIS.Core.PersonModel.UserAccountModel;
+using HIS.Core.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
-using HIS.Core.Util;
-using HIS.Core.PersonModel.UserAccountModel;
 
 namespace HIS.CLI.View
 {

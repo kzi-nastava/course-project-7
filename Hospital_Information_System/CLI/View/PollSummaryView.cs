@@ -1,12 +1,8 @@
-﻿using HIS.Core.PersonModel.DoctorModel;
-using HIS.Core.PersonModel.UserAccountModel;
+﻿using HIS.Core.PersonModel.UserAccountModel;
 using HIS.Core.PollModel;
 using HIS.Core.PollModel.AppointmentPollModel;
 using HIS.Core.PollModel.HospitalPollModel;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace HIS.CLI.View
 {
@@ -21,17 +17,7 @@ namespace HIS.CLI.View
 			_appointmentPollService = appointmentPollService;
 		}
 
-		public void CmdHospitalPolls()
-		{
-			PrintSingleHospitalPoll();
-			PrintHospitalAverageRatings();
-			PrintAllHospitalComments();
-
-			PrintDoctorRatings();
-			PrintTop3();
-		}
-
-		private void PrintTop3()
+		public void CmdPrintDoctorTop3()
 		{
 			var doctorRatingsSorted = _appointmentPollService.GetTotalAverageRatingsByDoctor().OrderByDescending(kv => kv.Value).ToList();
 			int topN = 3;
@@ -43,7 +29,8 @@ namespace HIS.CLI.View
 				{
 					Print($"{docRating.Key}: {docRating.Value}");
 				}
-			} else
+			}
+			else
 			{
 				Hint("Top 3:");
 				for (int i = 0; i < topN; i++)
@@ -61,14 +48,13 @@ namespace HIS.CLI.View
 			}
 		}
 
-		private void PrintDoctorRatings()
+		public void CmdPrintDoctorRatings()
 		{
 			var doctorPolls = _appointmentPollService.GetAppointmentPollsByDoctor();
 			foreach (var doctorPollsPair in doctorPolls)
 			{
-				var ratingsForThisDoctor = PollHelpers.ReduceToRatings(doctorPollsPair.Value);
-
 				Print($"{doctorPollsPair.Key}");
+				var ratingsForThisDoctor = PollHelpers.ReduceToRatings(doctorPollsPair.Value);
 				foreach (var questionRatingPair in ratingsForThisDoctor)
 				{
 					Print($"\t{questionRatingPair.Key}: {questionRatingPair.Value.Average()}");
@@ -84,12 +70,12 @@ namespace HIS.CLI.View
 			}
 		}
 
-		private void PrintSingleHospitalPoll()
+		public void CmdPrintSingleHospitalPoll()
 		{
 			Print(EasyInput<HospitalPoll>.Select(_hospitalPollService.GetAll(), poll => poll.Pollee.ToString() + ": " + poll.Comment, _cancel).ToString());
 		}
 
-		private void PrintAllHospitalComments()
+		public void CmdPrintAllHospitalComments()
 		{
 			foreach (var poll in _hospitalPollService.GetAll())
 			{
@@ -97,7 +83,7 @@ namespace HIS.CLI.View
 			}
 		}
 
-		private void PrintHospitalAverageRatings()
+		public void CmdPrintHospitalAverageRatings()
 		{
 			foreach (var kvp in PollHelpers.ReduceToRatings(_hospitalPollService.GetAll()))
 			{
