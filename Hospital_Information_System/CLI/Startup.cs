@@ -1,4 +1,5 @@
 ﻿using HIS.CLI.View;
+using HIS.CLI.View.UserCommand;
 using HIS.Core.AppointmentModel;
 using HIS.Core.AppointmentModel.AppointmentAvailability;
 using HIS.Core.EquipmentModel;
@@ -77,6 +78,11 @@ namespace HIS.CLI
 			IPatientAvailabilityService patientAvailabilityService = new PatientAvailabilityService(patientService, appointmentService);
 			IAppointmentAvailabilityService appointmentAvailabilityService = new AppointmentAvailabilityService(roomAvailabilityService, doctorAvailabilityService, patientAvailabilityService);
 
+			
+
+
+
+
 			// TODO: This is a temporary way of logging in.
 			UserAccount user = null;
 			// Cheaty login
@@ -101,6 +107,32 @@ namespace HIS.CLI
 			HospitalPollView hospitalPollView = new HospitalPollView(hospitalPollService, patientService, pollView, user);
 			PollSummaryView pollSummaryView = new PollSummaryView(hospitalPollService, appointmentPollService, user);
 
+			// will break if anyone other than a manager tries to log in
+			UserCommandView cmdView = new ManagerCommandView(user, roomView, equipmentView, equipmentRelocationView, renovationView, ingredientView, medicationView, pollSummaryView);
+
+			while (true)
+			{
+				try
+				{
+					cmdView.PollCommand();
+				}
+				catch (InputCancelledException)
+				{
+					Console.ForegroundColor = ConsoleColor.Green;
+					Console.WriteLine("^C");
+					Console.ResetColor();
+				}
+				catch (UserAccountForcefullyBlockedException e)
+				{
+					Console.WriteLine(e.Message);
+				}
+				catch (QuitApplicationException)
+				{
+					break;
+				}
+			}
+
+/*
 			try
 			{
 
@@ -125,7 +157,7 @@ namespace HIS.CLI
 			{
 				Console.WriteLine(e.Message);
 			}
-
+*/
 			Console.WriteLine("Press any key to exit...");
 			Console.ReadLine();
 
