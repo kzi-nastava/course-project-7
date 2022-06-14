@@ -28,20 +28,20 @@ namespace HIS.CLI.View
 		}
 
 		#region commands
-		internal Room CmdRoomCreate()
+		internal Room CmdCreate()
 		{
 			Room r = InputRoom();
 			_service.Add(r);
 			return r;
 		}
 
-		internal void CmdRoomView()
+		internal void CmdRead()
 		{
 			Room room = Select();
 			Print(room.ToString());
 		}
 
-		internal void CmdRoomUpdate()
+		internal void CmdUpdate()
 		{
 			Room room = SelectModifiable();
 			var whichProperties = SelectProperties();
@@ -49,7 +49,7 @@ namespace HIS.CLI.View
 			_service.Copy(src, room, whichProperties);
 		}
 
-		internal void CmdRoomDelete()
+		internal void CmdDelete()
 		{
 			Room room = SelectModifiable();
 			_service.Remove(room);

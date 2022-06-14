@@ -78,11 +78,6 @@ namespace HIS.CLI
 			IPatientAvailabilityService patientAvailabilityService = new PatientAvailabilityService(patientService, appointmentService);
 			IAppointmentAvailabilityService appointmentAvailabilityService = new AppointmentAvailabilityService(roomAvailabilityService, doctorAvailabilityService, patientAvailabilityService);
 
-			
-
-
-
-
 			// TODO: This is a temporary way of logging in.
 			UserAccount user = null;
 			// Cheaty login
@@ -98,8 +93,7 @@ namespace HIS.CLI
 			RenovationView renovationView = new RenovationView(renovationService, roomService, roomAvailabilityService, roomView, user);
 			IngredientView ingredientView = new IngredientView(ingredientService, medicationService, medicationRequestService, user);
 			MedicationView medicationView = new MedicationView(medicationService, ingredientService, medicationRequestService, user);
-			AppointmentView appointmentView = new AppointmentView(appointmentService, appointmentAvailabilityService, doctorService, doctorAvailabilityService,
-				patientService, patientAvailabilityService, roomService, roomAvailabilityService, user);
+			AppointmentView appointmentView = new AppointmentView(appointmentService, appointmentAvailabilityService, doctorService, doctorAvailabilityService, patientService, patientAvailabilityService, roomService, roomAvailabilityService, user);
 			MedicalRecordView medicalRecordView = new MedicalRecordView(medicalRecordService, patientService, user);
 			DoctorView doctorView = new DoctorView(doctorService, appointmentView, user);
 			PollView pollView = new PollView(user);
@@ -107,8 +101,13 @@ namespace HIS.CLI
 			HospitalPollView hospitalPollView = new HospitalPollView(hospitalPollService, patientService, pollView, user);
 			PollSummaryView pollSummaryView = new PollSummaryView(hospitalPollService, appointmentPollService, user);
 
-			// will break if anyone other than a manager tries to log in
-			UserCommandView cmdView = new ManagerCommandView(user, roomView, equipmentView, equipmentRelocationView, renovationView, ingredientView, medicationView, pollSummaryView);
+			UserCommandView cmdView = user.Type switch
+			{
+				UserAccount.AccountType.MANAGER => new ManagerCommandView(user, roomView, equipmentView, equipmentRelocationView, renovationView, ingredientView, medicationView, pollSummaryView),
+				_ => throw new NotImplementedException(),
+			};
+
+			Console.WriteLine("Type help for a list of commands");
 
 			while (true)
 			{
@@ -118,9 +117,7 @@ namespace HIS.CLI
 				}
 				catch (InputCancelledException)
 				{
-					Console.ForegroundColor = ConsoleColor.Green;
-					Console.WriteLine("^C");
-					Console.ResetColor();
+					Console.WriteLine("Cancelled");
 				}
 				catch (UserAccountForcefullyBlockedException e)
 				{
@@ -132,32 +129,6 @@ namespace HIS.CLI
 				}
 			}
 
-/*
-			try
-			{
-
-				pollSummaryView.CmdPrintDoctorTop3();
-
-				medicationView.CmdUpdateRequest();
-				// medicationView.CmdCreateAndSendForReview();
-
-				//ingredientView.CmdRead();
-				//ingredientView.CmdAdd();
-				//ingredientView.CmdUpdate();
-				// ingredientView.CmdDelete();
-				//ingredientView.CmdRead();
-			}
-			catch (InputCancelledException)
-			{
-				Console.ForegroundColor = ConsoleColor.Green;
-				Console.WriteLine("^C");
-				Console.ResetColor();
-			}
-			catch (UserAccountForcefullyBlockedException e)
-			{
-				Console.WriteLine(e.Message);
-			}
-*/
 			Console.WriteLine("Press any key to exit...");
 			Console.ReadLine();
 

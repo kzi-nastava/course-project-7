@@ -45,6 +45,9 @@ namespace HIS.CLI.View.UserCommand
 
 		public void PollCommand()
 		{
+			Console.ForegroundColor = ConsoleColor.DarkGray;
+			Console.Write("cmd>");
+			Console.ResetColor();
 			string cmd = Console.ReadLine().Trim();
 
 			try
@@ -63,10 +66,9 @@ namespace HIS.CLI.View.UserCommand
 
 		private void ShowHelp()
 		{
-			Print("Possible commands:");
 			foreach (var kv in commandMapping)
 			{
-				Hint(kv.Key);
+				Print(kv.Key);
 			}
 		}
 	}

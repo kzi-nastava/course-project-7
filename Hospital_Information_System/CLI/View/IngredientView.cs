@@ -28,7 +28,7 @@ namespace HIS.CLI.View
 			_properties = Utility.GetEnumValues<IngredientProperty>();
 		}
 
-		internal void CmdAdd()
+		internal void CmdCreate()
 		{
 			var newIngredient = Input(_properties);
 			_service.Add(newIngredient);
