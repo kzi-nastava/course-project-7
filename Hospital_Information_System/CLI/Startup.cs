@@ -78,39 +78,29 @@ namespace HIS.CLI
 			IPatientAvailabilityService patientAvailabilityService = new PatientAvailabilityService(patientService, appointmentService);
 			IAppointmentAvailabilityService appointmentAvailabilityService = new AppointmentAvailabilityService(roomAvailabilityService, doctorAvailabilityService, patientAvailabilityService);
 
-			// TODO: This is a temporary way of logging in.
-			UserAccount user = new UserAccount(UserAccount.AccountType.LOGGED_OUT);
-			// Cheaty login
-			//UserAccount user = userAccountService.AttemptLogin("janeka", "123");
-
-			// Ew.
-			UserAccountView userAccountView = new UserAccountView(userAccountService, user);
-			//user = userAccountView.CmdLogin();
-
-			RoomView roomView = new RoomView(roomService, user);
-			EquipmentView equipmentView = new EquipmentView(equipmentService, user);
-			EquipmentRelocationView equipmentRelocationView = new EquipmentRelocationView(equipmentRelocationService, roomService, user);
-			RenovationView renovationView = new RenovationView(renovationService, roomService, roomAvailabilityService, roomView, user);
-			IngredientView ingredientView = new IngredientView(ingredientService, medicationService, medicationRequestService, user);
-			MedicationView medicationView = new MedicationView(medicationService, ingredientService, medicationRequestService, user);
-			AppointmentView appointmentView = new AppointmentView(appointmentService, appointmentAvailabilityService, doctorService, doctorAvailabilityService, patientService, patientAvailabilityService, roomService, roomAvailabilityService, user);
-			MedicalRecordView medicalRecordView = new MedicalRecordView(medicalRecordService, patientService, user);
-			DoctorView doctorView = new DoctorView(doctorService, appointmentView, user);
-			PollView pollView = new PollView(user);
-			AppointmentPollView appointmentPollView = new AppointmentPollView(appointmentPollService, patientService, appointmentService, pollView, user);
-			HospitalPollView hospitalPollView = new HospitalPollView(hospitalPollService, patientService, pollView, user);
-			PollSummaryView pollSummaryView = new PollSummaryView(hospitalPollService, appointmentPollService, user);
-
-			
+			UserAccountView userAccountView = new UserAccountView(userAccountService);
+			RoomView roomView = new RoomView(roomService);
+			EquipmentView equipmentView = new EquipmentView(equipmentService);
+			EquipmentRelocationView equipmentRelocationView = new EquipmentRelocationView(equipmentRelocationService, roomService);
+			RenovationView renovationView = new RenovationView(renovationService, roomService, roomAvailabilityService, roomView);
+			IngredientView ingredientView = new IngredientView(ingredientService, medicationService, medicationRequestService);
+			MedicationView medicationView = new MedicationView(medicationService, ingredientService, medicationRequestService);
+			AppointmentView appointmentView = new AppointmentView(appointmentService, appointmentAvailabilityService, doctorService, doctorAvailabilityService, patientService, patientAvailabilityService, roomService, roomAvailabilityService);
+			MedicalRecordView medicalRecordView = new MedicalRecordView(medicalRecordService, patientService);
+			DoctorView doctorView = new DoctorView(doctorService, appointmentView);
+			PollView pollView = new PollView();
+			AppointmentPollView appointmentPollView = new AppointmentPollView(appointmentPollService, patientService, appointmentService, pollView);
+			HospitalPollView hospitalPollView = new HospitalPollView(hospitalPollService, patientService, pollView);
+			PollSummaryView pollSummaryView = new PollSummaryView(hospitalPollService, appointmentPollService);
 
 			Console.WriteLine("Type help for a list of commands");
 
 			while (true)
 			{
-				UserCommandView cmdView = user.Type switch
+				UserCommandView cmdView = AbstractView.User.Type switch
 				{
-					UserAccount.AccountType.MANAGER => new ManagerCommandView(user, roomView, equipmentView, equipmentRelocationView, renovationView, ingredientView, medicationView, pollSummaryView),
-					UserAccount.AccountType.LOGGED_OUT => new LoggedOutCommandView(user, userAccountView),
+					UserAccount.AccountType.MANAGER => new ManagerCommandView(roomView, equipmentView, equipmentRelocationView, renovationView, ingredientView, medicationView, pollSummaryView),
+					UserAccount.AccountType.LOGGED_OUT => new LoggedOutCommandView(userAccountView),
 					_ => throw new NotImplementedException(),
 				};
 

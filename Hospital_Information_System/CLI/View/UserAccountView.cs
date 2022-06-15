@@ -3,14 +3,14 @@ using HIS.Core.PersonModel.UserAccountModel.Util;
 
 namespace HIS.CLI.View
 {
-	internal class UserAccountView : View
+	internal class UserAccountView : AbstractView
 	{
 		private readonly IUserAccountService _service;
 
 		private const string hintInputUsername = "Enter username: ";
 		private const string hintInputPassword = "Enter password: ";
 
-		public UserAccountView(IUserAccountService service, UserAccount user) : base(user)
+		public UserAccountView(IUserAccountService service)
 		{
 			_service = service;
 		}

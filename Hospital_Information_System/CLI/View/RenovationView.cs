@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace HIS.CLI.View
 {
-	internal class RenovationView : View
+	internal class RenovationView : AbstractView
 	{
 		private static readonly string hintInputRoom = "Select room";
 		private static readonly string hintInputStart = "Select starting date and time";
@@ -30,7 +30,7 @@ namespace HIS.CLI.View
 		private readonly IRoomAvailabilityService _roomAvailabilityService;
 		private readonly RoomView _roomView;
 
-		internal RenovationView(IRenovationService service, IRoomService roomService, IRoomAvailabilityService roomAvailabilityService, RoomView roomView, UserAccount user) : base(user)
+		internal RenovationView(IRenovationService service, IRoomService roomService, IRoomAvailabilityService roomAvailabilityService, RoomView roomView)
 		{
 			_service = service;
 			_roomService = roomService;

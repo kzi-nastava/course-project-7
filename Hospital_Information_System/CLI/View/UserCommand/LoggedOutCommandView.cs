@@ -7,7 +7,7 @@ namespace HIS.CLI.View.UserCommand
 {
 	internal class LoggedOutCommandView : UserCommandView
 	{
-		public LoggedOutCommandView(UserAccount user, UserAccountView userAccountView) : base(user)
+		public LoggedOutCommandView(UserAccountView userAccountView)
 		{
 			AddCommands(new Dictionary<string, Action>
 			{
@@ -21,14 +21,7 @@ namespace HIS.CLI.View.UserCommand
 		
 		private void LogIn(UserAccountView userAccountView)
 		{
-			var newAccount = userAccountView.CmdLogin();
-			_user.Username = newAccount.Username;
-			_user.Password = newAccount.Password;
-			_user.Blocked = newAccount.Blocked;
-			_user.Deleted = newAccount.Deleted;
-			_user.Id = newAccount.Id;
-			_user.Person = newAccount.Person;
-			_user.Type = newAccount.Type;
+			User = userAccountView.CmdLogin();
 		}
 	}
 }

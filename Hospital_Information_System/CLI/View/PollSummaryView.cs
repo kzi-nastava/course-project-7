@@ -6,12 +6,12 @@ using System.Linq;
 
 namespace HIS.CLI.View
 {
-	internal class PollSummaryView : View
+	internal class PollSummaryView : AbstractView
 	{
 		private IHospitalPollService _hospitalPollService;
 		private IAppointmentPollService _appointmentPollService;
 
-		public PollSummaryView(IHospitalPollService hospitalPollService, IAppointmentPollService appointmentPollService, UserAccount account) : base(account)
+		public PollSummaryView(IHospitalPollService hospitalPollService, IAppointmentPollService appointmentPollService)
 		{
 			_hospitalPollService = hospitalPollService;
 			_appointmentPollService = appointmentPollService;

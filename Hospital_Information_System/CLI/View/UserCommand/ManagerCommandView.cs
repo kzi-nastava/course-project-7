@@ -6,7 +6,7 @@ namespace HIS.CLI.View.UserCommand
 {
 	internal class ManagerCommandView : UserCommandView
 	{
-		public ManagerCommandView(UserAccount user, RoomView roomView, EquipmentView equipmentView, EquipmentRelocationView equipmentRelocationView, RenovationView renovationView, IngredientView ingredientView, MedicationView medicationView, PollSummaryView pollSummaryView) : base(user)
+		public ManagerCommandView(RoomView roomView, EquipmentView equipmentView, EquipmentRelocationView equipmentRelocationView, RenovationView renovationView, IngredientView ingredientView, MedicationView medicationView, PollSummaryView pollSummaryView)
 		{
 			AddCommands(new Dictionary<string, Action>
 			{

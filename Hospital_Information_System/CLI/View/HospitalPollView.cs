@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace HIS.CLI.View
 {
-	internal class HospitalPollView : View
+	internal class HospitalPollView : AbstractView
 	{
 		private IHospitalPollService _service;
 		private IPatientService _patientService;
@@ -13,7 +13,7 @@ namespace HIS.CLI.View
 
 		private const string hintComment = "Input comment";
 
-		public HospitalPollView(IHospitalPollService service, IPatientService patientService, PollView pollView, UserAccount user) : base(user)
+		public HospitalPollView(IHospitalPollService service, IPatientService patientService, PollView pollView)
 		{
 			_service = service;
 			_patientService = patientService;
@@ -22,7 +22,7 @@ namespace HIS.CLI.View
 
 		internal void CmdCreate()
 		{
-			if (_user.Type != UserAccount.AccountType.PATIENT)
+			if (User.Type != UserAccount.AccountType.PATIENT)
 			{
 				return;
 			}
@@ -32,7 +32,7 @@ namespace HIS.CLI.View
 			Hint(hintComment);
 			string comment = EasyInput<string>.Get(_cancel);
 
-			Patient patient = _patientService.GetPatientFromPerson(_user.Person);
+			Patient patient = _patientService.GetPatientFromPerson(User.Person);
 			var poll = new HospitalPoll(questionnaire, comment, patient);
 
 			_service.Add(poll);

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace HIS.CLI.View
 {
-	internal class AppointmentPollView : View
+	internal class AppointmentPollView : AbstractView
 	{
 		private IAppointmentPollService _service;
 		private IPatientService _patientService;
@@ -16,7 +16,7 @@ namespace HIS.CLI.View
 		private const string hintSelectAppointment = "Select appointment";
 		private const string hintComment = "Input comment";
 
-		public AppointmentPollView(IAppointmentPollService service, IPatientService patientService, IAppointmentService appointmentService, PollView pollView, UserAccount user) : base(user)
+		public AppointmentPollView(IAppointmentPollService service, IPatientService patientService, IAppointmentService appointmentService, PollView pollView)
 		{
 			_service = service;
 			_patientService = patientService;
@@ -28,12 +28,12 @@ namespace HIS.CLI.View
 		{
 			try
 			{
-				if (_user.Type != UserAccount.AccountType.PATIENT)
+				if (User.Type != UserAccount.AccountType.PATIENT)
 				{
 					return;
 				}
 
-				Patient patient = _patientService.GetPatientFromPerson(_user.Person);
+				Patient patient = _patientService.GetPatientFromPerson(User.Person);
 
 				Hint(hintSelectAppointment);
 				Appointment appointment = EasyInput<Appointment>.Select(_appointmentService.GetPollable(patient), _cancel);

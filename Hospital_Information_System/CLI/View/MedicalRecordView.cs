@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace HIS.CLI.View
 {
-	internal class MedicalRecordView : View
+	internal class MedicalRecordView : AbstractView
 	{
 		private readonly IMedicalRecordService _service;
 		private readonly IPatientService _patientService;
@@ -52,7 +52,7 @@ namespace HIS.CLI.View
 		private const string hintGetMinutes = "Enter how many minutes before the scheduled medication time you want to receive a notification.";
 		private const string errMinutesMustBePositiveNumber = "Minutes must be a positive number!";
 
-		public MedicalRecordView(IMedicalRecordService service, IPatientService patientService, UserAccount user) : base(user)
+		public MedicalRecordView(IMedicalRecordService service, IPatientService patientService)
 		{
 			_service = service;
 			_patientService = patientService;
@@ -60,7 +60,7 @@ namespace HIS.CLI.View
 
 		internal void CmdSearch()
 		{
-			if (_user.Type != UserAccount.AccountType.PATIENT)
+			if (User.Type != UserAccount.AccountType.PATIENT)
 			{
 				return;
 			}
@@ -77,7 +77,7 @@ namespace HIS.CLI.View
 			Hint(hintSearchSortBy);
 			var sortChoice = EasyInput<string>.Select(sortBy.Keys.ToList(), _cancel);
 
-			Patient patient = _patientService.GetPatientFromPerson(_user.Person);
+			Patient patient = _patientService.GetPatientFromPerson(User.Person);
 			List<Appointment> matches = _service.MatchAppointmentByAnamnesis(query, sortBy[sortChoice], patient).ToList();
 
 			foreach (Appointment match in matches)
@@ -88,12 +88,12 @@ namespace HIS.CLI.View
 
 		internal void CmdChangeMinutesBeforeNotification()
 		{
-			if (_user.Type != UserAccount.AccountType.PATIENT)
+			if (User.Type != UserAccount.AccountType.PATIENT)
 			{
 				return;
 			}
 
-			Patient patient = _patientService.GetPatientFromPerson(_user.Person);
+			Patient patient = _patientService.GetPatientFromPerson(User.Person);
 			Debug.Assert(patient != null);
 			MedicalRecord record = _service.GetPatientsMedicalRecord(patient);
 			Debug.Assert(record != null);

@@ -13,11 +13,11 @@ namespace HIS.CLI.View.UserCommand
 	{
 	}
 
-	internal abstract class UserCommandView : View
+	internal abstract class UserCommandView : AbstractView
 	{
 		private readonly Dictionary<string, Action> _commandMapping;
 
-		protected UserCommandView(UserAccount user) : base(user)
+		protected UserCommandView()
 		{
 			_commandMapping = new Dictionary<string, Action>
 			{
@@ -52,7 +52,7 @@ namespace HIS.CLI.View.UserCommand
 		public void PollCommand()
 		{
 			Console.ForegroundColor = ConsoleColor.Green;
-			Console.Write(_user.Username + ">");
+			Console.Write(User.Username + ">");
 			string cmd = Console.ReadLine().Trim();
 			Console.ResetColor();
 
@@ -72,14 +72,7 @@ namespace HIS.CLI.View.UserCommand
 
 		private void LogOut()
 		{
-			var newAccount = new UserAccount(UserAccount.AccountType.LOGGED_OUT);
-			_user.Username = newAccount.Username;
-			_user.Password = newAccount.Password;
-			_user.Blocked = newAccount.Blocked;
-			_user.Deleted = newAccount.Deleted;
-			_user.Id = newAccount.Id;
-			_user.Person = newAccount.Person;
-			_user.Type = newAccount.Type;
+			User = new UserAccount(UserAccount.AccountType.LOGGED_OUT);
 		}
 
 		private void ShowHelp()
