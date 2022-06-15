@@ -21,8 +21,9 @@ namespace HIS.CLI.View.UserCommand
 		{
 			commandMapping = new Dictionary<string, Action>
 			{
-				{ "quit", () => throw new QuitApplicationException() },
-				{ "help", () => ShowHelp() }
+				{ "quit",   () => throw new QuitApplicationException() },
+				{ "logout", () => LogOut() },
+				{ "help",   () => ShowHelp() }
 			};
 		}
 
@@ -45,10 +46,10 @@ namespace HIS.CLI.View.UserCommand
 
 		public void PollCommand()
 		{
-			Console.ForegroundColor = ConsoleColor.DarkGray;
-			Console.Write("cmd>");
-			Console.ResetColor();
+			Console.ForegroundColor = ConsoleColor.Green;
+			Console.Write(_user.Username + ">");
 			string cmd = Console.ReadLine().Trim();
+			Console.ResetColor();
 
 			try
 			{
@@ -62,6 +63,18 @@ namespace HIS.CLI.View.UserCommand
 			{
 				throw e;
 			}
+		}
+
+		private void LogOut()
+		{
+			var newAccount = new UserAccount(UserAccount.AccountType.LOGGED_OUT);
+			_user.Username = newAccount.Username;
+			_user.Password = newAccount.Password;
+			_user.Blocked = newAccount.Blocked;
+			_user.Deleted = newAccount.Deleted;
+			_user.Id = newAccount.Id;
+			_user.Person = newAccount.Person;
+			_user.Type = newAccount.Type;
 		}
 
 		private void ShowHelp()

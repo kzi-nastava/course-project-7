@@ -18,7 +18,7 @@ namespace HIS.CLI.View.UserCommand
 				{ "equpiment-view",			() => equipmentView.CmdFilter() },
 				{ "equipment-relocate",		() => equipmentRelocationView.CmdPerform() },
 				{ "renovation-schedule",	() => renovationView.CmdSchedule() },
-				{ "ingredient-create",      () => ingredientView.CmdCreate() }, // TODO: Consistent naming for CRUD
+				{ "ingredient-create",      () => ingredientView.CmdCreate() },
 				{ "ingredient-read",        () => ingredientView.CmdRead() },
 				{ "ingredient-update",      () => ingredientView.CmdUpdate() },
 				{ "ingredient-delete",      () => ingredientView.CmdDelete() },

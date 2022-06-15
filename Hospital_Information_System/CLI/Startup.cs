@@ -79,13 +79,13 @@ namespace HIS.CLI
 			IAppointmentAvailabilityService appointmentAvailabilityService = new AppointmentAvailabilityService(roomAvailabilityService, doctorAvailabilityService, patientAvailabilityService);
 
 			// TODO: This is a temporary way of logging in.
-			UserAccount user = null;
+			UserAccount user = new UserAccount(UserAccount.AccountType.LOGGED_OUT);
 			// Cheaty login
 			//UserAccount user = userAccountService.AttemptLogin("janeka", "123");
 
 			// Ew.
 			UserAccountView userAccountView = new UserAccountView(userAccountService, user);
-			user = userAccountView.CmdLogin();
+			//user = userAccountView.CmdLogin();
 
 			RoomView roomView = new RoomView(roomService, user);
 			EquipmentView equipmentView = new EquipmentView(equipmentService, user);
@@ -101,16 +101,19 @@ namespace HIS.CLI
 			HospitalPollView hospitalPollView = new HospitalPollView(hospitalPollService, patientService, pollView, user);
 			PollSummaryView pollSummaryView = new PollSummaryView(hospitalPollService, appointmentPollService, user);
 
-			UserCommandView cmdView = user.Type switch
-			{
-				UserAccount.AccountType.MANAGER => new ManagerCommandView(user, roomView, equipmentView, equipmentRelocationView, renovationView, ingredientView, medicationView, pollSummaryView),
-				_ => throw new NotImplementedException(),
-			};
+			
 
 			Console.WriteLine("Type help for a list of commands");
 
 			while (true)
 			{
+				UserCommandView cmdView = user.Type switch
+				{
+					UserAccount.AccountType.MANAGER => new ManagerCommandView(user, roomView, equipmentView, equipmentRelocationView, renovationView, ingredientView, medicationView, pollSummaryView),
+					UserAccount.AccountType.LOGGED_OUT => new LoggedOutCommandView(user, userAccountView),
+					_ => throw new NotImplementedException(),
+				};
+
 				try
 				{
 					cmdView.PollCommand();
