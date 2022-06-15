@@ -117,6 +117,7 @@ namespace HIS.CLI
 					{
 						UserAccount.AccountType.MANAGER => new ManagerCommandView(roomView, equipmentView, equipmentRelocationView, renovationView, ingredientView, medicationView, pollSummaryView),
 						UserAccount.AccountType.PATIENT => new PatientCommandView(appointmentView, medicalRecordView, doctorView, hospitalPollView, appointmentPollView),
+						UserAccount.AccountType.DOCTOR => new DoctorCommandView(appointmentView),
 						UserAccount.AccountType.LOGGED_OUT => new LoggedOutCommandView(userAccountView),
 						_ => throw new NotImplementedException(),
 					};
