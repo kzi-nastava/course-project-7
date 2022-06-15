@@ -64,7 +64,7 @@ namespace HIS.CLI
 			IIngredientService ingredientService = new IngredientService(ingredientRepo);
 			IMedicationService medicationService = new MedicationService(medicationRepo);
 			IMedicationRequestService medicationRequestService = new MedicationRequestService(medicationRequestRepo);
-			IPatientService patientService = new PatientService(patientRepo); ;
+			IPatientService patientService = new PatientService(patientRepo);
 			IMedicalRecordService medicalRecordService = new MedicalRecordService(medicalRecordRepo, patientService);
 			IUserAccountService userAccountService = new UserAccountService(userAccountRepo, medicalRecordService);
 			IDeleteRequestService deleteRequestService = new DeleteRequestService(deleteRequestRepo);

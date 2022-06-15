@@ -13,6 +13,10 @@ namespace HIS.CLI.View.UserCommand
 			{
 				{ "login", () => LogIn(userAccountView) }
 			});
+			RemoveCommands(new List<string>
+			{
+				"logout"
+			});
 		}
 		
 		private void LogIn(UserAccountView userAccountView)

@@ -15,11 +15,11 @@ namespace HIS.CLI.View.UserCommand
 
 	internal abstract class UserCommandView : View
 	{
-		private Dictionary<string, Action> commandMapping;
+		private readonly Dictionary<string, Action> _commandMapping;
 
 		protected UserCommandView(UserAccount user) : base(user)
 		{
-			commandMapping = new Dictionary<string, Action>
+			_commandMapping = new Dictionary<string, Action>
 			{
 				{ "quit",   () => throw new QuitApplicationException() },
 				{ "logout", () => LogOut() },
@@ -29,14 +29,19 @@ namespace HIS.CLI.View.UserCommand
 
 		protected void AddCommands(Dictionary<string, Action> newCommands)
 		{
-			newCommands.ToList().ForEach(x => commandMapping.Add(x.Key, x.Value));
+			newCommands.ToList().ForEach(x => _commandMapping.Add(x.Key, x.Value));
+		}
+
+		protected void RemoveCommands(List<string> newCommands)
+		{
+			newCommands.ForEach(x => _commandMapping.Remove(x));
 		}
 
 		protected void ExecuteCommand(string command)
 		{
 			try
 			{
-				commandMapping[command]();
+				_commandMapping[command]();
 			}
 			catch (KeyNotFoundException)
 			{
@@ -79,7 +84,7 @@ namespace HIS.CLI.View.UserCommand
 
 		private void ShowHelp()
 		{
-			foreach (var kv in commandMapping)
+			foreach (var kv in _commandMapping)
 			{
 				Print(kv.Key);
 			}
