@@ -3,15 +3,10 @@ using System;
 
 namespace HIS.CLI.View
 {
-	internal abstract class View
+	internal abstract class AbstractView
 	{
 		protected static string _cancel = "-q";
-		protected UserAccount _user;
-
-		public View(UserAccount user)
-		{
-			_user = user;
-		}
+		public static UserAccount User { get; protected set; } = new UserAccount(UserAccount.AccountType.LOGGED_OUT);
 
 		protected void Hint(string value)
 		{

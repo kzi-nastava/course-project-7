@@ -1,4 +1,5 @@
 ﻿using HIS.CLI.View;
+using HIS.CLI.View.UserCommand;
 using HIS.Core.AppointmentModel;
 using HIS.Core.AppointmentModel.AppointmentAvailability;
 using HIS.Core.EquipmentModel;
@@ -63,7 +64,7 @@ namespace HIS.CLI
 			IIngredientService ingredientService = new IngredientService(ingredientRepo);
 			IMedicationService medicationService = new MedicationService(medicationRepo);
 			IMedicationRequestService medicationRequestService = new MedicationRequestService(medicationRequestRepo);
-			IPatientService patientService = new PatientService(patientRepo); ;
+			IPatientService patientService = new PatientService(patientRepo);
 			IMedicalRecordService medicalRecordService = new MedicalRecordService(medicalRecordRepo, patientService);
 			IUserAccountService userAccountService = new UserAccountService(userAccountRepo, medicalRecordService);
 			IDeleteRequestService deleteRequestService = new DeleteRequestService(deleteRequestRepo);
@@ -77,53 +78,52 @@ namespace HIS.CLI
 			IPatientAvailabilityService patientAvailabilityService = new PatientAvailabilityService(patientService, appointmentService);
 			IAppointmentAvailabilityService appointmentAvailabilityService = new AppointmentAvailabilityService(roomAvailabilityService, doctorAvailabilityService, patientAvailabilityService);
 
-			// TODO: This is a temporary way of logging in.
-			UserAccount user = null;
-			// Cheaty login
-			//UserAccount user = userAccountService.AttemptLogin("janeka", "123");
+			UserAccountView userAccountView = new UserAccountView(userAccountService);
+			RoomView roomView = new RoomView(roomService);
+			EquipmentView equipmentView = new EquipmentView(equipmentService);
+			EquipmentRelocationView equipmentRelocationView = new EquipmentRelocationView(equipmentRelocationService, roomService);
+			RenovationView renovationView = new RenovationView(renovationService, roomService, roomAvailabilityService, roomView);
+			IngredientView ingredientView = new IngredientView(ingredientService, medicationService, medicationRequestService);
+			MedicationView medicationView = new MedicationView(medicationService, ingredientService, medicationRequestService);
+			AppointmentView appointmentView = new AppointmentView(appointmentService, appointmentAvailabilityService, doctorService, doctorAvailabilityService, patientService, patientAvailabilityService, roomService, roomAvailabilityService);
+			MedicalRecordView medicalRecordView = new MedicalRecordView(medicalRecordService, patientService);
+			DoctorView doctorView = new DoctorView(doctorService, appointmentView);
+			PollView pollView = new PollView();
+			AppointmentPollView appointmentPollView = new AppointmentPollView(appointmentPollService, patientService, appointmentService, pollView);
+			HospitalPollView hospitalPollView = new HospitalPollView(hospitalPollService, patientService, pollView);
+			PollSummaryView pollSummaryView = new PollSummaryView(hospitalPollService, appointmentPollService);
 
-			// Ew.
-			UserAccountView userAccountView = new UserAccountView(userAccountService, user);
-			user = userAccountView.CmdLogin();
+			Console.WriteLine("Type help for a list of commands");
 
-			RoomView roomView = new RoomView(roomService, user);
-			EquipmentView equipmentView = new EquipmentView(equipmentService, user);
-			EquipmentRelocationView equipmentRelocationView = new EquipmentRelocationView(equipmentRelocationService, roomService, user);
-			RenovationView renovationView = new RenovationView(renovationService, roomService, roomAvailabilityService, roomView, user);
-			IngredientView ingredientView = new IngredientView(ingredientService, medicationService, medicationRequestService, user);
-			MedicationView medicationView = new MedicationView(medicationService, ingredientService, medicationRequestService, user);
-			AppointmentView appointmentView = new AppointmentView(appointmentService, appointmentAvailabilityService, doctorService, doctorAvailabilityService,
-				patientService, patientAvailabilityService, roomService, roomAvailabilityService, user);
-			MedicalRecordView medicalRecordView = new MedicalRecordView(medicalRecordService, patientService, user);
-			DoctorView doctorView = new DoctorView(doctorService, appointmentView, user);
-			PollView pollView = new PollView(user);
-			AppointmentPollView appointmentPollView = new AppointmentPollView(appointmentPollService, patientService, appointmentService, pollView, user);
-			HospitalPollView hospitalPollView = new HospitalPollView(hospitalPollService, patientService, pollView, user);
-			PollSummaryView pollSummaryView = new PollSummaryView(hospitalPollService, appointmentPollService, user);
+			UserCommandView cmdView = new LoggedOutCommandView(userAccountView);
 
-			try
+			while (true)
 			{
-
-				pollSummaryView.CmdPrintDoctorTop3();
-
-				medicationView.CmdUpdateRequest();
-				// medicationView.CmdCreateAndSendForReview();
-
-				//ingredientView.CmdRead();
-				//ingredientView.CmdAdd();
-				//ingredientView.CmdUpdate();
-				// ingredientView.CmdDelete();
-				//ingredientView.CmdRead();
-			}
-			catch (InputCancelledException)
-			{
-				Console.ForegroundColor = ConsoleColor.Green;
-				Console.WriteLine("^C");
-				Console.ResetColor();
-			}
-			catch (UserAccountForcefullyBlockedException e)
-			{
-				Console.WriteLine(e.Message);
+				try
+				{
+					cmdView.PollCommand();
+				}
+				catch (InputCancelledException)
+				{
+					Console.WriteLine("Cancelled");
+				}
+				catch (UserAccountForcefullyBlockedException e)
+				{
+					Console.WriteLine(e.Message);
+				}
+				catch (UserAccountChangedException)
+				{
+					cmdView = AbstractView.User.Type switch
+					{
+						UserAccount.AccountType.MANAGER => new ManagerCommandView(roomView, equipmentView, equipmentRelocationView, renovationView, ingredientView, medicationView, pollSummaryView),
+						UserAccount.AccountType.LOGGED_OUT => new LoggedOutCommandView(userAccountView),
+						_ => throw new NotImplementedException(),
+					};
+				}
+				catch (QuitApplicationException)
+				{
+					break;
+				}
 			}
 
 			Console.WriteLine("Press any key to exit...");

@@ -13,7 +13,8 @@ namespace HIS.Core.PersonModel.UserAccountModel
             PATIENT,
             DOCTOR,
             MANAGER,
-            SECRETARY
+            SECRETARY,
+            LOGGED_OUT
         }
 
         public UserAccount(AccountType type)

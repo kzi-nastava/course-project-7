@@ -9,13 +9,13 @@ using System.Linq;
 
 namespace HIS.CLI.View
 {
-	internal class EquipmentRelocationView : View
+	internal class EquipmentRelocationView : AbstractView
 	{
 		private readonly IRoomService _roomService;
 		private readonly IEquipmentRelocationService _service;
 		private readonly IList<EquipmentRelocationProperty> _properties;
 
-		internal EquipmentRelocationView(IEquipmentRelocationService service, IRoomService roomService, UserAccount user) : base(user)
+		internal EquipmentRelocationView(IEquipmentRelocationService service, IRoomService roomService)
 		{
 			_roomService = roomService;
 			_service = service;

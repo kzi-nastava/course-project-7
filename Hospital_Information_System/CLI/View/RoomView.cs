@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace HIS.CLI.View
 {
-	internal class RoomView : View
+	internal class RoomView : AbstractView
 	{
 		private const string errFloorNonNegative = "Room floor must be a non-negative integer!";
 		private const string errNameIsEmpty = "Name cannot be empty!";
@@ -20,7 +20,7 @@ namespace HIS.CLI.View
 		private readonly IEnumerable<RoomType> _types;
 		private readonly IEnumerable<RoomProperty> _modifiableProperties;
 
-		internal RoomView(IRoomService roomService, UserAccount user) : base(user)
+		internal RoomView(IRoomService roomService)
 		{
 			_service = roomService;
 			_types = Utility.GetEnumValues<RoomType>();
@@ -28,20 +28,20 @@ namespace HIS.CLI.View
 		}
 
 		#region commands
-		internal Room CmdRoomCreate()
+		internal Room CmdCreate()
 		{
 			Room r = InputRoom();
 			_service.Add(r);
 			return r;
 		}
 
-		internal void CmdRoomView()
+		internal void CmdRead()
 		{
 			Room room = Select();
 			Print(room.ToString());
 		}
 
-		internal void CmdRoomUpdate()
+		internal void CmdUpdate()
 		{
 			Room room = SelectModifiable();
 			var whichProperties = SelectProperties();
@@ -49,7 +49,7 @@ namespace HIS.CLI.View
 			_service.Copy(src, room, whichProperties);
 		}
 
-		internal void CmdRoomDelete()
+		internal void CmdDelete()
 		{
 			Room room = SelectModifiable();
 			_service.Remove(room);

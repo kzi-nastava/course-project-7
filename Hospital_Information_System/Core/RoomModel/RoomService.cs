@@ -38,6 +38,7 @@ namespace HIS.Core.RoomModel
 
 		public void Remove(Room r)
 		{
+			// todo: Remove relocations from/to this room...?
 			Room warehouse = _repo.GetWarehouse();
 			for (int i = 0; i < r.Equipment.Count; i++)
 			{

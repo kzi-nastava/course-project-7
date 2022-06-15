@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace HIS.CLI.View
 {
-	internal class MedicationView : View
+	internal class MedicationView : AbstractView
 	{
 		private readonly IMedicationService _service;
 		private readonly IIngredientService _ingredientService;
@@ -21,7 +21,7 @@ namespace HIS.CLI.View
 		private static readonly string errNameExists = "Name already exists";
 		private static readonly string hintNothingToSelect = "Nothing to select. Stop";
 
-		public MedicationView(IMedicationService service, IIngredientService ingredientService, IMedicationRequestService medicationRequestService, UserAccount user) : base(user)
+		public MedicationView(IMedicationService service, IIngredientService ingredientService, IMedicationRequestService medicationRequestService)
 		{
 			_service = service;
 			_ingredientService = ingredientService;

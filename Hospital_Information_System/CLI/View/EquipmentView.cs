@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace HIS.CLI.View
 {
-	internal class EquipmentView : View
+	internal class EquipmentView : AbstractView
 	{
 		private static readonly string hintEnterQuery = "Enter search query";
 
@@ -16,7 +16,7 @@ namespace HIS.CLI.View
 		private readonly IEnumerable<EquipmentType> _equipmentTypes;
 		private readonly IEnumerable<EquipmentUse> _equipmentUses;
 
-		internal EquipmentView(IEquipmentService service, UserAccount user) : base(user)
+		internal EquipmentView(IEquipmentService service)
 		{
 			_service = service;
 			_searchableProperties = Utility.GetEnumValues<EquipmentProperty>().ToList();

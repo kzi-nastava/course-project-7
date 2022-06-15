@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace HIS.CLI.View
 {
-	internal class DoctorView : View
+	internal class DoctorView : AbstractView
 	{
 		private readonly IDoctorService _service;
 		private readonly AppointmentView _appointmentView;
@@ -21,7 +21,7 @@ namespace HIS.CLI.View
 
 		private const string hintSelectDoctor = "Select doctor";
 
-		public DoctorView(IDoctorService service, AppointmentView appointmentView, UserAccount user) : base(user)
+		public DoctorView(IDoctorService service, AppointmentView appointmentView)
 		{
 			_service = service;
 			_appointmentView = appointmentView;
@@ -43,7 +43,7 @@ namespace HIS.CLI.View
 
 		internal void CmdAppointFromSearch()
 		{
-			if (_user.Type != UserAccount.AccountType.PATIENT)
+			if (User.Type != UserAccount.AccountType.PATIENT)
 			{
 				return;
 			}

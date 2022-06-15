@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace HIS.CLI.View
 {
-	internal class PollView : View
+	internal class PollView : AbstractView
 	{
-		public PollView(UserAccount user) : base(user)
+		public PollView()
 		{
 
 		}

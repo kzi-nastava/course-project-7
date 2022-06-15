@@ -15,7 +15,7 @@ using System.Linq;
 
 namespace HIS.CLI.View
 {
-	internal class AppointmentView : View
+	internal class AppointmentView : AbstractView
 	{
 		private readonly IAppointmentService _service;
 		private readonly IAppointmentAvailabilityService _appointmentAvailabilityService;
@@ -77,7 +77,7 @@ namespace HIS.CLI.View
 		private const string hintInputAnamnesis = "Input anamnesis (newLine to finish)";
 
 		public AppointmentView(IAppointmentService service, IAppointmentAvailabilityService appointmentAvailabilityService, IDoctorService doctorService, IDoctorAvailabilityService doctorAvailabilityService, IPatientService patientService,
-			IPatientAvailabilityService patientAvailabilityService, IRoomService roomService, IRoomAvailabilityService roomAvailabilityService, UserAccount user) : base(user)
+			IPatientAvailabilityService patientAvailabilityService, IRoomService roomService, IRoomAvailabilityService roomAvailabilityService)
 		{
 			_service = service;
 			_appointmentAvailabilityService = appointmentAvailabilityService;
@@ -94,7 +94,7 @@ namespace HIS.CLI.View
 		{
 			var propertiesToInput = AppointmentPropertyHelpers.GetProperties().Where(p => !predefProperties.Contains(p));
 			InputAppointment(propertiesToInput, appointment);
-			_service.Add(appointment, _user);
+			_service.Add(appointment, User);
 		}
 
 		internal void CmdCreate()
@@ -113,14 +113,14 @@ namespace HIS.CLI.View
 		internal void CmdRead()
 		{
 			IEnumerable<Appointment> allAppointments = new List<Appointment>();
-			if (_user.Type == UserAccount.AccountType.PATIENT)
+			if (User.Type == UserAccount.AccountType.PATIENT)
 			{
-				allAppointments = _service.GetAll(_patientService.GetPatientFromPerson(_user.Person));
+				allAppointments = _service.GetAll(_patientService.GetPatientFromPerson(User.Person));
 			}
 
-			if (_user.Type == UserAccount.AccountType.DOCTOR)
+			if (User.Type == UserAccount.AccountType.DOCTOR)
 			{
-				allAppointments = _service.GetAll(_doctorService.GetDoctorFromPerson(_user.Person));
+				allAppointments = _service.GetAll(_doctorService.GetDoctorFromPerson(User.Person));
 			}
 
 			foreach (var app in allAppointments)
@@ -137,7 +137,7 @@ namespace HIS.CLI.View
 				var propertiesToUpdate = SelectModifiableProperties();
 				var updatedAppointment = new Appointment();
 				InputAppointment(propertiesToUpdate, updatedAppointment, appointment);
-				_service.Update(appointment, updatedAppointment, propertiesToUpdate, _user);
+				_service.Update(appointment, updatedAppointment, propertiesToUpdate, User);
 				Hint(hintAppointmentUpdated);
 			}
 			catch (NothingToSelectException e)
@@ -153,7 +153,7 @@ namespace HIS.CLI.View
 				var appointmentsToDelete = SelectModifiableAppointments();
 				foreach (Appointment appointment in appointmentsToDelete)
 				{
-					_service.Remove(appointment, _user);
+					_service.Remove(appointment, User);
 					Hint(hintAppointmentDeleted);
 				}
 			}
@@ -167,7 +167,7 @@ namespace HIS.CLI.View
 		{
 			Hint(hintSelectProperties);
 			return EasyInput<AppointmentProperty>.SelectMultiple(
-				AppointmentPropertyHelpers.GetModifiableProperties(_user).ToList(),
+				AppointmentPropertyHelpers.GetModifiableProperties(User).ToList(),
 				ap => ap.ToString(),
 				_cancel
 			).ToList();
@@ -177,14 +177,14 @@ namespace HIS.CLI.View
 		{
 			Hint(hintSelectAppointment);
 			return EasyInput<Appointment>.Select(
-				_service.GetModifiable(_user), _cancel);
+				_service.GetModifiable(User), _cancel);
 		}
 
 		private List<Appointment> SelectModifiableAppointments()
 		{
 			Hint(hintSelectAppointments);
 			return EasyInput<Appointment>.SelectMultiple(
-				_service.GetModifiable(_user).ToList(), _cancel).ToList();
+				_service.GetModifiable(User).ToList(), _cancel).ToList();
 		}
 
 		private void InputAppointment(IEnumerable<AppointmentProperty> whichProperties, Appointment appointment, Appointment refAppointment = null)
@@ -212,9 +212,9 @@ namespace HIS.CLI.View
 
 		private Doctor InputDoctor(Appointment referenceAppointment)
 		{
-			if (_user.Type == UserAccount.AccountType.DOCTOR)
+			if (User.Type == UserAccount.AccountType.DOCTOR)
 			{
-				return _doctorService.GetDoctorFromPerson(_user.Person);
+				return _doctorService.GetDoctorFromPerson(User.Person);
 			}
 			else
 			{
@@ -226,9 +226,9 @@ namespace HIS.CLI.View
 
 		private Patient InputPatient(Appointment referenceAppointment)
 		{
-			if (_user.Type == UserAccount.AccountType.PATIENT)
+			if (User.Type == UserAccount.AccountType.PATIENT)
 			{
-				return _patientService.GetPatientFromPerson(_user.Person);
+				return _patientService.GetPatientFromPerson(User.Person);
 			}
 			else
 			{
@@ -240,7 +240,7 @@ namespace HIS.CLI.View
 		private Room InputExaminationRoom(Appointment referenceAppointment)
 		{
 			// Patient and doctor cannot modify the Room property, however when creating an Appointment we can reach here.
-			if (_user.Type != UserAccount.AccountType.MANAGER)
+			if (User.Type != UserAccount.AccountType.MANAGER)
 			{
 				return _roomAvailabilityService.GetRandomAvailableExaminationRoom(referenceAppointment);
 			}
@@ -309,7 +309,7 @@ namespace HIS.CLI.View
 				Hint(askCreateAppointment);
 				if (EasyInput<bool>.YesNo(_cancel))
 				{
-					_service.Add(appointment, _user);
+					_service.Add(appointment, User);
 				}
 			}
 			catch (NothingToSelectException e)

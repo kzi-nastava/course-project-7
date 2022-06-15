@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace HIS.CLI.View
 {
-	internal class IngredientView : View
+	internal class IngredientView : AbstractView
 	{
 		private static readonly string errNameTaken = "Name already taken";
 		private static readonly string hintName = "Enter name";
@@ -20,7 +20,7 @@ namespace HIS.CLI.View
 		private IMedicationRequestService _medicationRequestService;
 		private IEnumerable<IngredientProperty> _properties;
 
-		public IngredientView(IIngredientService service, IMedicationService medicationService, IMedicationRequestService medicationRequestService, UserAccount user) : base(user)
+		public IngredientView(IIngredientService service, IMedicationService medicationService, IMedicationRequestService medicationRequestService)
 		{
 			_service = service;
 			_medicationService = medicationService;
@@ -28,7 +28,7 @@ namespace HIS.CLI.View
 			_properties = Utility.GetEnumValues<IngredientProperty>();
 		}
 
-		internal void CmdAdd()
+		internal void CmdCreate()
 		{
 			var newIngredient = Input(_properties);
 			_service.Add(newIngredient);

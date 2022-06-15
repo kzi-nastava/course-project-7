@@ -17,4 +17,9 @@ namespace HIS.Core.PersonModel.UserAccountModel.Util
 
         }
     }
+
+    public class UserAccountChangedException : Exception
+	{
+
+	}
 }
