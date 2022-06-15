@@ -1,4 +1,5 @@
 ﻿using HIS.Core.PersonModel.UserAccountModel;
+using HIS.Core.PersonModel.UserAccountModel.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,6 +74,7 @@ namespace HIS.CLI.View.UserCommand
 		private void LogOut()
 		{
 			User = new UserAccount(UserAccount.AccountType.LOGGED_OUT);
+			throw new UserAccountChangedException();
 		}
 
 		private void ShowHelp()

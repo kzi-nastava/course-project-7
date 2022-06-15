@@ -1,4 +1,5 @@
 ﻿using HIS.Core.PersonModel.UserAccountModel;
+using HIS.Core.PersonModel.UserAccountModel.Util;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,6 +23,7 @@ namespace HIS.CLI.View.UserCommand
 		private void LogIn(UserAccountView userAccountView)
 		{
 			User = userAccountView.CmdLogin();
+			throw new UserAccountChangedException();
 		}
 	}
 }

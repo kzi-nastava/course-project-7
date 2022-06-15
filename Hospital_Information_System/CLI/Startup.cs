@@ -95,15 +95,10 @@ namespace HIS.CLI
 
 			Console.WriteLine("Type help for a list of commands");
 
+			UserCommandView cmdView = new LoggedOutCommandView(userAccountView);
+
 			while (true)
 			{
-				UserCommandView cmdView = AbstractView.User.Type switch
-				{
-					UserAccount.AccountType.MANAGER => new ManagerCommandView(roomView, equipmentView, equipmentRelocationView, renovationView, ingredientView, medicationView, pollSummaryView),
-					UserAccount.AccountType.LOGGED_OUT => new LoggedOutCommandView(userAccountView),
-					_ => throw new NotImplementedException(),
-				};
-
 				try
 				{
 					cmdView.PollCommand();
@@ -115,6 +110,15 @@ namespace HIS.CLI
 				catch (UserAccountForcefullyBlockedException e)
 				{
 					Console.WriteLine(e.Message);
+				}
+				catch (UserAccountChangedException)
+				{
+					cmdView = AbstractView.User.Type switch
+					{
+						UserAccount.AccountType.MANAGER => new ManagerCommandView(roomView, equipmentView, equipmentRelocationView, renovationView, ingredientView, medicationView, pollSummaryView),
+						UserAccount.AccountType.LOGGED_OUT => new LoggedOutCommandView(userAccountView),
+						_ => throw new NotImplementedException(),
+					};
 				}
 				catch (QuitApplicationException)
 				{
