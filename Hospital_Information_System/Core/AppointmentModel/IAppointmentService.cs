@@ -21,5 +21,6 @@ namespace HIS.Core.AppointmentModel
         bool MustRequestModification(Appointment appointment, UserAccount user);
         bool AreColliding(DateTime schedule1, DateTime schedule2);
         void Copy(Appointment target, Appointment source, IEnumerable<AppointmentProperty> whichProperties);
+        Appointment Get(int id);
     }
 }

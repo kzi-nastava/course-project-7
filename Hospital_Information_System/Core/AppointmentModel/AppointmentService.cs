@@ -133,5 +133,10 @@ namespace HIS.Core.AppointmentModel
         {
             return GetPast(patient).Where(a => _appointmentPollService.GetAll().FirstOrDefault(ap => ap.Appointment == a) == null);
         }
+
+        public Appointment Get(int id)
+        {
+            return _repo.Get(id);
+        }
     }
 }

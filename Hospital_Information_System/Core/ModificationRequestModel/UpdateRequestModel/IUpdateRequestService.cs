@@ -8,5 +8,7 @@ namespace HIS.Core.ModificationRequestModel.UpdateRequestModel
     {
         IEnumerable<UpdateRequest> GetAll();
         UpdateRequest Add(UpdateRequest request);
+        List<UpdateRequest> GetPending();
+        bool IsModifiable(UpdateRequest request);
     }
 }

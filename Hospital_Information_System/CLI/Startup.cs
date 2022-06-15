@@ -93,6 +93,7 @@ namespace HIS.CLI
 			AppointmentPollView appointmentPollView = new AppointmentPollView(appointmentPollService, patientService, appointmentService, pollView);
 			HospitalPollView hospitalPollView = new HospitalPollView(hospitalPollService, patientService, pollView);
 			PollSummaryView pollSummaryView = new PollSummaryView(hospitalPollService, appointmentPollService);
+			RequestView requestView = new RequestView(deleteRequestService, updateRequestService, appointmentService);
 
 			Console.WriteLine("Type help for a list of commands");
 
@@ -118,7 +119,7 @@ namespace HIS.CLI
 					{
 						UserAccount.AccountType.MANAGER => new ManagerCommandView(roomView, equipmentView, equipmentRelocationView, renovationView, ingredientView, medicationView, pollSummaryView),
 						UserAccount.AccountType.PATIENT => new PatientCommandView(appointmentView, medicalRecordView, doctorView, hospitalPollView, appointmentPollView),
-						UserAccount.AccountType.SECRETARY => new SecretaryCommandView(userAccountView, appointmentView, medicalRecordView),
+						UserAccount.AccountType.SECRETARY => new SecretaryCommandView(userAccountView, appointmentView, medicalRecordView, requestView),
 						UserAccount.AccountType.LOGGED_OUT => new LoggedOutCommandView(userAccountView),
 						_ => throw new NotImplementedException(),
 					};
