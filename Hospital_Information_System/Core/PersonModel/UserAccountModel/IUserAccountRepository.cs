@@ -11,5 +11,9 @@ namespace HIS.Core.PersonModel.UserAccountModel
 		public UserAccount Get(int id);
 		public UserAccount Add(UserAccount obj);
 		public void Remove(UserAccount obj);
+		public IEnumerable<UserAccount> GetByUsername(string username);
+		public IEnumerable<UserAccount> GetModifiable(UserAccount user);
+		public IEnumerable<UserAccount> GetNotBlockedPatientAccounts();
+		public IEnumerable<UserAccount> GetBlockedPatientAccounts();
 	}
 }

@@ -7,5 +7,6 @@ namespace HIS.Core.PersonModel.PatientModel
     {
         IEnumerable<Patient> GetAll();
         Patient GetPatientFromPerson(Person person);
+        void Add(Patient patient);
     }
 }

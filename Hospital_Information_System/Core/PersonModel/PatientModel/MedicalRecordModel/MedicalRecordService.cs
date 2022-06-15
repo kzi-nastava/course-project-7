@@ -58,6 +58,11 @@ namespace HIS.Core.PersonModel.PatientModel.MedicalRecordModel
             }
         }
 
+        public void Add(Patient patient)
+        {
+            _repo.Add(new MedicalRecord(patient));
+        }
+
         private void ExecutePrescriptionNotification(MedicalRecord record, Prescription prescription)
         {
             prescription.TimesOfUsage.Sort();

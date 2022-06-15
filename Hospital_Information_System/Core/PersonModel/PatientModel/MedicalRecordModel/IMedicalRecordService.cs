@@ -12,5 +12,6 @@ namespace HIS.Core.PersonModel.PatientModel.MedicalRecordModel
         MedicalRecord GetPatientsMedicalRecord(Patient patient);
         IEnumerable<Appointment> MatchAppointmentByAnamnesis(string query, AppointmentComparer comparer, Patient patient);
         void AddNotifsIfNecessary(UserAccount ua);
+        void Add(Patient patient);
     }
 }

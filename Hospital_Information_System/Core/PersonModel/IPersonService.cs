@@ -7,5 +7,6 @@ namespace HIS.Core.PersonModel
     public interface IPersonService
     {
         IEnumerable<Person> GetAll();
+        void Add(Person person);
     }
 }
