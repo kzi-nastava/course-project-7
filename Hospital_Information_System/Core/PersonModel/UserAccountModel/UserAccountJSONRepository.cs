@@ -29,7 +29,31 @@ namespace HIS.Core.PersonModel.UserAccountModel
 		{
 			return _userAccounts.Where(o => !o.Deleted);
 		}
+		
+		public IEnumerable<UserAccount> GetByUsername(string username)
+		{
+			return _userAccounts.Where(acc => acc.Username == username);
+		}
 
+		public IEnumerable<UserAccount> GetModifiable(UserAccount user)
+		{
+			return _userAccounts.Where(acc => acc.Type == UserAccount.AccountType.PATIENT && !acc.Deleted);
+		}
+		
+		public IEnumerable<UserAccount> GetNotBlockedPatientAccounts()
+		{
+			return _userAccounts.Where(account => !account.Deleted && !IsBlocked(account) && account.Type == UserAccount.AccountType.PATIENT).ToList();
+		}
+		
+		public IEnumerable<UserAccount> GetBlockedPatientAccounts()
+		{
+			return _userAccounts.Where(account => !account.Deleted && IsBlocked(account) && account.Type == UserAccount.AccountType.PATIENT).ToList();
+		}
+		
+		private bool IsBlocked(UserAccount account)
+		{
+			return account.Blocked != UserAccount.BlockedBy.NONE;
+		}
 		public UserAccount Get(int id)
 		{
 			return _userAccounts.FirstOrDefault(r => r.Id == id);
