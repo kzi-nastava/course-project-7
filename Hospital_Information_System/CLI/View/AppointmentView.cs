@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using HIS.Core.PersonModel.PatientModel.MedicalRecordModel;
+using HIS.Core.PersonModel.PatientModel.MedicalRecordModel.ReferralModel;
 
 namespace HIS.CLI.View
 {
@@ -28,6 +29,8 @@ namespace HIS.CLI.View
 		private readonly IRoomAvailabilityService _roomAvailabilityService;
 		private readonly IMedicalRecordService _medicalRecordService;
 		private readonly MedicalRecordView _medicalRecordView;
+		private readonly ReferralView _referralView;
+		private readonly PrescriptionView _prescriptionView;
 		private IEnumerable<AppointmentProperty> _properties;
 
 		private const string hintSelectAppointments = "Select appointments by their number, separated by whitespace.\nEnter a newline to finish";
@@ -80,7 +83,8 @@ namespace HIS.CLI.View
 		private const string hintInputAnamnesis = "Input anamnesis (newLine to finish)";
 
 		public AppointmentView(IAppointmentService service, IAppointmentAvailabilityService appointmentAvailabilityService, IDoctorService doctorService, IDoctorAvailabilityService doctorAvailabilityService, IPatientService patientService,
-			IPatientAvailabilityService patientAvailabilityService, IRoomService roomService, IRoomAvailabilityService roomAvailabilityService, IMedicalRecordService medicalRecordService, MedicalRecordView medicalRecordView)
+			IPatientAvailabilityService patientAvailabilityService, IRoomService roomService, IRoomAvailabilityService roomAvailabilityService, IMedicalRecordService medicalRecordService, MedicalRecordView medicalRecordView, ReferralView referralView,
+			PrescriptionView prescriptionView)
 		{
 			_service = service;
 			_appointmentAvailabilityService = appointmentAvailabilityService;
@@ -93,6 +97,8 @@ namespace HIS.CLI.View
 			_medicalRecordService = medicalRecordService;
 			_medicalRecordView = medicalRecordView;
 			_properties = Utility.GetEnumValues<AppointmentProperty>();
+			_referralView = referralView;
+			_prescriptionView = prescriptionView;
 		}
 
 		internal void CreateWithPredefinedProperties(IEnumerable<AppointmentProperty> predefProperties, Appointment appointment)
@@ -514,24 +520,25 @@ namespace HIS.CLI.View
             
 			_medicalRecordView.UpdateMedicalRecord(appointmentToStart.Patient);
 			UpdateAnamnesis(appointmentToStart);
-            
-			/*
+			
 			Hint(hintMakeReferral);
 			if (EasyInput<bool>.YesNo(_cancel)) //wants to create a referral
 			{
-				ReferralModel.CreateReferral(appointmentToStart);
+				_referralView.CreateReferral(appointmentToStart);
 			}
             
+			
 			Hint(hintWritePrescription);
 			if (EasyInput<bool>.YesNo(_cancel)) //wants to create a prescription
 			{
-				PrescriptionModel.CreatePrescription(MedicalRecordController.GetPatientsMedicalRecord(appointmentToStart.Patient));
+				_prescriptionView.CreatePrescription(_medicalRecordService.GetPatientsMedicalRecord(appointmentToStart.Patient));
 			}
             
 			Console.ForegroundColor = ConsoleColor.Green;
-			Print(hintAppointmentIsOver);
+			Console.WriteLine(hintAppointmentIsOver);
 			Console.ForegroundColor = ConsoleColor.Gray;
             
+			/*
 			EquipmentModel.DeleteEquipmentAfterAppointment(appointmentToStart.Room);
 			*/
 		}

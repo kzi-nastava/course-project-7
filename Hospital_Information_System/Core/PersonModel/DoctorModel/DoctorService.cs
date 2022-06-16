@@ -57,5 +57,10 @@ namespace HIS.Core.PersonModel.DoctorModel
         {
             return $"Doctor{{Id = {doctor.Id}, First name = {doctor.Person.FirstName}, Last name = {doctor.Person.LastName}, Specialty = {doctor.Specialty}, Rating = {Math.Round(CalculateRating(doctor), 2)}}}";
         }
+        
+        public List<Doctor.MedicineSpeciality> GetAllSpecialties()
+        {
+            return Enum.GetValues(typeof(Doctor.MedicineSpeciality)).Cast<Doctor.MedicineSpeciality>().ToList();
+        }
     }
 }

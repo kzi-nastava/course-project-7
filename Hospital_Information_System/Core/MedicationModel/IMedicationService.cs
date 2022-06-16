@@ -14,5 +14,7 @@ namespace HIS.Core.MedicationModel
 		public void Remove(Medication obj);
 		public IEnumerable<Medication> GetAllThatUse(Ingredient ingredient);
 		public void Copy(Medication src, Medication dest, IEnumerable<MedicationProperty> properties);
+
+		public bool IsMedicationSafe(List<Ingredient> medicationIngredients, List<Ingredient> patientsAllergies);
 	}
 }

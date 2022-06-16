@@ -23,5 +23,7 @@ namespace HIS.Core.PersonModel.PatientModel.MedicalRecordModel
         List<String> GetActionsPerformableOnList();
 
         void Add(Patient patient);
+
+        public List<MedicalRecordProperty> GetPrescriptionProperty();
     }
 }
