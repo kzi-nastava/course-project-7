@@ -9,5 +9,6 @@ namespace HIS.Core.PersonModel.DoctorModel.DoctorAvailability
         public bool IsAvailable(Doctor doctor, DateTime newSchedule, Appointment refAppointment = null);
         public Doctor FindFirstAvailableDoctor(DateTime scheduledFor);
         public IEnumerable<Doctor> GetAvailable(Appointment refAppointment);
+        public Doctor FindFirstAvailableDoctorOfSpecialty(DateTime scheduledFor, Doctor.MedicineSpeciality speciality);
     }
 }

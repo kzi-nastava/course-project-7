@@ -49,5 +49,10 @@ namespace HIS.Core.PersonModel.DoctorModel.DoctorAvailability
 
             return _doctorService.GetAll().Where(d => IsAvailable(d, refAppointment.ScheduledFor, refAppointment));
         }
+
+        public Doctor FindFirstAvailableDoctorOfSpecialty(DateTime scheduledFor, Doctor.MedicineSpeciality speciality)
+        {
+            return _doctorService.GetAll().First(d => IsAvailable(d, scheduledFor) && d.Specialty == speciality);
+        }
     }
 }

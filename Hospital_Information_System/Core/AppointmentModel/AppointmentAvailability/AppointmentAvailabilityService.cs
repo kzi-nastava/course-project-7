@@ -49,5 +49,33 @@ namespace HIS.Core.AppointmentModel.AppointmentAvailability
             }
             return null;
         }
+
+        public Appointment FindUrgentAppointmentSlot(AppointmentSearchBundle sb, Doctor.MedicineSpeciality speciality)
+        {
+            DateTime currDt = sb.By;
+            Doctor doctor = sb.Doctor;
+            Patient patient = sb.Patient;
+
+            for (TimeSpan currTs = sb.Start; currTs <= sb.End; currTs = currTs.Add(TimeSpan.FromMinutes(1)))
+            {
+                DateTime scheduledFor = currDt.Add(currTs);
+                if (scheduledFor < DateTime.Now) continue;
+
+                doctor = (sb.Doctor != null) ?
+                    (_doctorAvailabilityService.IsAvailable(sb.Doctor, scheduledFor) ? sb.Doctor : null) : _doctorAvailabilityService.FindFirstAvailableDoctorOfSpecialty(scheduledFor, speciality);
+                if (doctor == null) continue;
+
+                patient = (sb.Patient != null) ?
+                    (_patientAvailabilityService.IsAvailable(sb.Patient, scheduledFor) ? sb.Patient : null) : _patientAvailabilityService.FindFirstAvailablePatient(scheduledFor);
+                if (patient == null) continue;
+
+                Room room = _roomAvailabilityService.FindFirstAvailableExaminationRoom(scheduledFor);
+                if (room == null) continue;
+
+                return new Appointment(doctor, patient, room, scheduledFor);
+            }
+
+            return new Appointment(doctor, patient, null, DateTime.Now);
+        }
     }
 }
