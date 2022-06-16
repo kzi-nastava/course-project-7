@@ -99,7 +99,9 @@ namespace HIS.CLI
 			MedicalRecordView medicalRecordView = new MedicalRecordView(medicalRecordService, patientService, appointmentService, ingredientService);
 			ReferralView referralView = new ReferralView(referralService, doctorService);
 			PrescriptionView prescriptionView = new PrescriptionView(prescriptionService, medicalRecordService, medicationService);
-			AppointmentView appointmentView = new AppointmentView(appointmentService, appointmentAvailabilityService, doctorService, doctorAvailabilityService, patientService, patientAvailabilityService, roomService, roomAvailabilityService, medicalRecordService, medicalRecordView, referralView, prescriptionView, equipmentView);
+
+			AppointmentView appointmentView = new AppointmentView(appointmentService, appointmentAvailabilityService, doctorService, doctorAvailabilityService, patientService, patientAvailabilityService, roomService, roomAvailabilityService, medicalRecordService, medicalRecordView, referralView, prescriptionView, referralService, equipmentView);
+
 			DoctorView doctorView = new DoctorView(doctorService, appointmentView);
 			PollView pollView = new PollView();
 			AppointmentPollView appointmentPollView = new AppointmentPollView(appointmentPollService, patientService, appointmentService, pollView);
@@ -132,8 +134,11 @@ namespace HIS.CLI
 					{
 						UserAccount.AccountType.MANAGER => new ManagerCommandView(roomView, equipmentView, equipmentRelocationView, renovationView, ingredientView, medicationView, pollSummaryView),
 						UserAccount.AccountType.PATIENT => new PatientCommandView(appointmentView, medicalRecordView, doctorView, hospitalPollView, appointmentPollView),
-						UserAccount.AccountType.SECRETARY => new SecretaryCommandView(userAccountView, appointmentView, medicalRecordView, requestView, equipmentView, equipmentRelocationView),
+
 						UserAccount.AccountType.DOCTOR => new DoctorCommandView(appointmentView, daysOffRequestView, medicationView),
+
+						UserAccount.AccountType.SECRETARY => new SecretaryCommandView(userAccountView, appointmentView, requestView, equipmentView, equipmentRelocationView, daysOffRequestView),
+
 						UserAccount.AccountType.LOGGED_OUT => new LoggedOutCommandView(userAccountView),
 						_ => throw new NotImplementedException(),
 					};

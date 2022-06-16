@@ -48,5 +48,35 @@
     "RejectionExplanation": "",
     "Id": 5,
     "Deleted": false
+  },
+  {
+    "Requester": 2,
+    "Start": "2022-06-28T00:00:00",
+    "End": "2022-06-30T00:00:00",
+    "Reason": "Paternity leave",
+    "State": 0,
+    "RejectionExplanation": "",
+    "Id": 5,
+    "Deleted": false
+  },
+  {
+    "Requester": 2,
+    "Start": "2022-07-02T00:00:00",
+    "End": "2022-07-05T00:00:00",
+    "Reason": "Vacation",
+    "State": 0,
+    "RejectionExplanation": "",
+    "Id": 6,
+    "Deleted": false
+  },
+  {
+    "Requester": 2,
+    "Start": "2022-07-15T00:00:00",
+    "End": "2022-07-20T00:00:00",
+    "Reason": "Death of a parent",
+    "State": 0,
+    "RejectionExplanation": "",
+    "Id": 7,
+    "Deleted": false
   }
 ]

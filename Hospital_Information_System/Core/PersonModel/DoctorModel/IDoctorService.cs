@@ -17,5 +17,6 @@ namespace HIS.Core.PersonModel.DoctorModel
         string VerboseToString(Doctor doctor);
         bool ExistForSpecialty(Doctor.MedicineSpeciality speciality);
         List<Doctor.MedicineSpeciality> GetAllSpecialties();
+        IEnumerable<Doctor> GetDoctorsBySpecialty(Doctor.MedicineSpeciality speciality);
     }
 }

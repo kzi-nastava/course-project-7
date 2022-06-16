@@ -1,12 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace HIS.CLI.View.UserCommand
 {
     internal class DoctorCommandView : UserCommandView
     {
+
         public DoctorCommandView(AppointmentView appointmentView, DaysOffRequestView daysOffRequestView, MedicationView medicationView)
         {
+            daysOffRequestView.NotifyDoctor();
             AddCommands(new Dictionary<string, Action>
             {
                 { "app-create", () => appointmentView.CmdCreate() },

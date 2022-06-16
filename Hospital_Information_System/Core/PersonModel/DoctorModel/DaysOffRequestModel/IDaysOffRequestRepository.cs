@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using HIS.Core.PersonModel.UserAccountModel;
 
 namespace HIS.Core.PersonModel.DoctorModel.DaysOffRequestModel
 {
@@ -12,7 +13,8 @@ namespace HIS.Core.PersonModel.DoctorModel.DaysOffRequestModel
         public DaysOffRequest Add(DaysOffRequest obj);
         public void Remove(DaysOffRequest obj);
 
-        public List<DaysOffRequest> GetSentDaysOffRequests();
+        public List<DaysOffRequest> GetSent();
+        List<DaysOffRequest> GetChanged(UserAccount user);
 
         public List<DaysOffRequest> GetDaysOffRequests(Doctor doctor);
 
