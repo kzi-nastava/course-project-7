@@ -24,9 +24,10 @@ namespace HIS.Core.AppointmentModel
         private IUpdateRequestService _updateRequestService;
         private IMedicalRecordService _medicalRecordService;
         private IAppointmentPollService _appointmentPollService;
+        private IDoctorService _doctorService;
 
         public AppointmentService(IAppointmentRepository repo, IUserAccountService userAccountService, IDeleteRequestService deleteRequestService, IUpdateRequestService updateRequestService,
-            IMedicalRecordService medicalRecordService, IAppointmentPollService appointmentPollService)
+            IMedicalRecordService medicalRecordService, IAppointmentPollService appointmentPollService, IDoctorService doctorService)
         {
             _repo = repo;
             _userAccountService = userAccountService;
@@ -34,6 +35,7 @@ namespace HIS.Core.AppointmentModel
             _updateRequestService = updateRequestService;
             _medicalRecordService = medicalRecordService;
             _appointmentPollService = appointmentPollService;
+            _doctorService = doctorService;
         }
 
         public IEnumerable<Appointment> GetAll()
@@ -132,6 +134,23 @@ namespace HIS.Core.AppointmentModel
         public IEnumerable<Appointment> GetPollable(Patient patient)
         {
             return GetPast(patient).Where(a => _appointmentPollService.GetAll().FirstOrDefault(ap => ap.Appointment == a) == null);
+        }
+        
+        public List<Appointment> GetNextDoctorsAppointments(UserAccount user, DateTime firstRelevantDay)
+        {
+            var lastRelevantDay = firstRelevantDay.AddDays(3);
+            List<Appointment> allAppointments = GetAll(_doctorService.GetDoctorFromPerson(user.Person)).ToList();
+            List<Appointment> nextAppointments = new List<Appointment>();
+            foreach (var appointment in allAppointments)
+            {
+                if (DateTime.Compare(firstRelevantDay, appointment.ScheduledFor) <= 0 && //if date of the appointment is later than the first relevant day
+                    DateTime.Compare(appointment.ScheduledFor, lastRelevantDay) <= 0) // if date of the appointment is earlier than the last relevant day
+                {
+                    nextAppointments.Add(appointment);
+                }
+            }
+
+            return nextAppointments;
         }
     }
 }

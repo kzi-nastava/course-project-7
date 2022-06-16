@@ -8,6 +8,10 @@ using System.Collections.Generic;
 
 namespace HIS.Core.PersonModel.PatientModel.MedicalRecordModel
 {
+    public enum MedicalRecordProperty
+    {
+        PATIENT, HEIGHT, WEIGHT, ALLERGIES_TO_INGREDIENTS, OTHER_ALLERGIES, ILLNESSES, PRESCRIPTIONS
+    }
     public class MedicalRecord : Entity
     {
         [JsonConverter(typeof(PatientJSONReferenceConverter))]

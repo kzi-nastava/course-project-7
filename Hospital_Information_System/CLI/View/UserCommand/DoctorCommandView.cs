@@ -13,6 +13,7 @@ namespace HIS.CLI.View.UserCommand
                 { "app-read", () => appointmentView.CmdRead() },
                 { "app-update", () => appointmentView.CmdUpdate() },
                 { "app-delete", () => appointmentView.CmdDelete() },
+                { "app-view-start", () => appointmentView.CmdViewAndStartAppointments() },
             });
         }
     }
