@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using HIS.Core.EquipmentModel.EquipmentRequestModel;
+using HIS.Core.RoomModel;
 
 namespace HIS.CLI.View
 {
@@ -15,6 +16,11 @@ namespace HIS.CLI.View
 		private static readonly string hintInputAmountOfEquipment = "Input amount of equipment";
 		private static readonly string errNoEquipmentNeeded = "All equipment is in stock";
 		private static readonly string errNotZero = "Input amount must be greater than 0!";
+		private const string errNotEnoughEquipment = "This room does not have that much equipment";
+		private const string showCurrentState = "Current state in the room [Equipment: Quantity]:";
+		private const string errNoEquipmentInRoom = "There's no equipment in this room";
+		private const string errPositiveNumber = "You must input a positive number (or 0)";
+		private const string hintInputUsedEquipment = "For each equipment, input how many you have used: ";
 
 		private readonly IEquipmentService _service;
 		private readonly IList<EquipmentProperty> _searchableProperties;
@@ -119,6 +125,69 @@ namespace HIS.CLI.View
 		private EquipmentUse SelectUse()
 		{
 			return EasyInput<EquipmentUse>.Select(_equipmentUses, _cancel);
+		}
+		
+		public void DeleteEquipmentAfterAppointment(Room room)
+		{
+			Dictionary<Equipment, int> currentDynamicEquipmentQuantity = _service.GetDynamicEquipment(room);
+			if (currentDynamicEquipmentQuantity.Count == 0)
+			{
+				Error(errNoEquipmentInRoom);
+				return;
+			}
+			Print(currentDynamicEquipmentQuantity);
+			var newDynamicEquipment = GetNewEquipmentQuantity(currentDynamicEquipmentQuantity);
+			var nonDynamicEquipment = _service.GetNonDynamicEquipment(room);
+			var equipment = _service.GetEquipmentAfterDeletion(newDynamicEquipment, nonDynamicEquipment);
+			room.Equipment = equipment;
+		}
+		
+		private void Print(Dictionary<Equipment, int> currentEquipmentQuantity)
+		{
+			Hint(showCurrentState);
+			foreach (KeyValuePair<Equipment, int> entry in currentEquipmentQuantity)
+			{
+				Print(entry.Key + ": " + entry.Value);
+			}
+			
+		}
+		
+		private Dictionary<Equipment, int> GetNewEquipmentQuantity(
+			Dictionary<Equipment, int> oldEquipmentQuantity)
+		{
+			Dictionary<Equipment, int> newEquipmentQuantity = new Dictionary<Equipment, int>();
+			Hint(hintInputUsedEquipment);
+			foreach (KeyValuePair<Equipment, int> entry in oldEquipmentQuantity)
+			{
+				var equipment = entry.Key;
+				var currentQuantity = entry.Value;
+				Console.Write(equipment + ": ");
+				int usedQuantity = GetUsedEquipmentQuantity(currentQuantity); 
+				int newQuantity = currentQuantity - usedQuantity;
+				if (newQuantity != 0)
+				{
+					newEquipmentQuantity[equipment] = newQuantity;
+				}
+			}
+
+			return newEquipmentQuantity;
+		}
+		
+		private int GetUsedEquipmentQuantity(int currentQuantity)
+		{
+			return EasyInput<int>.Get(
+				new List<Func<int, bool>>
+				{
+					s => s <= currentQuantity,
+					s => s >= 0,
+				},
+				new[]
+				{
+					errNotEnoughEquipment,
+					errPositiveNumber,
+				},
+				_cancel
+			);
 		}
 	}
 }

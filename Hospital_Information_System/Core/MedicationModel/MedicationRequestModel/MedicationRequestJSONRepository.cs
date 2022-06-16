@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using HIS.Core.PersonModel.DoctorModel;
 
 namespace HIS.Core.MedicationModel.MedicationRequestModel
 {
@@ -61,6 +62,21 @@ namespace HIS.Core.MedicationModel.MedicationRequestModel
 		public IEnumerable<MedicationRequest> GetAllReturnedForRevision()
 		{
 			return GetAll().Where(req => req.State == MedicationRequestState.RETURNED);
+		}
+
+		public IEnumerable<MedicationRequest> GetAllSent()
+		{
+			return GetAll().Where(req => req.State == MedicationRequestState.SENT);
+		}
+
+		public List<MedicationRequest> Get(Doctor doctor)
+		{
+			return _requests.Where(req => req.State == MedicationRequestState.SENT && (req.Reviews.Count() == 0 || req.Reviews[0].Reviewer == doctor)).ToList();
+		}
+
+		public IEnumerable<MedicationRequestState> GetAllRequestStates()
+		{
+			return Enum.GetValues(typeof(MedicationRequestState)).Cast<MedicationRequestState>();
 		}
 	}
 }

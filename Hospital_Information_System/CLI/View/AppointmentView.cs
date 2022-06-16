@@ -12,6 +12,7 @@ using HIS.Core.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HIS.Core.EquipmentModel;
 using HIS.Core.PersonModel.PatientModel.MedicalRecordModel;
 using HIS.Core.PersonModel.PatientModel.MedicalRecordModel.ReferralModel;
 
@@ -31,6 +32,7 @@ namespace HIS.CLI.View
 		private readonly MedicalRecordView _medicalRecordView;
 		private readonly ReferralView _referralView;
 		private readonly PrescriptionView _prescriptionView;
+		private readonly EquipmentView _equipmentView;
 		private readonly IReferralService _referralService;
 		private IEnumerable<AppointmentProperty> _properties;
 
@@ -96,6 +98,7 @@ namespace HIS.CLI.View
 
 		private const string hintInputAnamnesis = "Input anamnesis (newLine to finish)";
 		private const string hintSelectSpecialty = "Select a specialty for the referral: ";
+
 		private const string hintSelectReferral = "Select referral: ";
 
 		public AppointmentView(IAppointmentService service,
@@ -104,7 +107,8 @@ namespace HIS.CLI.View
 			IPatientAvailabilityService patientAvailabilityService, IRoomService roomService,
 			IRoomAvailabilityService roomAvailabilityService, IMedicalRecordService medicalRecordService,
 			MedicalRecordView medicalRecordView, ReferralView referralView,
-			PrescriptionView prescriptionView, IReferralService referralService)
+			PrescriptionView prescriptionView, IReferralService referralService, EquipmentView equipmentView)
+
 		{
 			_service = service;
 			_appointmentAvailabilityService = appointmentAvailabilityService;
@@ -119,7 +123,11 @@ namespace HIS.CLI.View
 			_properties = Utility.GetEnumValues<AppointmentProperty>();
 			_referralView = referralView;
 			_prescriptionView = prescriptionView;
+
+			_equipmentView = equipmentView;
+
 			_referralService = referralService;
+
 		}
 
 		internal void CreateWithPredefinedProperties(IEnumerable<AppointmentProperty> predefProperties, Appointment appointment)
@@ -559,13 +567,14 @@ namespace HIS.CLI.View
 					_medicalRecordService.GetPatientsMedicalRecord(appointmentToStart.Patient));
 			}
 
-			Console.ForegroundColor = ConsoleColor.Green;
+            
+			Console.ForegroundColor = ConsoleColor.DarkBlue;
 			Console.WriteLine(hintAppointmentIsOver);
 			Console.ForegroundColor = ConsoleColor.Gray;
+            
+			
+			_equipmentView.DeleteEquipmentAfterAppointment(appointmentToStart.Room);
 
-			/*
-			EquipmentModel.DeleteEquipmentAfterAppointment(appointmentToStart.Room);
-			*/
 		}
 
 		private void UpdateAnamnesis(Appointment appointment)

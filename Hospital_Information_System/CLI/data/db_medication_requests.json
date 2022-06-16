@@ -2,27 +2,7 @@
   {
     "Reviews": [],
     "Medication": {
-      "Name": "remove-this",
-      "Ingredients": [
-        0
-      ],
-      "Id": -1,
-      "Deleted": false
-    },
-    "State": 0,
-    "Id": 0,
-    "Deleted": true
-  },
-  {
-    "Reviews": [
-      {
-        "Message": "Foo bar",
-        "Timestamp": "2022-06-05T13:58:12",
-        "Verdict": 1
-      }
-    ],
-    "Medication": {
-      "Name": "somethingium",
+      "Name": "newMed",
       "Ingredients": [
         1
       ],
@@ -30,7 +10,7 @@
       "Deleted": false
     },
     "State": 0,
-    "Id": 1,
+    "Id": 0,
     "Deleted": false
   }
 ]
