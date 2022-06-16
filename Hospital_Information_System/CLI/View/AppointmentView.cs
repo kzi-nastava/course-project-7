@@ -550,5 +550,10 @@ namespace HIS.CLI.View
 			return Console.ReadLine();
 		}
 		
+    internal void CmdCreateUrgent()
+		{
+			throw new NotImplementedException();
+		}
+
 	}
 }

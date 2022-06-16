@@ -59,7 +59,8 @@ namespace HIS.Core.RoomModel
 			{
 				dest.Equipment[equipment] = amount;
 			}
-			src.Equipment[equipment] -= amount;
+			if (src != null)
+				src.Equipment[equipment] -= amount;
 		}
 
 		public void Copy(Room src, Room dest, IEnumerable<RoomProperty> properties)

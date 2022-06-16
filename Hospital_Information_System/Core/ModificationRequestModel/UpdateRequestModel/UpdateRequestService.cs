@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace HIS.Core.ModificationRequestModel.UpdateRequestModel
@@ -22,5 +23,19 @@ namespace HIS.Core.ModificationRequestModel.UpdateRequestModel
 		{
 			return _repo.Add(request);
 		}
+		
+		public List<UpdateRequest> GetPending()
+		{
+			return _repo.GetAll().Where(request => !request.Deleted && IsModifiable(request)).ToList();
+		}
+
+		public bool IsModifiable(UpdateRequest request)
+		{
+			return request.OldAppointment.ScheduledFor > DateTime.Now && request.State == ModificationRequest.StateType.PENDING;	
+		}
+		
+		
+		
+		
 	}
 }

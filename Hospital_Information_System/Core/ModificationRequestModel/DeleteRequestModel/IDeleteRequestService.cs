@@ -8,5 +8,8 @@ namespace HIS.Core.ModificationRequestModel.DeleteRequestModel
     {
         IEnumerable<DeleteRequest> GetAll();
         DeleteRequest Add(DeleteRequest request);
+        IEnumerable<DeleteRequest> GetPending();
+        bool IsModifiable(DeleteRequest request);
+        void Remove(DeleteRequest request);
     }
 }

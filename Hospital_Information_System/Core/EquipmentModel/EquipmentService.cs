@@ -46,5 +46,28 @@ namespace HIS.Core.EquipmentModel
 			int v = 0;
 			return _roomService.GetAll().Sum(r => r.Equipment.TryGetValue(eq, out v) ? v : 0);
 		}
+		
+		public IEnumerable<Equipment> GetDynamicEquipment()
+		{
+			return _repo.GetAll().Where(IsDynamicEquipment).ToList();
+		}
+		
+		public IEnumerable<Equipment> GetDynamicEquipmentNotInStock()
+		{
+			return GetDynamicEquipment().Where(eq => GetTotalSupply(eq) == 0).ToList();
+		}
+		
+		public bool IsDynamicEquipment(Equipment equipment)
+		{
+			return (equipment.Use == EquipmentUse.Examination || 
+			        equipment.Use == EquipmentUse.Operation ||
+			        equipment.Use == EquipmentUse.Unknown) && 
+			       (equipment.Type == EquipmentType.Gauze ||
+			        equipment.Type == EquipmentType.Injection ||
+			        equipment.Type == EquipmentType.BandAid ||
+			        equipment.Type == EquipmentType.Pen ||
+			        equipment.Type == EquipmentType.Paper ||
+			        equipment.Type == EquipmentType.Unknown);
+		}
 	}
 }

@@ -11,5 +11,8 @@ namespace HIS.Core.EquipmentModel
 		IEnumerable<Equipment> FilterByAmount(Func<int, bool> amountPredicate);
 		IEnumerable<Equipment> GetAll();
 		int GetTotalSupply(Equipment eq);
+		IEnumerable<Equipment> GetDynamicEquipmentNotInStock();
+		IEnumerable<Equipment> GetDynamicEquipment();
+		bool IsDynamicEquipment(Equipment equipment);
 	}
 }
