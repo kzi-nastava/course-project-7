@@ -59,9 +59,14 @@ namespace HIS.Core.PersonModel.DoctorModel.DaysOffRequestModel
             _repo.Remove(obj);
         }
 
-        public List<DaysOffRequest> GetSentDaysOffRequests()
+        public List<DaysOffRequest> GetSent()
         {
-            return _repo.GetSentDaysOffRequests();
+            return _repo.GetSent();
+        }
+
+        public List<DaysOffRequest> GetChanged(UserAccount user)
+        {
+            return _repo.GetChanged(user);
         }
 
         public List<DaysOffRequest> GetDaysOffRequests(Doctor doctor)
@@ -158,7 +163,7 @@ namespace HIS.Core.PersonModel.DoctorModel.DaysOffRequestModel
         {
             return (user.Type == UserAccount.AccountType.DOCTOR)
                 ? GetDaysOffRequests(_doctorService.GetDoctorFromPerson(user.Person))
-                : GetSentDaysOffRequests(); //for secretary
+                : GetSent(); //for secretary
         }
 
         public void DeleteProblematicAppointments(Doctor doctor, DateTime start, DateTime end)

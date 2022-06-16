@@ -202,15 +202,15 @@ namespace HIS.CLI.View
 			return account;
 		}
 		
-		private static string InputUsername()
+		private string InputUsername()
 		{
 			return EasyInput<string>.Get(
-				new List<Func<string, bool>>() {s => s.Length != 0},
+				new List<Func<string, bool>>() {s => _service.GetByUsername(s).Count() == 0},
 				new[] { errAccountUsernameNonEmpty },
 				_cancel
 			);
 		}
-		private static string InputPassword()
+		private string InputPassword()
 		{
 			return EasyInput<string>.Get(
 				new List<Func<string, bool>>() {s => s.Length != 0},
@@ -218,7 +218,7 @@ namespace HIS.CLI.View
 				_cancel
 			);
 		}
-		private static string InputFirstName()
+		private string InputFirstName()
 		{
 			return EasyInput<string>.Get(
 				new List<Func<string, bool>>() {s => s.Length != 0},
@@ -227,7 +227,7 @@ namespace HIS.CLI.View
 			);
 		}
         
-		private static string InputLastName()
+		private string InputLastName()
 		{
 			return EasyInput<string>.Get(
 				new List<Func<string, bool>>() {s => s.Length != 0},
@@ -237,7 +237,7 @@ namespace HIS.CLI.View
 			);
 		}
         
-		private static Person.PersonGender InputGender()
+		private Person.PersonGender InputGender()
 		{
 			return EasyInput<Person.PersonGender>.Select(
 				Enum.GetValues(typeof(Person.PersonGender)).Cast<Person.PersonGender>().ToList(),

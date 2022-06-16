@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using HIS.Core.PersonModel.UserAccountModel;
 
 
 namespace HIS.Core.PersonModel.DoctorModel.DaysOffRequestModel
@@ -53,9 +54,14 @@ namespace HIS.Core.PersonModel.DoctorModel.DaysOffRequestModel
             File.WriteAllText(_fname, JsonConvert.SerializeObject(_daysOffRequests, Formatting.Indented, _settings));
         }
         
-        public List<DaysOffRequest> GetSentDaysOffRequests()
+        public List<DaysOffRequest> GetSent()
         {
-            return _daysOffRequests.Where(a => !a.Deleted && a.State == DaysOffRequest.DaysOffRequestState.SENT).ToList();
+            return _daysOffRequests.Where(a => !a.Deleted && a.State == DaysOffRequest.DaysOffRequestState.SENT && DateTime.Compare(DateTime.Now, a.Start) <= 0).ToList();
+        }
+        
+        public List<DaysOffRequest> GetChanged(UserAccount user)
+        {
+            return _daysOffRequests.Where(r => !r.Deleted && user.Person == r.Requester.Person && (r.State == DaysOffRequest.DaysOffRequestState.APPROVED || r.State == DaysOffRequest.DaysOffRequestState.REJECTED)).ToList();
         }
 
         public List<DaysOffRequest> GetDaysOffRequests(Doctor doctor)

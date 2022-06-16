@@ -21,12 +21,16 @@ namespace HIS.CLI.View
         private const string hintInputStartDay = "Input date you want the break to start";
         private const string hintInputEndDay = "Input date you want the break to end";
         private const string hintInputReason = "Input reason for requesting days off";
+        private const string hintSelectAction = "Select action over requests";
+        private const string hintApproved = "Request approved";
+        private const string hintDenied = "Request denied";
 
         private const string hintIsRequestUrgent = "Do you want to make an urgent request?";
         private const string errEndBeforeStart = "The last day off comes before or at the same day as the first day, input last day again";
         private const string errUnableToSchedule = "You have appointment(s) or days off scheduled during the requested break";
         private const string errNoReason = "You have to input reason";
         private const string errBreakTooLong = "You can schedule break that lasts up to 5 days";
+        private const string errUnableToApprove = "Doctor has appointments scheduled for that time period";
 
         public DaysOffRequestView(IDaysOffRequestService service, IDoctorService doctorService, AppointmentView appointmentView)
         {
@@ -66,6 +70,69 @@ namespace HIS.CLI.View
             _service.Add(daysOffRequest);
         }
 
+        internal void NotifyDoctor()
+        {
+            var requests = _service.GetChanged(User);
+            PrintAll(requests);
+            foreach (var request in requests)
+            {
+                request.Deleted = true;
+            }
+        }
+        
+        internal void CmdHandle()
+        {
+            try
+            {
+                CmdRead();
+            
+                var actions = new Dictionary<string, Action>
+                {
+                    ["Approve days off request"] = () => Approve(),
+                    ["Deny days off request"] = () => Deny()
+                };
+                Print(hintSelectAction);
+                var actionChoice = EasyInput<string>.Select(actions.Keys.ToList(), _cancel);
+
+                actions[actionChoice]();
+            }
+            catch (NothingToSelectException e)
+            {
+                Error(e.Message);
+            }
+        }
+
+        private void Approve()
+        {
+            var request = Select();
+            
+            if (HasProblematicAppointments(request))
+                Hint(errUnableToApprove);
+            else
+            {
+                request.State = DaysOffRequest.DaysOffRequestState.APPROVED;
+                Hint(hintApproved);
+            }
+                
+        }
+
+        private void Deny()
+        {
+            var request = Select();
+            request.RejectionExplanation = InputExplanation();
+            request.State = DaysOffRequest.DaysOffRequestState.REJECTED;
+            Hint(hintDenied);
+        }
+
+        private DaysOffRequest Select()
+        {
+            return EasyInput<DaysOffRequest>.Select(_service.Get(User), _cancel);
+        }
+
+        private bool HasProblematicAppointments(DaysOffRequest request)
+        {
+            return _service.FindProblematicAppointments(request.Requester, request.Start, request.End).Count() != 0;
+        }
         private DaysOffRequest CreateUnurgentRequest(Doctor doctor)
         {
             DateTime start;
@@ -136,6 +203,21 @@ namespace HIS.CLI.View
         }
 
         private string InputReason()
+        {
+            Hint(hintInputReason);
+            return EasyInput<string>.Get(
+                new List<Func<string, bool>>
+                {
+                    s => s.Trim().Length > 0,
+                },
+                new string[]
+                {
+                    errNoReason,
+                },
+                _cancel);
+        }
+        
+        private string InputExplanation()
         {
             Hint(hintInputReason);
             return EasyInput<string>.Get(
