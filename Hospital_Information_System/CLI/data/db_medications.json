@@ -27,5 +27,13 @@
     ],
     "Id": 2,
     "Deleted": false
+  },
+  {
+    "Name": "newMed",
+    "Ingredients": [
+      1
+    ],
+    "Id": 3,
+    "Deleted": false
   }
 ]

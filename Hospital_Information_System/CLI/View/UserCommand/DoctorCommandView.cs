@@ -16,9 +16,9 @@ namespace HIS.CLI.View.UserCommand
                 { "appointment-update", () => appointmentView.CmdUpdate() },
                 { "appointment-delete", () => appointmentView.CmdDelete() },
                 { "appointment-view-start", () => appointmentView.CmdViewAndStartAppointments() },
+                { "medication-review", () => medicationView.CmdReviewMedicationRequests() },
                 { "days-off-read", () => daysOffRequestView.CmdRead() },
                 { "days-off-create", () => daysOffRequestView.CmdCreateDaysOffRequest() },
-                { "medication-review", () => medicationView.CmdReviewMedicationRequests() },
             });
         }
     }
