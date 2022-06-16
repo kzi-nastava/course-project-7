@@ -16,6 +16,6 @@ namespace HIS.Core.PersonModel.DoctorModel
         double CalculateRating(Doctor doctor);
         string VerboseToString(Doctor doctor);
         bool ExistForSpecialty(Doctor.MedicineSpeciality speciality);
-        IEnumerable<Doctor.MedicineSpeciality> GetAllSpecialties();
+        List<Doctor.MedicineSpeciality> GetAllSpecialties();
     }
 }

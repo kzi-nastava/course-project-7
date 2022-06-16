@@ -48,5 +48,21 @@ namespace HIS.Core.MedicationModel
 			if (properties.Contains(MedicationProperty.NAME)) dest.Name = src.Name;
 			if (properties.Contains(MedicationProperty.INGREDIENTS)) dest.Ingredients = new List<Ingredient>(src.Ingredients);
 		}
+		
+		public bool IsMedicationSafe(List<Ingredient> medicationIngredients,
+			List<Ingredient> patientsAllergies)
+		{
+			for (int i = 0; i < medicationIngredients.Count(); i++)
+			{
+				for (int j = 0; j < patientsAllergies.Count(); j++)
+				{
+					if (medicationIngredients[i] == patientsAllergies[j])
+					{
+						return false; 
+					}
+				}
+			}
+			return true;
+		}
 	}
 }

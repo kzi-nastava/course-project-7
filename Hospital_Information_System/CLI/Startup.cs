@@ -29,6 +29,7 @@ using System;
 using System.IO;
 using HIS.Core.EquipmentModel.EquipmentRequestModel;
 using HIS.Core.PersonModel.DoctorModel.DaysOffRequestModel;
+using HIS.Core.PersonModel.PatientModel.MedicalRecordModel.ReferralModel;
 
 namespace HIS.CLI
 {
@@ -60,6 +61,7 @@ namespace HIS.CLI
 			IAppointmentPollRepository appointmentPollRepo = new AppointmentPollJSONRepository(dataDir + "db_appointment_polls.json", jsonSettings);
 			IEquipmentRequestRepository equipmentRequestRepo = new EquipmentRequestJSONRepository(dataDir + "db_equipment_requests.json", jsonSettings);
 			IDaysOffRequestRepository daysOffRequestRepo = new DaysOffRequestJSONRepository(dataDir + "db_days_off_requests.json", jsonSettings);
+			IReferralRepository referralRepo = new ReferralJSONRepository(dataDir + "db_referrals.json", jsonSettings);
 
 			IRoomService roomService = new RoomService(roomRepo);
 			IEquipmentService equipmentService = new EquipmentService(equipmentRepo, roomService);
@@ -84,6 +86,8 @@ namespace HIS.CLI
 			IAppointmentAvailabilityService appointmentAvailabilityService = new AppointmentAvailabilityService(roomAvailabilityService, doctorAvailabilityService, patientAvailabilityService);
 			IEquipmentRequestService equipmentRequestService = new EquipmentRequestService(equipmentRequestRepo, roomService, _tasks);
 			IDaysOffRequestService daysOffRequestService = new DaysOffRequestService(daysOffRequestRepo, appointmentService, patientService, doctorService, userAccountService);
+			IReferralService referralService = new ReferralService(referralRepo);
+			IPrescriptionService prescriptionService = new PrescriptionService(prescriptionRepo);
 
 			UserAccountView userAccountView = new UserAccountView(userAccountService);
 			RoomView roomView = new RoomView(roomService);
@@ -93,7 +97,9 @@ namespace HIS.CLI
 			IngredientView ingredientView = new IngredientView(ingredientService, medicationService, medicationRequestService);
 			MedicationView medicationView = new MedicationView(medicationService, ingredientService, medicationRequestService);
 			MedicalRecordView medicalRecordView = new MedicalRecordView(medicalRecordService, patientService, appointmentService, ingredientService);
-			AppointmentView appointmentView = new AppointmentView(appointmentService, appointmentAvailabilityService, doctorService, doctorAvailabilityService, patientService, patientAvailabilityService, roomService, roomAvailabilityService, medicalRecordService, medicalRecordView);
+			ReferralView referralView = new ReferralView(referralService, doctorService);
+			PrescriptionView prescriptionView = new PrescriptionView(prescriptionService, medicalRecordService, medicationService);
+			AppointmentView appointmentView = new AppointmentView(appointmentService, appointmentAvailabilityService, doctorService, doctorAvailabilityService, patientService, patientAvailabilityService, roomService, roomAvailabilityService, medicalRecordService, medicalRecordView, referralView, prescriptionView);
 			DoctorView doctorView = new DoctorView(doctorService, appointmentView);
 			PollView pollView = new PollView();
 			AppointmentPollView appointmentPollView = new AppointmentPollView(appointmentPollService, patientService, appointmentService, pollView);
@@ -161,6 +167,7 @@ namespace HIS.CLI
 			appointmentPollRepo.Save();
 			equipmentRequestRepo.Save();
 			daysOffRequestRepo.Save();
+			referralRepo.Save();
 		}
-	}
 }
+	}

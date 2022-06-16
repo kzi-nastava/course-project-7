@@ -137,5 +137,12 @@ namespace HIS.Core.PersonModel.PatientModel.MedicalRecordModel
             actions.Add("REMOVE");
             return actions;
         }
+        
+        public List<MedicalRecordProperty> GetPrescriptionProperty()
+        {
+            List<MedicalRecordProperty> prescriptionProperty = new List<MedicalRecordProperty>();
+            prescriptionProperty.Add(MedicalRecordProperty.PRESCRIPTIONS);
+            return prescriptionProperty;
+        }
     }
 }
