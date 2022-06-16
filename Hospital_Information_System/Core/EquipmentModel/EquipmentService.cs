@@ -61,5 +61,50 @@ namespace HIS.Core.EquipmentModel
 		{
 			return _repo.IsDynamic(equipment);
 		}
+
+		public Dictionary<Equipment, int> GetDynamicEquipment(Room room)
+		{
+			Dictionary<Equipment, int> allEquipment = room.Equipment;
+			Dictionary<Equipment, int> dynamicEquipment = new Dictionary<Equipment, int>();
+			foreach (KeyValuePair<Equipment, int> entry in allEquipment)
+			{
+				if (IsDynamic(entry.Key))
+				{
+					dynamicEquipment[entry.Key] = entry.Value;
+				}
+			}
+
+			return dynamicEquipment;
+		}
+		
+		public Dictionary<Equipment, int> GetNonDynamicEquipment(Room room)
+		{
+			Dictionary<Equipment, int> allEquipment = room.Equipment;
+			Dictionary<Equipment, int> dynamicEquipment = new Dictionary<Equipment, int>();
+			foreach (KeyValuePair<Equipment, int> entry in allEquipment)
+			{
+				if (!IsDynamic(entry.Key))
+				{
+					dynamicEquipment[entry.Key] = entry.Value;
+				}
+			}
+
+			return dynamicEquipment;
+		}
+
+		public Dictionary<Equipment, int> GetEquipmentAfterDeletion(Dictionary<Equipment, int> dynamicEquipment, Dictionary<Equipment, int> nonDynamicEquipment)
+		{
+			Dictionary<Equipment, int> equipment = new Dictionary<Equipment, int>();
+			foreach (KeyValuePair<Equipment, int> entry in dynamicEquipment)
+			{
+				equipment.Add(entry.Key, entry.Value);
+			}
+			foreach (KeyValuePair<Equipment, int> entry in nonDynamicEquipment)
+			{
+				equipment.Add(entry.Key, entry.Value);
+			}
+
+			return equipment;
+		}
 	}
 }
