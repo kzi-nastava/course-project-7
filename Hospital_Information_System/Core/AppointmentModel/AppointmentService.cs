@@ -139,7 +139,8 @@ namespace HIS.Core.AppointmentModel
         public Appointment Get(int id)
         {
             return _repo.Get(id);
-        
+        }
+
         public List<Appointment> GetNextDoctorsAppointments(UserAccount user, DateTime firstRelevantDay)
         {
             var lastRelevantDay = firstRelevantDay.AddDays(3);

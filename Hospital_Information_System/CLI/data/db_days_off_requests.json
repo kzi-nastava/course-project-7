@@ -1,0 +1,52 @@
+[
+  {
+    "Requester": 1,
+    "Start": "2022-06-16T00:00:00",
+    "End": "2022-06-25T00:00:00",
+    "Reason": "Vacation",
+    "State": 0,
+    "RejectionExplanation": "",
+    "Id": 0,
+    "Deleted": false
+  },
+  {
+    "Requester": 1,
+    "Start": "2022-06-26T00:00:00",
+    "End": "2022-06-30T00:00:00",
+    "Reason": "Sickness",
+    "State": 0,
+    "RejectionExplanation": "",
+    "Id": 1,
+    "Deleted": false
+  },
+  {
+    "Requester": 1,
+    "Start": "2022-07-01T00:00:00",
+    "End": "2022-07-08T00:00:00",
+    "Reason": "Wife's birthday",
+    "State": 0,
+    "RejectionExplanation": "",
+    "Id": 2,
+    "Deleted": false
+  },
+  {
+    "Requester": 1,
+    "Start": "2022-06-14T00:00:00",
+    "End": "2022-06-19T00:00:00",
+    "Reason": "Building house",
+    "State": 1,
+    "RejectionExplanation": "",
+    "Id": 3,
+    "Deleted": false
+  },
+  {
+    "Requester": 0,
+    "Start": "2022-07-15T00:00:00",
+    "End": "2022-07-16T00:00:00",
+    "Reason": "Sick child",
+    "State": 2,
+    "RejectionExplanation": "",
+    "Id": 5,
+    "Deleted": false
+  }
+]

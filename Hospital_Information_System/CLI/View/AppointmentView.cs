@@ -554,6 +554,14 @@ namespace HIS.CLI.View
 		{
 			throw new NotImplementedException();
 		}
+    
+    internal void Print(List<Appointment> appointments)
+    {
+	    foreach (var appointment in appointments)
+	    {
+		    Print(appointment.ToString());
+	    }
+    }
 
 	}
 }
