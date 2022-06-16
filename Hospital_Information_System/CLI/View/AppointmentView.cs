@@ -451,5 +451,10 @@ namespace HIS.CLI.View
 			Hint(hintGetPrioritizedProperty);
 			return EasyInput<AppointmentProperty>.Select(AppointmentPropertyHelpers.GetPrioritizableProperties(), _cancel);
 		}
+		
+		internal void CmdCreateUrgent()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

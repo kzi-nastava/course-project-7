@@ -27,6 +27,7 @@ using HIS.Core.RoomModel.RoomAvailability;
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using HIS.Core.EquipmentModel.EquipmentRequestModel;
 
 namespace HIS.CLI
 {
@@ -56,6 +57,7 @@ namespace HIS.CLI
 			IUpdateRequestRepository updateRequestRepo = new UpdateRequestJSONRepository(dataDir + "db_update_requests.json", jsonSettings);
 			IHospitalPollRepository hospitalPollRepo = new HospitalPollJSONRepository(dataDir + "db_hospital_polls.json", jsonSettings);
 			IAppointmentPollRepository appointmentPollRepo = new AppointmentPollJSONRepository(dataDir + "db_appointment_polls.json", jsonSettings);
+			IEquipmentRequestRepository equipmentRequestRepo = new EquipmentRequestJSONRepository(dataDir + "db_equipment_requests.json", jsonSettings);
 
 			IRoomService roomService = new RoomService(roomRepo);
 			IEquipmentService equipmentService = new EquipmentService(equipmentRepo, roomService);
@@ -78,10 +80,11 @@ namespace HIS.CLI
 			IRoomAvailabilityService roomAvailabilityService = new RoomAvailabilityService(roomService, renovationService, appointmentService);
 			IPatientAvailabilityService patientAvailabilityService = new PatientAvailabilityService(patientService, appointmentService);
 			IAppointmentAvailabilityService appointmentAvailabilityService = new AppointmentAvailabilityService(roomAvailabilityService, doctorAvailabilityService, patientAvailabilityService);
+			IEquipmentRequestService equipmentRequestService = new EquipmentRequestService(equipmentRequestRepo, roomService, _tasks);
 
 			UserAccountView userAccountView = new UserAccountView(userAccountService);
 			RoomView roomView = new RoomView(roomService);
-			EquipmentView equipmentView = new EquipmentView(equipmentService);
+			EquipmentView equipmentView = new EquipmentView(equipmentService, equipmentRequestService);
 			EquipmentRelocationView equipmentRelocationView = new EquipmentRelocationView(equipmentRelocationService, roomService);
 			RenovationView renovationView = new RenovationView(renovationService, roomService, roomAvailabilityService, roomView);
 			IngredientView ingredientView = new IngredientView(ingredientService, medicationService, medicationRequestService);
@@ -119,7 +122,7 @@ namespace HIS.CLI
 					{
 						UserAccount.AccountType.MANAGER => new ManagerCommandView(roomView, equipmentView, equipmentRelocationView, renovationView, ingredientView, medicationView, pollSummaryView),
 						UserAccount.AccountType.PATIENT => new PatientCommandView(appointmentView, medicalRecordView, doctorView, hospitalPollView, appointmentPollView),
-						UserAccount.AccountType.SECRETARY => new SecretaryCommandView(userAccountView, appointmentView, medicalRecordView, requestView),
+						UserAccount.AccountType.SECRETARY => new SecretaryCommandView(userAccountView, appointmentView, medicalRecordView, requestView, equipmentView),
 						UserAccount.AccountType.LOGGED_OUT => new LoggedOutCommandView(userAccountView),
 						_ => throw new NotImplementedException(),
 					};
@@ -151,6 +154,7 @@ namespace HIS.CLI
 			updateRequestRepo.Save();
 			hospitalPollRepo.Save();
 			appointmentPollRepo.Save();
+			equipmentRequestRepo.Save();
 		}
 	}
 }
