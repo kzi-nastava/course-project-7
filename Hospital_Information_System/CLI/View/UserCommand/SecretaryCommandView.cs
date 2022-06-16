@@ -5,7 +5,7 @@ namespace HIS.CLI.View.UserCommand
 {
     internal class SecretaryCommandView : UserCommandView
     {
-        public SecretaryCommandView(UserAccountView userAccountView, AppointmentView appointmentView, MedicalRecordView medicalRecordView, RequestView requestView, EquipmentView equipmentView, EquipmentRelocationView equipmentRelocationView)
+        public SecretaryCommandView(UserAccountView userAccountView, AppointmentView appointmentView, RequestView requestView, EquipmentView equipmentView, EquipmentRelocationView equipmentRelocationView, DaysOffRequestView daysOffRequestView)
         {
             AddCommands(new Dictionary<string, Action>
             {
@@ -17,10 +17,11 @@ namespace HIS.CLI.View.UserCommand
                 {"unblock-patient-account", () => userAccountView.CmdUnblock()},
                 {"view-patient-requests", () => requestView.CmdRead()},
                 {"handle-patient-requests", () => requestView.CmdHandle()},
-                {"handle-referrals", () => throw new NotImplementedException()}, 
+                {"handle-referrals", () => requestView.CmdHandleRefferals()}, 
                 {"create-urgent-appointment", () => appointmentView.CmdCreateUrgent()}, 
                 {"request-new-equipment", () => equipmentView.CmdRequestNew()},
-                {"move-dynamic-equipment", () => equipmentRelocationView.CmdMoveDynamicEquipment()}
+                {"move-dynamic-equipment", () => equipmentRelocationView.CmdMoveDynamicEquipment()},
+                {"/", () => daysOffRequestView.CmdHandle()} //handle-days-off-requests
             });
         }
     }
