@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using HIS.Core.PersonModel.DoctorModel;
 
 namespace HIS.Core.PersonModel.UserAccountModel
 {
@@ -15,5 +16,6 @@ namespace HIS.Core.PersonModel.UserAccountModel
 		public IEnumerable<UserAccount> GetModifiable(UserAccount user);
 		public IEnumerable<UserAccount> GetNotBlockedPatientAccounts();
 		public IEnumerable<UserAccount> GetBlockedPatientAccounts();
+		public UserAccount GetUserFromDoctor(Doctor doctor);
 	}
 }

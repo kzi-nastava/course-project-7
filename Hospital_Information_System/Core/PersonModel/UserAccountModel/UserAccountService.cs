@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HIS.Core.PersonModel.DoctorModel;
 using HIS.Core.PersonModel.PatientModel;
 using HIS.Core.PersonModel.PatientModel.MedicalRecordModel;
 using HIS.Core.PersonModel.UserAccountModel.Util;
@@ -132,6 +133,11 @@ namespace HIS.Core.PersonModel.UserAccountModel
 
             prune(user.AppointmentCreatedTimestamps);
             prune(user.AppointmentModifiedTimestamps);
+        }
+
+        public UserAccount GetUserFromDoctor(Doctor doctor)
+        {
+            return _repo.GetUserFromDoctor(doctor);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
+using HIS.Core.PersonModel.UserAccountModel;
 
 namespace HIS.Core.PersonModel.PatientModel
 {
