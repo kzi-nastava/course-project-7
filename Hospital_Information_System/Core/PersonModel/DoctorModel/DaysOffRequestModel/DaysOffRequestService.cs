@@ -69,24 +69,24 @@ namespace HIS.Core.PersonModel.DoctorModel.DaysOffRequestModel
             return _repo.GetChanged(user);
         }
 
-        public List<DaysOffRequest> GetDaysOffRequests(Doctor doctor)
+        public List<DaysOffRequest> Get(Doctor doctor)
         {
-            return _repo.GetDaysOffRequests(doctor);
+            return _repo.Get(doctor);
         }
 
-        public List<DaysOffRequest> GetFutureDaysOffRequests()
+        public List<DaysOffRequest> GetFuture()
         {
-            return _repo.GetFutureDaysOffRequests();
+            return _repo.GetFuture();
         }
 
-        public List<DaysOffRequest> GetApprovedRequests(Doctor doctor)
+        public List<DaysOffRequest> GetApproved(Doctor doctor)
         {
-            return _repo.GetApprovedRequests(doctor);
+            return _repo.GetApproved(doctor);
         }
 
-        public List<DaysOffRequest> GetSentAndApprovedRequests(Doctor doctor)
+        public List<DaysOffRequest> GetSentAndApproved(Doctor doctor)
         {
-            return _repo.GetSentAndApprovedRequests(doctor);
+            return _repo.GetSentAndApproved(doctor);
         }
         
         public bool IsRangeCorrect(Doctor doctor, DateTime start, DateTime end)
@@ -101,7 +101,7 @@ namespace HIS.Core.PersonModel.DoctorModel.DaysOffRequestModel
         public List<DaysOffRequest> FindProblematicDaysOff(Doctor doctor, DateTime start, DateTime end)
         {
             DateTimeRange newRequestRange = new DateTimeRange(start, end);
-            List<DaysOffRequest> daysOffRequests = GetSentAndApprovedRequests(doctor);
+            List<DaysOffRequest> daysOffRequests = GetSentAndApproved(doctor);
             List<DaysOffRequest> problematicDaysOffRequests = new List<DaysOffRequest>();
             foreach (var request in daysOffRequests)
             {
@@ -136,7 +136,7 @@ namespace HIS.Core.PersonModel.DoctorModel.DaysOffRequestModel
         public List<Appointment> GetAppointmentsToDelete(UserAccount ua)
         {
             Patient patient = _patientService.GetPatientFromPerson(ua.Person);
-            var requests = GetFutureDaysOffRequests();
+            var requests = GetFuture();
             List<Appointment> appointmentsToDelete = new List<Appointment>();
             foreach (var request in requests)
             {
@@ -162,7 +162,7 @@ namespace HIS.Core.PersonModel.DoctorModel.DaysOffRequestModel
         public List<DaysOffRequest> Get(UserAccount user)
         {
             return (user.Type == UserAccount.AccountType.DOCTOR)
-                ? GetDaysOffRequests(_doctorService.GetDoctorFromPerson(user.Person))
+                ? Get(_doctorService.GetDoctorFromPerson(user.Person))
                 : GetSent(); //for secretary
         }
 

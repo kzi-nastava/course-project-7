@@ -26,7 +26,12 @@ namespace HIS.Core.MedicationModel.MedicationRequestModel
 
 		public override string ToString()
 		{
-			return $"Medication{{Medication={Medication}, State={State}, ReviewCount={Reviews.Count}, LastReview={Reviews.Last()}}}";
+			if (Reviews.Count != 0)
+			{
+				return $"Medication{{Medication={Medication}, State={State}, ReviewCount={Reviews.Count}, LastReview={Reviews.Last()}}}";
+			}
+			return
+				$"Medication{{Medication={Medication}, State={State}, ReviewCount={Reviews.Count}, Reviews=None yet}}";
 		}
 	}
 }

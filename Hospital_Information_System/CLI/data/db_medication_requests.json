@@ -1,15 +1,22 @@
 [
   {
-    "Reviews": [],
+    "Reviews": [
+      {
+        "Message": "good!",
+        "Timestamp": "2022-06-16T23:11:10.2608815+02:00",
+        "Verdict": 2,
+        "Reviewer": 1
+      }
+    ],
     "Medication": {
       "Name": "newMed",
       "Ingredients": [
         1
       ],
-      "Id": -1,
+      "Id": 3,
       "Deleted": false
     },
-    "State": 0,
+    "State": 2,
     "Id": 0,
     "Deleted": false
   }
