@@ -35,6 +35,11 @@ namespace HIS.Core.PersonModel.PatientModel.MedicalRecordModel.ReferralModel
             return _referrals.FirstOrDefault(r => r.Id == id);
         }
 
+        public IEnumerable<Referral> GetUnused()
+        {
+            return _referrals.Where(r => !r.Scheduled && !r.Deleted);
+        }
+
         public Referral Add(Referral obj)
         {
             obj.Id = GetNextId();

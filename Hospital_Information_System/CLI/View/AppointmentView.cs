@@ -31,23 +31,33 @@ namespace HIS.CLI.View
 		private readonly MedicalRecordView _medicalRecordView;
 		private readonly ReferralView _referralView;
 		private readonly PrescriptionView _prescriptionView;
+		private readonly IReferralService _referralService;
 		private IEnumerable<AppointmentProperty> _properties;
 
-		private const string hintSelectAppointments = "Select appointments by their number, separated by whitespace.\nEnter a newline to finish";
+		private const string hintSelectAppointments =
+			"Select appointments by their number, separated by whitespace.\nEnter a newline to finish";
+
 		private const string hintSelectAppointment = "Select appointment";
-		private const string hintSelectProperties = "Select properties by their number, separated by whitespace.\nEnter a newline to finish";
+
+		private const string hintSelectProperties =
+			"Select properties by their number, separated by whitespace.\nEnter a newline to finish";
+
 		private const string hintSelectDoctor = "Select doctor for the appointment";
 		private const string hintSelectPatient = "Select patient for the appointment";
 		private const string hintSelectExaminationRoom = "Select examination room for the appointment";
 		private const string hintGetScheduledFor = "Enter date and time for the appointment";
 		private const string hintPatientNotAvailable = "Patient is not available at the selected date and time";
 		private const string hintDoctorNotAvailable = "Doctor is not available at the selected date and time";
-		private const string hintExaminationRoomNotAvailable = "Examination room is not available at the selected date and time";
+
+		private const string hintExaminationRoomNotAvailable =
+			"Examination room is not available at the selected date and time";
+
 		private const string hintDateTimeNotInFuture = "Date and time must be in the future";
 		private const string hintAppointmentScheduled = "You've successfully scheduled an appointment!";
 		private const string hintAppointmentUpdated = "You've successfully updated an appointment!";
 		private const string hintAppointmentDeleted = "You've successfully deleted an appointment!";
 		private const string hintDeletedPatient = "Patient is deleted!";
+
 		private const string hintNoScheduledAppoinments =
 			"You don't have any scheduled appointments for the time given.";
 
@@ -62,7 +72,9 @@ namespace HIS.CLI.View
 		private const string hintGetPrioritizedProperty = "Enter the prioritized property";
 
 		private const string hintOptimalSearchFailed = "Could not find optimal appointment. Trying priority search...";
-		private const string hintPrioritySearchFailed = "Could not find appointment using priority search. Showing closest matching appointments...";
+
+		private const string hintPrioritySearchFailed =
+			"Could not find appointment using priority search. Showing closest matching appointments...";
 
 		private const string hintDesperateSearchRespectDoctorOnly = "Closest respecting only doctor";
 		private const string hintDesperateSearchRespectIntervalOnly = "Closest respecting only time interval";
@@ -74,18 +86,25 @@ namespace HIS.CLI.View
 
 		private const string hintMakeReferral =
 			"Do you want to make a referral?";
+
 		private const string hintWritePrescription =
 			"Do you want to write a prescription?";
+
 		private const string hintInputDate = "Input the date for which you want to be given scheduled appointments";
 
 		private const string hintAnamensisUpdated = "You've successfully updated appointment's anamnesis";
 
 		private const string hintInputAnamnesis = "Input anamnesis (newLine to finish)";
 		private const string hintSelectSpecialty = "Select a specialty for the referral: ";
+		private const string hintSelectReferral = "Select referral: ";
 
-		public AppointmentView(IAppointmentService service, IAppointmentAvailabilityService appointmentAvailabilityService, IDoctorService doctorService, IDoctorAvailabilityService doctorAvailabilityService, IPatientService patientService,
-			IPatientAvailabilityService patientAvailabilityService, IRoomService roomService, IRoomAvailabilityService roomAvailabilityService, IMedicalRecordService medicalRecordService, MedicalRecordView medicalRecordView, ReferralView referralView,
-			PrescriptionView prescriptionView)
+		public AppointmentView(IAppointmentService service,
+			IAppointmentAvailabilityService appointmentAvailabilityService, IDoctorService doctorService,
+			IDoctorAvailabilityService doctorAvailabilityService, IPatientService patientService,
+			IPatientAvailabilityService patientAvailabilityService, IRoomService roomService,
+			IRoomAvailabilityService roomAvailabilityService, IMedicalRecordService medicalRecordService,
+			MedicalRecordView medicalRecordView, ReferralView referralView,
+			PrescriptionView prescriptionView, IReferralService referralService)
 		{
 			_service = service;
 			_appointmentAvailabilityService = appointmentAvailabilityService;
@@ -100,6 +119,7 @@ namespace HIS.CLI.View
 			_properties = Utility.GetEnumValues<AppointmentProperty>();
 			_referralView = referralView;
 			_prescriptionView = prescriptionView;
+			_referralService = referralService;
 		}
 
 		internal void CreateWithPredefinedProperties(IEnumerable<AppointmentProperty> predefProperties, Appointment appointment)
@@ -390,10 +410,12 @@ namespace HIS.CLI.View
 			processDesperate(AppointmentSearchBundle.RespectOnlyDoctorAndPatient, hintDesperateSearchRespectDoctorOnly);
 
 			// Closest respecting only time interval
-			processDesperate(AppointmentSearchBundle.RespectOnlyIntervalAndPatient, hintDesperateSearchRespectIntervalOnly);
+			processDesperate(AppointmentSearchBundle.RespectOnlyIntervalAndPatient,
+				hintDesperateSearchRespectIntervalOnly);
 
 			// Closest respecting only latest date.
-			processDesperate(AppointmentSearchBundle.RespectOnlyLatestDateAndPatient, hintDesperateSearchRespectDateOnly);
+			processDesperate(AppointmentSearchBundle.RespectOnlyLatestDateAndPatient,
+				hintDesperateSearchRespectDateOnly);
 
 			// Closest optimal when ignoring latest date.
 			processDesperate(AppointmentSearchBundle.IgnoreLatestDate, hintDesperateSearchIgnoreDate);
@@ -461,27 +483,28 @@ namespace HIS.CLI.View
 		private AppointmentProperty InputPrioritizedProperty()
 		{
 			Hint(hintGetPrioritizedProperty);
-			return EasyInput<AppointmentProperty>.Select(AppointmentPropertyHelpers.GetPrioritizableProperties(), _cancel);
+			return EasyInput<AppointmentProperty>.Select(AppointmentPropertyHelpers.GetPrioritizableProperties(),
+				_cancel);
 		}
-		
+
 		internal void CmdViewAndStartAppointments()
 		{
 			DateTime firstRelevantDay = GetFirstRelevantDayOfAppointments();
-			List <Appointment> nextAppointments = _service.GetNextDoctorsAppointments(User, firstRelevantDay);
+			List<Appointment> nextAppointments = _service.GetNextDoctorsAppointments(User, firstRelevantDay);
 			PrintAppointmentsAndMedicalRecords(nextAppointments);
 			if (nextAppointments.Count == 0) return;
-            
+
 			Hint(hintCheckStartingAppointment);
 			if (EasyInput<bool>.YesNo(_cancel)) //wants to start appointment
 			{
 				StartAppointment(nextAppointments);
 			}
 		}
-		
+
 		private DateTime GetFirstRelevantDayOfAppointments()
 		{
 			Hint(hintInputDate);
-            
+
 			DateTime firstRelevantDay = EasyInput<DateTime>.Get(
 				new List<Func<DateTime, bool>>()
 				{
@@ -492,10 +515,10 @@ namespace HIS.CLI.View
 					hintDateTimeNotInFuture,
 				},
 				_cancel);
-            
+
 			return firstRelevantDay;
 		}
-		
+
 		private void PrintAppointmentsAndMedicalRecords(List<Appointment> appointments)
 		{
 			if (appointments.Count == 0)
@@ -513,37 +536,38 @@ namespace HIS.CLI.View
 				}
 			}
 		}
-		
+
 		private void StartAppointment(List<Appointment> startableAppointments)
 		{
 			Hint(hintSelectAppointment);
 			var appointmentToStart = EasyInput<Appointment>.Select(startableAppointments, _cancel);
-            
+
 			_medicalRecordView.UpdateMedicalRecord(appointmentToStart.Patient);
 			UpdateAnamnesis(appointmentToStart);
-			
+
 			Hint(hintMakeReferral);
 			if (EasyInput<bool>.YesNo(_cancel)) //wants to create a referral
 			{
 				_referralView.CreateReferral(appointmentToStart);
 			}
-            
-			
+
+
 			Hint(hintWritePrescription);
 			if (EasyInput<bool>.YesNo(_cancel)) //wants to create a prescription
 			{
-				_prescriptionView.CreatePrescription(_medicalRecordService.GetPatientsMedicalRecord(appointmentToStart.Patient));
+				_prescriptionView.CreatePrescription(
+					_medicalRecordService.GetPatientsMedicalRecord(appointmentToStart.Patient));
 			}
-            
+
 			Console.ForegroundColor = ConsoleColor.Green;
 			Console.WriteLine(hintAppointmentIsOver);
 			Console.ForegroundColor = ConsoleColor.Gray;
-            
+
 			/*
 			EquipmentModel.DeleteEquipmentAfterAppointment(appointmentToStart.Room);
 			*/
 		}
-		
+
 		private void UpdateAnamnesis(Appointment appointment)
 		{
 			Appointment updatedAppointment = appointment;
@@ -551,28 +575,29 @@ namespace HIS.CLI.View
 			_service.Copy(appointment, updatedAppointment, _properties);
 			Print(hintAnamensisUpdated);
 		}
-        
+
 		private string InputAnamnesis()
 		{
 			Hint(hintInputAnamnesis);
 			return Console.ReadLine();
 		}
-		
-    internal void CmdCreateUrgent()
+
+		internal void CmdCreateUrgent()
 		{
 			try
 			{
 				Doctor.MedicineSpeciality speciality = InputSpecialty();
 				if (!_doctorService.ExistForSpecialty(speciality))
 					throw new NothingToSelectException();
-                
+
 				AppointmentSearchBundle sb = InputSearchBundleUrgent();
 				Appointment appointment = _appointmentAvailabilityService.FindUrgentAppointmentSlot(sb, speciality);
 
 				if (appointment.Room == null)
 				{
 					Appointment rescheduledAppointment = RescheduleAppointment(); // TODO
-					appointment = new Appointment(appointment.Doctor, appointment.Patient, rescheduledAppointment.Room, rescheduledAppointment.ScheduledFor);
+					appointment = new Appointment(appointment.Doctor, appointment.Patient, rescheduledAppointment.Room,
+						rescheduledAppointment.ScheduledFor);
 				}
 
 				Print(appointment.ToString());
@@ -589,66 +614,133 @@ namespace HIS.CLI.View
 		}
 
 
-    private Doctor.MedicineSpeciality InputSpecialty()
-    {
-	    Hint(hintSelectSpecialty);
-	    return EasyInput<Doctor.MedicineSpeciality>.Select(_doctorService.GetAllSpecialties(), _cancel);
-    }
-    internal void Print(List<Appointment> appointments)
-    {
-	    foreach (var appointment in appointments)
-	    {
-		    Print(appointment.ToString());
-	    }
-    }
-	
-    private AppointmentSearchBundle InputSearchBundleUrgent()
-    {
-	    Patient patient = InputPatient(null);
-	    DateTime latestDate = DateTime.Today;
+		private Doctor.MedicineSpeciality InputSpecialty()
+		{
+			Hint(hintSelectSpecialty);
+			return EasyInput<Doctor.MedicineSpeciality>.Select(_doctorService.GetAllSpecialties(), _cancel);
+		}
 
-	    var start = GetStartTime();
-	    var end = GetEndTime(start);
+		internal void Print(List<Appointment> appointments)
+		{
+			foreach (var appointment in appointments)
+			{
+				Print(appointment.ToString());
+			}
+		}
 
-	    if (end > TimeSpan.FromHours(0) && end < TimeSpan.FromHours(2))
-	    {
-		    start = new TimeSpan(0, 0, 0);
-		    end = new TimeSpan(start.Hours + 2, 0, 0);
-		    latestDate = DateTime.Today.AddDays(1);
-	    }
+		private AppointmentSearchBundle InputSearchBundleUrgent()
+		{
+			Patient patient = InputPatient(null);
+			DateTime latestDate = DateTime.Today;
 
-	    return new AppointmentSearchBundle(null, patient, start, end, latestDate, true); 
-    }
+			var start = GetStartTime();
+			var end = GetEndTime(start);
 
-    private TimeSpan GetStartTime()
-    {
-	    TimeSpan start = TimeSpan.FromHours(DateTime.Now.TimeOfDay.TotalHours);
-	    return new TimeSpan(start.Hours, start.Minutes + 10, 0);
-    }
+			if (end > TimeSpan.FromHours(0) && end < TimeSpan.FromHours(2))
+			{
+				start = new TimeSpan(0, 0, 0);
+				end = new TimeSpan(start.Hours + 2, 0, 0);
+				latestDate = DateTime.Today.AddDays(1);
+			}
 
-    private TimeSpan GetEndTime(TimeSpan start)
-    {
-	    return new TimeSpan((start.Hours + 2) % 24, start.Minutes, 0);
-    }
-    private Appointment RescheduleAppointment()
-    {
-	    Appointment appointment = SelectAppointmentToReschedule();
-            
-	    AppointmentSearchBundle sb = new AppointmentSearchBundle(appointment.Doctor, appointment.Patient, AppointmentSearchBundle.DefaultStart, AppointmentSearchBundle.DefaultEnd, DateTime.Today);
-	    Appointment newAppointment = _appointmentAvailabilityService.FindRecommendedAppointment(sb);
-            
-	    _service.Add(newAppointment, User);
-	    _service.Remove(appointment, User);
-            
-	    return appointment;
-    }
-        
-    private Appointment SelectAppointmentToReschedule()
-    {
-	    Console.WriteLine(hintSelectAppointment);
-	    return EasyInput<Appointment>.Select(
-		    _service.GetFirstFiveModifiable(User), _cancel);
-    }
-    
+			return new AppointmentSearchBundle(null, patient, start, end, latestDate, true);
+		}
+
+		private TimeSpan GetStartTime()
+		{
+			TimeSpan start = TimeSpan.FromHours(DateTime.Now.TimeOfDay.TotalHours);
+			return new TimeSpan(start.Hours, start.Minutes + 10, 0);
+		}
+
+		private TimeSpan GetEndTime(TimeSpan start)
+		{
+			return new TimeSpan((start.Hours + 2) % 24, start.Minutes, 0);
+		}
+
+		private Appointment RescheduleAppointment()
+		{
+			Appointment appointment = SelectAppointmentToReschedule();
+
+			AppointmentSearchBundle sb = new AppointmentSearchBundle(appointment.Doctor, appointment.Patient,
+				AppointmentSearchBundle.DefaultStart, AppointmentSearchBundle.DefaultEnd, DateTime.Today);
+			Appointment newAppointment = _appointmentAvailabilityService.FindRecommendedAppointment(sb);
+
+			_service.Add(newAppointment, User);
+			_service.Remove(appointment, User);
+
+			return appointment;
+		}
+
+		private Appointment SelectAppointmentToReschedule()
+		{
+			Console.WriteLine(hintSelectAppointment);
+			return EasyInput<Appointment>.Select(
+				_service.GetFirstFiveModifiable(User), _cancel);
+		}
+
+
+		internal void CmdHandleRefferals()
+		{
+			try
+			{
+				Hint(hintSelectReferral);
+				CreateAppointmentWithReferral(SelectReferral(), User);
+			}
+			catch (NothingToSelectException e)
+			{
+				Console.WriteLine(e);
+			}
+		}
+
+		private Referral SelectReferral()
+		{
+			return EasyInput<Referral>.Select(_referralService.GetUnused(), _cancel);
+		}
+
+		private void CreateAppointmentWithReferral(Referral referral, UserAccount user)
+		{
+			try
+			{
+				if (referral.Patient.Deleted)
+				{
+					Console.WriteLine(hintDeletedPatient);
+				}
+
+				if (referral.Doctor == null)
+				{
+					Doctor doctor = SelectDoctorBySpecialty(referral.Specialty);
+					Console.WriteLine(hintSelectDoctor);
+					referral.Doctor = doctor;
+
+				}
+
+				Appointment appointment = SelectAppointment(referral);
+				_service.Add(appointment, user);
+				Console.WriteLine(hintAppointmentScheduled);
+				referral.Scheduled = true;
+			}
+			catch (NothingToSelectException e)
+			{
+				Error(e.Message);
+			}
+		}
+
+		private Appointment SelectAppointment(Referral referral)
+		{
+			var appointment = new Appointment();
+
+			appointment.Doctor = referral.Doctor;
+			appointment.Patient = referral.Patient;
+			appointment.Room = InputExaminationRoom(null);
+			appointment.ScheduledFor = InputScheduledFor(appointment, null);
+
+			return appointment;
+		}
+
+		private Doctor SelectDoctorBySpecialty(Doctor.MedicineSpeciality speciality)
+		{
+			return EasyInput<Doctor>.Select(_doctorService.GetDoctorsBySpecialty(speciality),
+				_cancel);
+		}
 	}
 }

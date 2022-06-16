@@ -73,11 +73,6 @@ namespace HIS.CLI.View
             }
         }
 
-        internal void CmdHandleRefferals()
-        {
-            throw new NotImplementedException();
-        }
-
         private void ApproveDeleteRequest()
         {
             Print(hintSelectRequests);

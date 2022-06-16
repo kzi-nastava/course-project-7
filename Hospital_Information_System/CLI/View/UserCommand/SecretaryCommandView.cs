@@ -17,11 +17,11 @@ namespace HIS.CLI.View.UserCommand
                 {"unblock-patient-account", () => userAccountView.CmdUnblock()},
                 {"view-patient-requests", () => requestView.CmdRead()},
                 {"handle-patient-requests", () => requestView.CmdHandle()},
-                {"handle-referrals", () => requestView.CmdHandleRefferals()}, 
+                {"handle-referrals", () => appointmentView.CmdHandleRefferals()}, 
                 {"create-urgent-appointment", () => appointmentView.CmdCreateUrgent()}, 
                 {"request-new-equipment", () => equipmentView.CmdRequestNew()},
                 {"move-dynamic-equipment", () => equipmentRelocationView.CmdMoveDynamicEquipment()},
-                {"/", () => daysOffRequestView.CmdHandle()} //handle-days-off-requests
+                {"handle-days-off-requests", () => daysOffRequestView.CmdHandle()}
             });
         }
     }

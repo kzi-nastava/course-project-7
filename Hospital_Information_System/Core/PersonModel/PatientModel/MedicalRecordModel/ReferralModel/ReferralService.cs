@@ -27,6 +27,11 @@ namespace HIS.Core.PersonModel.PatientModel.MedicalRecordModel.ReferralModel
             return _repo.GetNextId();
         }
 
+        public IEnumerable<Referral> GetUnused()
+        {
+            return _repo.GetUnused();
+        }
+
         public void Save()
         {
             _repo.Save();
