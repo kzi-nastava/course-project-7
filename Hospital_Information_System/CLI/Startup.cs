@@ -47,12 +47,12 @@ namespace HIS.CLI
 			IRenovationRepository renovationRepo = new RenovationJSONRepository(dataDir + "db_renovations.json", jsonSettings);
 			IIngredientRepository ingredientRepo = new IngredientJSONRepository(dataDir + "db_ingredients.json", jsonSettings);
 			IMedicationRepository medicationRepo = new MedicationJSONRepository(dataDir + "db_medications.json", jsonSettings);
-			IMedicationRequestRepository medicationRequestRepo = new MedicationRequestJSONRepository(dataDir + "db_medication_requests.json", jsonSettings);
 			IPersonRepository personRepo = new PersonJSONRepository(dataDir + "db_persons.json", jsonSettings);
+			IDoctorRepository doctorRepo = new DoctorJSONRepository(dataDir + "db_doctors.json", jsonSettings);
+			IMedicationRequestRepository medicationRequestRepo = new MedicationRequestJSONRepository(dataDir + "db_medication_requests.json", jsonSettings);
 			IUserAccountRepository userAccountRepo = new UserAccountJSONRepository(dataDir + "db_user_accounts.json", jsonSettings);
 			IPatientRepository patientRepo = new PatientJSONRepository(dataDir + "db_patients.json", jsonSettings);
 			IPrescriptionRepository prescriptionRepo = new PrescriptionJSONRepository(dataDir + "db_prescriptions.json", jsonSettings);
-			IDoctorRepository doctorRepo = new DoctorJSONRepository(dataDir + "db_doctors.json", jsonSettings);
 			IAppointmentRepository appointmentRepo = new AppointmentJSONRepository(dataDir + "db_appointments.json", jsonSettings);
 			IMedicalRecordRepository medicalRecordRepo = new MedicalRecordJSONRepository(dataDir + "db_medical_records.json", jsonSettings);
 			IDeleteRequestRepository deleteRequestRepo = new DeleteRequestJSONRepository(dataDir + "db_delete_requests.json", jsonSettings);
@@ -69,7 +69,7 @@ namespace HIS.CLI
 			IRenovationService renovationService = new RenovationService(renovationRepo, _tasks, roomService);
 			IIngredientService ingredientService = new IngredientService(ingredientRepo);
 			IMedicationService medicationService = new MedicationService(medicationRepo);
-			IMedicationRequestService medicationRequestService = new MedicationRequestService(medicationRequestRepo);
+			IMedicationRequestService medicationRequestService = new MedicationRequestService(medicationRequestRepo, medicationService);
 			IPatientService patientService = new PatientService(patientRepo);
 			IPersonService personService = new PersonService(personRepo);
 			IMedicalRecordService medicalRecordService = new MedicalRecordService(medicalRecordRepo, patientService);
@@ -95,7 +95,7 @@ namespace HIS.CLI
 			EquipmentRelocationView equipmentRelocationView = new EquipmentRelocationView(equipmentRelocationService, roomService, equipmentService);
 			RenovationView renovationView = new RenovationView(renovationService, roomService, roomAvailabilityService, roomView);
 			IngredientView ingredientView = new IngredientView(ingredientService, medicationService, medicationRequestService);
-			MedicationView medicationView = new MedicationView(medicationService, ingredientService, medicationRequestService);
+			MedicationView medicationView = new MedicationView(medicationService, ingredientService, medicationRequestService, doctorService);
 			MedicalRecordView medicalRecordView = new MedicalRecordView(medicalRecordService, patientService, appointmentService, ingredientService);
 			ReferralView referralView = new ReferralView(referralService, doctorService);
 			PrescriptionView prescriptionView = new PrescriptionView(prescriptionService, medicalRecordService, medicationService);
@@ -133,7 +133,7 @@ namespace HIS.CLI
 						UserAccount.AccountType.MANAGER => new ManagerCommandView(roomView, equipmentView, equipmentRelocationView, renovationView, ingredientView, medicationView, pollSummaryView),
 						UserAccount.AccountType.PATIENT => new PatientCommandView(appointmentView, medicalRecordView, doctorView, hospitalPollView, appointmentPollView),
 						UserAccount.AccountType.SECRETARY => new SecretaryCommandView(userAccountView, appointmentView, medicalRecordView, requestView, equipmentView, equipmentRelocationView),
-						UserAccount.AccountType.DOCTOR => new DoctorCommandView(appointmentView, daysOffRequestView),
+						UserAccount.AccountType.DOCTOR => new DoctorCommandView(appointmentView, daysOffRequestView, medicationView),
 						UserAccount.AccountType.LOGGED_OUT => new LoggedOutCommandView(userAccountView),
 						_ => throw new NotImplementedException(),
 					};

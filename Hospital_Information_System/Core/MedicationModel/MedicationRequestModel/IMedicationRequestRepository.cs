@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using HIS.Core.PersonModel.DoctorModel;
 
 namespace HIS.Core.MedicationModel.MedicationRequestModel
 {
@@ -15,5 +16,8 @@ namespace HIS.Core.MedicationModel.MedicationRequestModel
 		public void Remove(MedicationRequest obj);
 		public IEnumerable<MedicationRequest> GetAllThatUse(Ingredient ing);
 		IEnumerable<MedicationRequest> GetAllReturnedForRevision();
+		List<MedicationRequest> Get(Doctor doctor);
+		IEnumerable<MedicationRequestState> GetAllRequestStates();
+		IEnumerable<MedicationRequest> GetAllSent();
 	}
 }

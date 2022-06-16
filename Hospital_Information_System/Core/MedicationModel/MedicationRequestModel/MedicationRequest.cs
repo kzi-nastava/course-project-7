@@ -13,6 +13,7 @@ namespace HIS.Core.MedicationModel.MedicationRequestModel
 		public Medication Medication { get; set; }
 		public MedicationRequestState State { get; set; } = MedicationRequestState.SENT;
 		public IList<MedicationReview> Reviews = new List<MedicationReview>();
+		
 
 		public MedicationRequest()
 		{
