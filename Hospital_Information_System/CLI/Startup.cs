@@ -65,8 +65,9 @@ namespace HIS.CLI
 			IMedicationService medicationService = new MedicationService(medicationRepo);
 			IMedicationRequestService medicationRequestService = new MedicationRequestService(medicationRequestRepo);
 			IPatientService patientService = new PatientService(patientRepo);
+			IPersonService personService = new PersonService(personRepo);
 			IMedicalRecordService medicalRecordService = new MedicalRecordService(medicalRecordRepo, patientService);
-			IUserAccountService userAccountService = new UserAccountService(userAccountRepo, medicalRecordService);
+			IUserAccountService userAccountService = new UserAccountService(userAccountRepo, medicalRecordService, patientService, personService);
 			IDeleteRequestService deleteRequestService = new DeleteRequestService(deleteRequestRepo);
 			IUpdateRequestService updateRequestService = new UpdateRequestService(updateRequestRepo);
 			IHospitalPollService hospitalPollService = new HospitalPollService(hospitalPollRepo);
@@ -118,6 +119,7 @@ namespace HIS.CLI
 						UserAccount.AccountType.MANAGER => new ManagerCommandView(roomView, equipmentView, equipmentRelocationView, renovationView, ingredientView, medicationView, pollSummaryView),
 						UserAccount.AccountType.PATIENT => new PatientCommandView(appointmentView, medicalRecordView, doctorView, hospitalPollView, appointmentPollView),
 						UserAccount.AccountType.DOCTOR => new DoctorCommandView(appointmentView),
+						UserAccount.AccountType.SECRETARY => new SecretaryCommandView(userAccountView, appointmentView, medicalRecordView),
 						UserAccount.AccountType.LOGGED_OUT => new LoggedOutCommandView(userAccountView),
 						_ => throw new NotImplementedException(),
 					};

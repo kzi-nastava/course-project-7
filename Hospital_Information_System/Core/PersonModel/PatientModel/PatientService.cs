@@ -23,5 +23,10 @@ namespace HIS.Core.PersonModel.PatientModel
 		{
 			return _repo.GetAll().First(p => p.Person == person);
 		}
+
+        public void Add(Patient patient)
+        {
+	        _repo.Add(patient);
+        }
     }
 }

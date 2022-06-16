@@ -6,6 +6,10 @@ using System.Collections.Generic;
 
 namespace HIS.Core.PersonModel.UserAccountModel
 {
+    public enum AccountProperty
+    {
+        USERNAME, PASSWORD, FIRSTNAME, LASTNAME, GENDER
+    }
     public class UserAccount : Entity
     {
         public enum AccountType

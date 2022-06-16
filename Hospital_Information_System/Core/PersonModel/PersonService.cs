@@ -17,5 +17,10 @@ namespace HIS.Core.PersonModel
 		{
 			return _repo.GetAll();
 		}
+
+		public void Add(Person person)
+		{
+			_repo.Add(person);
+		}
 	}
 }

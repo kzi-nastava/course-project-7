@@ -12,6 +12,7 @@ namespace HIS.Core.PersonModel.PatientModel.MedicalRecordModel
         MedicalRecord GetPatientsMedicalRecord(Patient patient);
         IEnumerable<Appointment> MatchAppointmentByAnamnesis(string query, AppointmentComparer comparer, Patient patient);
         void AddNotifsIfNecessary(UserAccount ua);
+
         public int GetNextId();
         public void Save();
         public MedicalRecord Get(int id);
@@ -20,5 +21,7 @@ namespace HIS.Core.PersonModel.PatientModel.MedicalRecordModel
         
         void Copy(MedicalRecord target, MedicalRecord source, IEnumerable<MedicalRecordProperty> whichProperties);
         List<String> GetActionsPerformableOnList();
+
+        void Add(Patient patient);
     }
 }
