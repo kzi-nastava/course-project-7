@@ -11,5 +11,6 @@ namespace HIS.Core.PersonModel.PatientModel.MedicalRecordModel.ReferralModel
         public void Remove(Referral obj);
         public Referral Get(int id);
         public List<ReferralProperty> GetAllReferralProperties();
+        public IEnumerable<Referral> GetUnused();
     }
 }

@@ -99,7 +99,7 @@ namespace HIS.CLI
 			MedicalRecordView medicalRecordView = new MedicalRecordView(medicalRecordService, patientService, appointmentService, ingredientService);
 			ReferralView referralView = new ReferralView(referralService, doctorService);
 			PrescriptionView prescriptionView = new PrescriptionView(prescriptionService, medicalRecordService, medicationService);
-			AppointmentView appointmentView = new AppointmentView(appointmentService, appointmentAvailabilityService, doctorService, doctorAvailabilityService, patientService, patientAvailabilityService, roomService, roomAvailabilityService, medicalRecordService, medicalRecordView, referralView, prescriptionView);
+			AppointmentView appointmentView = new AppointmentView(appointmentService, appointmentAvailabilityService, doctorService, doctorAvailabilityService, patientService, patientAvailabilityService, roomService, roomAvailabilityService, medicalRecordService, medicalRecordView, referralView, prescriptionView, referralService);
 			DoctorView doctorView = new DoctorView(doctorService, appointmentView);
 			PollView pollView = new PollView();
 			AppointmentPollView appointmentPollView = new AppointmentPollView(appointmentPollService, patientService, appointmentService, pollView);

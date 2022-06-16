@@ -67,5 +67,10 @@ namespace HIS.Core.PersonModel.DoctorModel
         {
             return Enum.GetValues(typeof(Doctor.MedicineSpeciality)).Cast<Doctor.MedicineSpeciality>().ToList();
         }
+
+        public IEnumerable<Doctor> GetDoctorsBySpecialty(Doctor.MedicineSpeciality speciality)
+        {
+            return _repo.GetAll().Where(d => d.Specialty == speciality);
+        }
     }
 }

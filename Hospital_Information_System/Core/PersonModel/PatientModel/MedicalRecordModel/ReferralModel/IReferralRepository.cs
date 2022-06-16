@@ -10,7 +10,6 @@ namespace HIS.Core.PersonModel.PatientModel.MedicalRecordModel.ReferralModel
         public Referral Add(Referral obj);
         public void Remove(Referral obj);
         public Referral Get(int id);
-        
-        
+        IEnumerable<Referral> GetUnused();
     }
 }
