@@ -87,6 +87,7 @@ namespace HIS.CLI
 			IEquipmentRequestService equipmentRequestService = new EquipmentRequestService(equipmentRequestRepo, roomService, _tasks);
 			IDaysOffRequestService daysOffRequestService = new DaysOffRequestService(daysOffRequestRepo, appointmentService, patientService, doctorService, userAccountService);
 			IReferralService referralService = new ReferralService(referralRepo);
+			IPrescriptionService prescriptionService = new PrescriptionService(prescriptionRepo);
 
 			UserAccountView userAccountView = new UserAccountView(userAccountService);
 			RoomView roomView = new RoomView(roomService);
@@ -97,7 +98,8 @@ namespace HIS.CLI
 			MedicationView medicationView = new MedicationView(medicationService, ingredientService, medicationRequestService);
 			MedicalRecordView medicalRecordView = new MedicalRecordView(medicalRecordService, patientService, appointmentService, ingredientService);
 			ReferralView referralView = new ReferralView(referralService, doctorService);
-			AppointmentView appointmentView = new AppointmentView(appointmentService, appointmentAvailabilityService, doctorService, doctorAvailabilityService, patientService, patientAvailabilityService, roomService, roomAvailabilityService, medicalRecordService, medicalRecordView, referralView);
+			PrescriptionView prescriptionView = new PrescriptionView(prescriptionService, medicalRecordService, medicationService);
+			AppointmentView appointmentView = new AppointmentView(appointmentService, appointmentAvailabilityService, doctorService, doctorAvailabilityService, patientService, patientAvailabilityService, roomService, roomAvailabilityService, medicalRecordService, medicalRecordView, referralView, prescriptionView);
 			DoctorView doctorView = new DoctorView(doctorService, appointmentView);
 			PollView pollView = new PollView();
 			AppointmentPollView appointmentPollView = new AppointmentPollView(appointmentPollService, patientService, appointmentService, pollView);
@@ -167,5 +169,5 @@ namespace HIS.CLI
 			daysOffRequestRepo.Save();
 			referralRepo.Save();
 		}
-	}
 }
+	}

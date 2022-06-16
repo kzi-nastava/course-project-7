@@ -65,5 +65,20 @@
     "Scheduled": false,
     "Id": 8,
     "Deleted": false
+  },
+  {
+    "Doctor": 2,
+    "Specialty": 2,
+    "Patient": 0,
+    "Scheduled": false,
+    "Id": 9,
+    "Deleted": false
+  },
+  {
+    "Specialty": 0,
+    "Patient": 0,
+    "Scheduled": false,
+    "Id": 10,
+    "Deleted": false
   }
 ]
