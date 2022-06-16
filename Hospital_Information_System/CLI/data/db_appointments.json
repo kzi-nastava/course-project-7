@@ -196,5 +196,14 @@
     "Anamnesis": "good!",
     "Id": 21,
     "Deleted": false
+  },
+  {
+    "Doctor": 1,
+    "Patient": 0,
+    "Room": 4,
+    "ScheduledFor": "2022-06-20T00:00:00",
+    "Anamnesis": "",
+    "Id": 22,
+    "Deleted": true
   }
 ]

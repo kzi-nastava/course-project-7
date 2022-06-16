@@ -35,5 +35,7 @@ namespace HIS.Core.PersonModel.DoctorModel.DaysOffRequestModel
         public bool IsEndDateCorrect(DateTime start, DateTime end);
 
         public List<DaysOffRequest> Get(UserAccount user);
+
+        public void DeleteProblematicAppointments(Doctor doctor, DateTime start, DateTime end);
     }
 }

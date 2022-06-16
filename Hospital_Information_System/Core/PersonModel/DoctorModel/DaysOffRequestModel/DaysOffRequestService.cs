@@ -14,17 +14,19 @@ namespace HIS.Core.PersonModel.DoctorModel.DaysOffRequestModel
         private readonly IAppointmentService _appointmentService;
         private readonly IPatientService _patientService;
         private readonly IDoctorService _doctorService;
+        private readonly IUserAccountService _userAccountService;
         
         
         private const string hintAppointmentsDeleted =
             "Following appointments of yours will be deleted due to the doctor taking an urgent break:";
         
-        public DaysOffRequestService(IDaysOffRequestRepository repo, IAppointmentService appointmentService, IPatientService patientService, IDoctorService doctorService)
+        public DaysOffRequestService(IDaysOffRequestRepository repo, IAppointmentService appointmentService, IPatientService patientService, IDoctorService doctorService, IUserAccountService userAccountService)
         {
             _repo = repo;
             _appointmentService = appointmentService;
             _patientService = patientService;
             _doctorService = doctorService;
+            _userAccountService = userAccountService;
         }
 
         public IEnumerable<DaysOffRequest> GetAll()
@@ -157,6 +159,16 @@ namespace HIS.Core.PersonModel.DoctorModel.DaysOffRequestModel
             return (user.Type == UserAccount.AccountType.DOCTOR)
                 ? GetDaysOffRequests(_doctorService.GetDoctorFromPerson(user.Person))
                 : GetSentDaysOffRequests(); //for secretary
+        }
+
+        public void DeleteProblematicAppointments(Doctor doctor, DateTime start, DateTime end)
+        {
+            var problematicAppointments = FindProblematicAppointments(doctor, start, end);
+            UserAccount ua = _userAccountService.GetUserFromDoctor(doctor);
+            foreach (var app in problematicAppointments)
+            {
+                _appointmentService.Remove(app, ua);
+            }
         }
     }
 }

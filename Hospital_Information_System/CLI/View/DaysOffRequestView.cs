@@ -100,6 +100,7 @@ namespace HIS.CLI.View
 
             var reason = InputReason();
             var state = DaysOffRequest.DaysOffRequestState.APPROVED;
+            _service.DeleteProblematicAppointments(doctor, start, end);
             return new DaysOffRequest(doctor, start, end, reason, state);
         }
 

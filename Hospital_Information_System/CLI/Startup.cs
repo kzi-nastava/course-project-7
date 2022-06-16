@@ -83,7 +83,7 @@ namespace HIS.CLI
 			IPatientAvailabilityService patientAvailabilityService = new PatientAvailabilityService(patientService, appointmentService);
 			IAppointmentAvailabilityService appointmentAvailabilityService = new AppointmentAvailabilityService(roomAvailabilityService, doctorAvailabilityService, patientAvailabilityService);
 			IEquipmentRequestService equipmentRequestService = new EquipmentRequestService(equipmentRequestRepo, roomService, _tasks);
-			IDaysOffRequestService daysOffRequestService = new DaysOffRequestService(daysOffRequestRepo, appointmentService, patientService, doctorService);
+			IDaysOffRequestService daysOffRequestService = new DaysOffRequestService(daysOffRequestRepo, appointmentService, patientService, doctorService, userAccountService);
 
 			UserAccountView userAccountView = new UserAccountView(userAccountService);
 			RoomView roomView = new RoomView(roomService);

@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using HIS.Core.PersonModel.DoctorModel;
 
 namespace HIS.Core.PersonModel.UserAccountModel
 {
@@ -74,6 +75,19 @@ namespace HIS.Core.PersonModel.UserAccountModel
 		public void Save()
 		{
 			File.WriteAllText(_fname, JsonConvert.SerializeObject(_userAccounts, Formatting.Indented, _settings));
+		}
+
+		public UserAccount GetUserFromDoctor(Doctor doctor)
+		{
+			foreach (var ua in _userAccounts)
+			{
+				if (doctor.Person == ua.Person)
+				{
+					return ua;
+				}
+			}
+
+			return null;
 		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using HIS.Core.PersonModel.DoctorModel;
 
 namespace HIS.Core.PersonModel.UserAccountModel
 {
@@ -19,5 +20,6 @@ namespace HIS.Core.PersonModel.UserAccountModel
         void AddCreatedAppointmentTimestamp(UserAccount user, DateTime timestamp);
         void DetectTrolling(UserAccount user);
         void PruneTimestamps(UserAccount user);
+        public UserAccount GetUserFromDoctor(Doctor doctor);
     }
 }
