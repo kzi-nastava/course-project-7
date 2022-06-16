@@ -5,7 +5,7 @@ namespace HIS.CLI.View.UserCommand
 {
     internal class SecretaryCommandView : UserCommandView
     {
-        public SecretaryCommandView(UserAccountView userAccountView, AppointmentView appointmentView, MedicalRecordView medicalRecordView, RequestView requestView, EquipmentView equipmentView)
+        public SecretaryCommandView(UserAccountView userAccountView, AppointmentView appointmentView, MedicalRecordView medicalRecordView, RequestView requestView, EquipmentView equipmentView, EquipmentRelocationView equipmentRelocationView)
         {
             AddCommands(new Dictionary<string, Action>
             {
@@ -20,7 +20,7 @@ namespace HIS.CLI.View.UserCommand
                 {"handle-referrals", () => throw new NotImplementedException()}, 
                 {"create-urgent-appointment", () => appointmentView.CmdCreateUrgent()}, 
                 {"request-new-equipment", () => equipmentView.CmdRequestNew()},
-                {"move-dynamic-equipment", () => throw new NotImplementedException()}
+                {"move-dynamic-equipment", () => equipmentRelocationView.CmdMoveDynamicEquipment()}
             });
         }
     }

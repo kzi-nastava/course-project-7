@@ -80,5 +80,25 @@ namespace HIS.Core.RoomModel
 		{
 			return _repo.GetExaminationRooms();
 		}
+      
+        public IEnumerable<Equipment> GetEquipment(Room room)
+        {
+	        return room.Equipment.Keys.ToList();
+        }
+
+        public IEnumerable<Room> GetExeminationAndOperationRooms()
+        {
+	        return _repo.GetExeminationAndOperationRooms();
+        }
+        public bool HasEquipmentLessThanFive(Room room, Equipment equipment)
+        {
+	        return room.Equipment.ContainsKey(equipment) && room.Equipment[equipment] < 5;
+        }
+		
+        public bool DoesNotHaveEquipmentRightNow(Room room, Equipment equipment)
+        {
+	        return room.Equipment.ContainsKey(equipment) && room.Equipment[equipment] == 0;
+        }
+
     }
 }

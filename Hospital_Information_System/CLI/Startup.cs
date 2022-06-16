@@ -88,7 +88,7 @@ namespace HIS.CLI
 			UserAccountView userAccountView = new UserAccountView(userAccountService);
 			RoomView roomView = new RoomView(roomService);
 			EquipmentView equipmentView = new EquipmentView(equipmentService, equipmentRequestService);
-			EquipmentRelocationView equipmentRelocationView = new EquipmentRelocationView(equipmentRelocationService, roomService);
+			EquipmentRelocationView equipmentRelocationView = new EquipmentRelocationView(equipmentRelocationService, roomService, equipmentService);
 			RenovationView renovationView = new RenovationView(renovationService, roomService, roomAvailabilityService, roomView);
 			IngredientView ingredientView = new IngredientView(ingredientService, medicationService, medicationRequestService);
 			MedicationView medicationView = new MedicationView(medicationService, ingredientService, medicationRequestService);
@@ -126,7 +126,7 @@ namespace HIS.CLI
 					{
 						UserAccount.AccountType.MANAGER => new ManagerCommandView(roomView, equipmentView, equipmentRelocationView, renovationView, ingredientView, medicationView, pollSummaryView),
 						UserAccount.AccountType.PATIENT => new PatientCommandView(appointmentView, medicalRecordView, doctorView, hospitalPollView, appointmentPollView),
-						UserAccount.AccountType.SECRETARY => new SecretaryCommandView(userAccountView, appointmentView, medicalRecordView, requestView, equipmentView),
+						UserAccount.AccountType.SECRETARY => new SecretaryCommandView(userAccountView, appointmentView, medicalRecordView, requestView, equipmentView, equipmentRelocationView),
 						UserAccount.AccountType.DOCTOR => new DoctorCommandView(appointmentView, daysOffRequestView),
 						UserAccount.AccountType.LOGGED_OUT => new LoggedOutCommandView(userAccountView),
 						_ => throw new NotImplementedException(),

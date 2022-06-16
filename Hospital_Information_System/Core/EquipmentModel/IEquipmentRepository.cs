@@ -14,5 +14,7 @@ namespace HIS.Core.EquipmentModel
 		IEnumerable<Equipment> Search(string searchQuery, IList<EquipmentProperty> propertiesToSearchOn);
 		IEnumerable<Equipment> FilterByType(EquipmentType equipmentType);
 		IEnumerable<Equipment> FilterByUse(EquipmentUse equipmentUse);
+		bool IsDynamic(Equipment equipment);
+		IEnumerable<Equipment> GetDynamic();
 	}
 }

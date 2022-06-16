@@ -78,5 +78,24 @@ namespace HIS.Core.EquipmentModel
 		{
 			return _equipment.Where(eq => eq.Use == equipmentUse);
 		}
+		
+		public bool IsDynamic(Equipment equipment)
+		{
+			return (equipment.Use == EquipmentUse.Examination || 
+			        equipment.Use == EquipmentUse.Operation ||
+			        equipment.Use == EquipmentUse.Unknown) && 
+			       (equipment.Type == EquipmentType.Gauze ||
+			        equipment.Type == EquipmentType.Injection ||
+			        equipment.Type == EquipmentType.BandAid ||
+			        equipment.Type == EquipmentType.Pen ||
+			        equipment.Type == EquipmentType.Paper ||
+			        equipment.Type == EquipmentType.Unknown);
+		}
+
+		public IEnumerable<Equipment> GetDynamic()
+		{
+			return _equipment.Where(e => IsDynamic(e));
+		}
+		
 	}
 }

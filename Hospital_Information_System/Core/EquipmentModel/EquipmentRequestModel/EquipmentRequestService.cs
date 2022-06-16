@@ -31,7 +31,7 @@ namespace HIS.Core.EquipmentModel.EquipmentRequestModel
             AddToTasks(request);
         }
         
-        #region Relocation tasks
+        #region Order tasks
         private void Perform(EquipmentRequest request)
         {
             if (request.Added)
@@ -43,7 +43,7 @@ namespace HIS.Core.EquipmentModel.EquipmentRequestModel
                 _roomService.Move(equipment.Key, equipment.Value, null, _roomService.GetWarehouse());    
             }
             
-            System.Console.WriteLine("EquipmentRequestService.cs: Finished acquisition.");
+            System.Console.WriteLine("EquipmentRequestService.cs: Finished order.");
             request.Added = true;
         }
 

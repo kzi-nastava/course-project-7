@@ -12,7 +12,6 @@ namespace HIS.Core.EquipmentModel
 		IEnumerable<Equipment> GetAll();
 		int GetTotalSupply(Equipment eq);
 		IEnumerable<Equipment> GetDynamicEquipmentNotInStock();
-		IEnumerable<Equipment> GetDynamicEquipment();
-		bool IsDynamicEquipment(Equipment equipment);
+		bool IsDynamic(Equipment equipment);
 	}
 }
