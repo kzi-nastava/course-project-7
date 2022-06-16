@@ -232,23 +232,6 @@ namespace HIS.CLI.View
                 _cancel);
         }
 
-        /*
-        internal void ShowDeletedAppointments(UserAccount ua)
-        {
-            var appointmentsToDelete = DaysOffRequestController.GetAppointmentsToDelete(ua);
-            if (appointmentsToDelete.Count == 0) return;
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(hintAppointmentsDeleted);
-            Console.ForegroundColor = ConsoleColor.Gray;
-            foreach (var appointment in appointmentsToDelete)
-            {
-                Console.WriteLine(appointment);
-                UserAccount doctorsAccount = DoctorController.GetUserFromDoctor(appointment.Doctor);
-                AppointmentController.Delete(appointment, doctorsAccount);
-            }
-        }
-        */
-
         private void Print(List<DaysOffRequest> requests)
         {
             foreach (var request in requests)

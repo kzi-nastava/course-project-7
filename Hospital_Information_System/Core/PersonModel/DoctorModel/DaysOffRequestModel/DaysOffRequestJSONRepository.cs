@@ -64,23 +64,23 @@ namespace HIS.Core.PersonModel.DoctorModel.DaysOffRequestModel
             return _daysOffRequests.Where(r => !r.Deleted && user.Person == r.Requester.Person && (r.State == DaysOffRequest.DaysOffRequestState.APPROVED || r.State == DaysOffRequest.DaysOffRequestState.REJECTED)).ToList();
         }
 
-        public List<DaysOffRequest> GetDaysOffRequests(Doctor doctor)
+        public List<DaysOffRequest> Get(Doctor doctor)
         {
             return _daysOffRequests.Where(a => !a.Deleted && a.Requester == doctor).ToList();
         }
 
-        public List<DaysOffRequest> GetFutureDaysOffRequests()
+        public List<DaysOffRequest> GetFuture()
         {
             return _daysOffRequests.Where(a => !a.Deleted && a.State == DaysOffRequest.DaysOffRequestState.APPROVED && DateTime.Compare(DateTime.Now, a.Start) <= 0).ToList();
         }
 
-        public List<DaysOffRequest> GetApprovedRequests(Doctor doctor)
+        public List<DaysOffRequest> GetApproved(Doctor doctor)
         {
             return _daysOffRequests.Where(a =>
                 !a.Deleted && a.Requester == doctor && a.State == DaysOffRequest.DaysOffRequestState.APPROVED).ToList();
         }
 
-        public List<DaysOffRequest> GetSentAndApprovedRequests(Doctor doctor)
+        public List<DaysOffRequest> GetSentAndApproved(Doctor doctor)
         {
             return _daysOffRequests.Where(a =>
                 !a.Deleted && a.Requester == doctor && 
