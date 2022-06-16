@@ -7,6 +7,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
+using HIS.Core.MedicationModel.IngredientModel;
+using HIS.Core.MedicationModel.PrescriptionModel;
+using HIS.Core.PersonModel.PatientModel.MedicalRecordModel.Util;
 
 namespace HIS.CLI.View
 {
@@ -14,6 +18,8 @@ namespace HIS.CLI.View
 	{
 		private readonly IMedicalRecordService _service;
 		private readonly IPatientService _patientService;
+		private readonly IAppointmentService _appointmentService;
+		private readonly IIngredientService _ingredientService;
 
 		private const string hintInputWeight = "Input patient's weight [kg]";
 		private const string hintInputHeight = "Input patient's height [cm]";
@@ -40,9 +46,6 @@ namespace HIS.CLI.View
 		private const string errHeightTooLow = "Height must be higher than 50cm!";
 		private const string hintNoMedicalRecord = "This patient doesn't have a medical record yet.";
 		private const string hintMedicalRecordUpdated = "You've successfully updated patient's medical record!";
-		private const string hintSelectAction = "Select the action that you want to perform";
-		private const string hintInputNew = "Input the item you want to add, or newLine to finish";
-		private const string hintSelectToRemove = "Select items you want removed";
 		private const string hintUpdatingCurrentAllergies = "Updating current list of allergies";
 		private const string hintUpdatingCurrentIllnesses = "Updating current list of illnesses";
 
@@ -51,11 +54,17 @@ namespace HIS.CLI.View
 
 		private const string hintGetMinutes = "Enter how many minutes before the scheduled medication time you want to receive a notification.";
 		private const string errMinutesMustBePositiveNumber = "Minutes must be a positive number!";
+		
+		private const string hintSelectAction = "Select the action that you want to perform";
+		private const string hintInputNew = "Input the item you want to add, or newLine to finish";
+		private const string hintSelectToRemove = "Select items you want removed";
 
-		public MedicalRecordView(IMedicalRecordService service, IPatientService patientService)
+		public MedicalRecordView(IMedicalRecordService service, IPatientService patientService, IAppointmentService appointmentService, IIngredientService ingredientService)
 		{
 			_service = service;
 			_patientService = patientService;
+			_appointmentService = appointmentService;
+			_ingredientService = ingredientService;
 		}
 
 		internal void CmdSearch()
@@ -106,5 +115,258 @@ namespace HIS.CLI.View
 
 			record.MinutesBeforeNotification = newMinutes;
 		}
+		
+		internal void ReadMedicalRecord(Appointment appointment)
+		{
+			MedicalRecord medicalRecord = _service.GetPatientsMedicalRecord(appointment.Patient);
+
+			if (medicalRecord is null)
+			{
+				Hint(hintNoMedicalRecord);
+			}
+			else
+			{
+				Print(medicalRecord.ToString());
+			}
+		}
+		
+		private void CreateMedicalRecord(Patient patient)
+		{
+			try
+			{
+				MedicalRecord medicalRecord = new MedicalRecord();
+				medicalRecord.Patient = patient;
+				medicalRecord.Weight = InputWeight();
+				medicalRecord.Height = InputHeight();
+				medicalRecord.Illnesses = InputIllnesses();
+				medicalRecord.IngredientAllergies = InputIngredients();
+				medicalRecord.OtherAllergies = InputAllergies();
+				medicalRecord.Prescriptions = new List<Prescription>();
+
+				medicalRecord.Examinations = _appointmentService.GetAll(patient).ToList();
+
+				_service.Add(medicalRecord);
+			}
+			catch (Exception e)
+			{
+				Error(e.Message);
+			}
+		}
+		
+		internal void UpdateMedicalRecord(Patient patient)
+        {
+            MedicalRecord medicalRecord = _service.GetPatientsMedicalRecord(patient);
+            if (medicalRecord is null)
+            {
+                CreateMedicalRecord(patient);
+            }
+            else
+            {
+                UpdateMedicalRecord(medicalRecord);
+            }
+
+        }
+
+        private void UpdateMedicalRecord(MedicalRecord medicalRecord)
+        {
+            Hint(hintSelectProperties);
+            try
+            {
+                var modifiableProperties = MedicalRecordPropertyHelpers.GetModifiableProperties();
+                var propertiesToUpdate = EasyInput<MedicalRecordProperty>.SelectMultiple(
+                    modifiableProperties,
+                    ap => MedicalRecordPropertyHelpers.GetName(ap),
+                    _cancel
+                ).ToList();
+                var updatedMedialRecord =
+                    GetUpdatedMedicalRecord(propertiesToUpdate, medicalRecord);
+                _service.Copy(medicalRecord, updatedMedialRecord, propertiesToUpdate);
+                Hint(hintMedicalRecordUpdated);
+            }
+                
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        private float InputWeight()
+        {
+            Hint(hintInputWeight);
+            return EasyInput<float>.Get(
+                new List<Func<float, bool>>
+                {
+                    s => s > 0.0,
+                    s => s > 5.0,
+                    s => s < 500.0,
+                },
+                new[]
+                {
+                    errWeightPositive,
+                    errWeightTooLow,
+                    errWeightTooHigh,
+                },
+                _cancel
+            );
+        }
+
+        private float InputHeight()
+        {
+            Hint(hintInputHeight);
+            return EasyInput<float>.Get(
+                new List<Func<float, bool>>
+                {
+                    s => s > 0,
+                    s => s > 50,
+                    s => s < 250,
+                },
+                new[]
+                {
+                    errHeightPositive,
+                    errHeightTooLow,
+                    errHeightTooHigh,
+                },
+                _cancel
+            );
+        }
+
+        private List<String> InputIllnesses()
+        {
+            List<String> illnesses = new List<string>();
+            Hint(hintInputIllnesses);
+            while (true)
+            {
+                Hint(hintInputIllness);
+                string illness = Console.ReadLine();
+                if (illness.ToLower() == "q")
+                {
+                    break;
+                }
+
+                illnesses.Add(illness);
+            }
+
+            return illnesses;
+        }
+
+
+        private List<String> InputAllergies()
+        {
+            List<String> allergies = new List<string>();
+            Hint(hintInputAllergies);
+            while (true)
+            {
+                Hint(hintInputAllergy);
+                string allergy = Console.ReadLine();
+                if (allergy.ToLower() == "q" || allergy == "")
+                {
+                    break;
+                }
+
+                allergies.Add(allergy);
+            }
+
+            return allergies;
+        }
+        
+        private List<Ingredient> InputIngredients()
+        {
+            Hint(hintInputIngredients);
+            List<Ingredient> ingredients = _ingredientService.GetAll().ToList();
+            var selectedIngredients = EasyInput<Ingredient>.SelectMultiple(ingredients, _cancel).ToList();
+            return selectedIngredients;
+        }
+
+        private MedicalRecord GetUpdatedMedicalRecord(List<MedicalRecordProperty> propertiesToUpdate, MedicalRecord oldMedicalRecord)
+        {
+            MedicalRecord updatedMedicalRecord = oldMedicalRecord;
+            if (propertiesToUpdate.Contains(MedicalRecordProperty.HEIGHT))
+            {
+                updatedMedicalRecord.Height = InputHeight();
+            }
+
+            if (propertiesToUpdate.Contains(MedicalRecordProperty.WEIGHT))
+            {
+                updatedMedicalRecord.Weight = InputWeight();
+            }
+
+            if (propertiesToUpdate.Contains(MedicalRecordProperty.OTHER_ALLERGIES))
+            {
+                Hint(hintUpdatingCurrentAllergies);
+                updatedMedicalRecord.OtherAllergies = PerformActionsOnList(oldMedicalRecord.OtherAllergies);
+            }
+            if (propertiesToUpdate.Contains(MedicalRecordProperty.ALLERGIES_TO_INGREDIENTS))
+            {
+                Hint(hintUpdatingCurrentAllergies);
+                updatedMedicalRecord.IngredientAllergies = InputIngredients();
+            }
+
+            if (propertiesToUpdate.Contains(MedicalRecordProperty.ILLNESSES))
+            {
+                Hint(hintUpdatingCurrentIllnesses);
+                updatedMedicalRecord.Illnesses = PerformActionsOnList(oldMedicalRecord.Illnesses);
+            }
+
+            return updatedMedicalRecord;
+        }
+
+        private List<String> PerformActionsOnList(List<String> properties)
+        {
+	        Hint(hintSelectAction);
+	        List<string> allActions = _service.GetActionsPerformableOnList();
+	        var actionsToPerform = EasyInput<String>.SelectMultiple(allActions, _cancel);
+	        List<string> updatedProperties = new List<string>();
+	        foreach (var action in actionsToPerform)
+	        {
+		        if (action == "ADD")
+		        {
+			        updatedProperties = Add(properties);
+		        }
+		        else
+		        {
+			        updatedProperties = Remove(properties);
+		        }
+
+	        }
+
+	        return updatedProperties;
+        }
+
+
+        private List<String> Add(List<String> oldList)
+        {
+	        List<String> updatedList = oldList;
+	        while (true)
+	        {
+		        Hint(hintInputNew);
+		        string newItem = Console.ReadLine();
+		        if (newItem != "")
+		        {
+			        updatedList.Add(newItem);
+		        }
+
+		        else
+		        {
+			        break;
+		        }
+	        }
+
+	        return updatedList;
+        }
+
+        private List<String> Remove(List<String> oldList)
+        {
+	        List<String> updatedList = oldList;
+	        Hint(hintSelectToRemove);
+	        var itemsToRemove = EasyInput<String>.SelectMultiple(oldList, _cancel);
+	        foreach (var item in itemsToRemove)
+	        {
+		        updatedList.Remove(item);
+	        }
+
+	        return updatedList;
+
+        }
+
 	}
 }

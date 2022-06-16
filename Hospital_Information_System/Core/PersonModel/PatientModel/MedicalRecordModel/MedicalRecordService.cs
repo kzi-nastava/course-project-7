@@ -2,6 +2,7 @@
 using HIS.Core.AppointmentModel;
 using HIS.Core.AppointmentModel.AppointmentComparers;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using HIS.Core.PersonModel.UserAccountModel;
 using HIS.Core.MedicationModel.PrescriptionModel;
@@ -92,6 +93,49 @@ namespace HIS.Core.PersonModel.PatientModel.MedicalRecordModel
             {
                 t.Start();
             }
+        }
+
+        public int GetNextId()
+        {
+            return _repo.GetNextId();
+        }
+
+        public void Save()
+        {
+            _repo.Save();
+        }
+
+        public MedicalRecord Get(int id)
+        {
+            return _repo.Get(id);
+        }
+
+        public MedicalRecord Add(MedicalRecord obj)
+        {
+            return _repo.Add(obj);
+        }
+
+        public void Remove(MedicalRecord obj)
+        {
+            _repo.Remove(obj);
+        }
+        
+        public void Copy(MedicalRecord target, MedicalRecord source, IEnumerable<MedicalRecordProperty> whichProperties)
+        {
+            if (whichProperties.Contains(MedicalRecordProperty.HEIGHT)) target.Height = source.Height;
+            if (whichProperties.Contains(MedicalRecordProperty.WEIGHT)) target.Weight = source.Weight;
+            if (whichProperties.Contains(MedicalRecordProperty.ILLNESSES)) target.Illnesses = source.Illnesses;
+            if (whichProperties.Contains(MedicalRecordProperty.OTHER_ALLERGIES)) target.OtherAllergies = source.OtherAllergies;
+            if (whichProperties.Contains(MedicalRecordProperty.ALLERGIES_TO_INGREDIENTS)) target.IngredientAllergies = source.IngredientAllergies;
+            if (whichProperties.Contains(MedicalRecordProperty.PRESCRIPTIONS)) target.Prescriptions = source.Prescriptions;
+        }
+        
+        public List<String> GetActionsPerformableOnList()
+        {
+            List<string> actions = new List<string>();
+            actions.Add("ADD");
+            actions.Add("REMOVE");
+            return actions;
         }
     }
 }
