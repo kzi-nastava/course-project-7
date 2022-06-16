@@ -21,8 +21,15 @@ namespace HIS.Core.AppointmentModel
 
 		public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
 		{
-			var appointmentID = serializer.Deserialize<int>(reader);
-			return Repo.GetAll().First(eq => eq.Id == appointmentID);
+			try
+			{
+				var appointmentID = serializer.Deserialize<int>(reader);
+				return Repo.GetAll().First(eq => eq.Id == appointmentID);
+			}
+			catch
+            {
+				return null;
+            }
 		}
 
 		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
