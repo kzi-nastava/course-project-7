@@ -1,0 +1,22 @@
+[
+  {
+    "Name": "Probiol",
+    "Id": 0,
+    "Deleted": true
+  },
+  {
+    "Name": "Hlocitol",
+    "Id": 1,
+    "Deleted": false
+  },
+  {
+    "Name": "Paritricine",
+    "Id": 2,
+    "Deleted": false
+  },
+  {
+    "Name": "Kweywonol",
+    "Id": 3,
+    "Deleted": false
+  }
+]

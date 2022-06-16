@@ -1,0 +1,333 @@
+[
+  {
+    "Name": "Warehouse",
+    "Floor": 0,
+    "Type": 0,
+    "Equipment": {
+      "0": 0,
+      "22": 0,
+      "21": 6,
+      "14": 8,
+      "11": 1,
+      "2": 0,
+      "24": 0,
+      "1": 0,
+      "23": 0,
+      "25": 0,
+      "26": 0,
+      "27": 19,
+      "28": 11,
+      "29": 12,
+      "30": 18,
+      "32": 0
+    },
+    "Id": 0,
+    "Deleted": false
+  },
+  {
+    "Name": "bathroom 0-4-0",
+    "Floor": 0,
+    "Type": 4,
+    "Equipment": {
+      "1": 0,
+      "23": 0,
+      "2": 0,
+      "24": 0,
+      "22": 0
+    },
+    "Id": 1,
+    "Deleted": true
+  },
+  {
+    "Name": "bathroom 0-4-1",
+    "Floor": 0,
+    "Type": 4,
+    "Equipment": {
+      "2": 0,
+      "24": 0,
+      "22": 0
+    },
+    "Id": 2,
+    "Deleted": true
+  },
+  {
+    "Name": "bathroom 0-4-2",
+    "Floor": 0,
+    "Type": 4,
+    "Equipment": {
+      "3": 3,
+      "0": 5
+    },
+    "Id": 3,
+    "Deleted": false
+  },
+  {
+    "Name": "examination 0-3-0",
+    "Floor": 0,
+    "Type": 3,
+    "Equipment": {
+      "4": 5,
+      "1": 5,
+      "27": 2,
+      "29": 8,
+      "31": 7,
+      "28": 9,
+      "30": 8,
+      "0": 4
+    },
+    "Id": 4,
+    "Deleted": false
+  },
+  {
+    "Name": "examination 0-3-1",
+    "Floor": 0,
+    "Type": 3,
+    "Equipment": {
+      "5": 5,
+      "2": 6,
+      "25": 0,
+      "26": 0,
+      "27": 5,
+      "29": 9,
+      "31": 0,
+      "28": 0,
+      "0": 8,
+      "30": 6,
+      "32": 0
+    },
+    "Id": 5,
+    "Deleted": false
+  },
+  {
+    "Name": "operation 0-1-0",
+    "Floor": 0,
+    "Type": 1,
+    "Equipment": {
+      "6": 5,
+      "3": 6
+    },
+    "Id": 6,
+    "Deleted": false
+  },
+  {
+    "Name": "recovery 0-2-0",
+    "Floor": 0,
+    "Type": 2,
+    "Equipment": {
+      "7": 1,
+      "4": 6
+    },
+    "Id": 7,
+    "Deleted": false
+  },
+  {
+    "Name": "bathroom 1-4-0",
+    "Floor": 1,
+    "Type": 4,
+    "Equipment": {
+      "8": 9,
+      "5": 9
+    },
+    "Id": 8,
+    "Deleted": false
+  },
+  {
+    "Name": "bathroom 1-4-1",
+    "Floor": 1,
+    "Type": 4,
+    "Equipment": {
+      "9": 2,
+      "6": 5
+    },
+    "Id": 9,
+    "Deleted": false
+  },
+  {
+    "Name": "bathroom 1-4-2",
+    "Floor": 1,
+    "Type": 4,
+    "Equipment": {
+      "10": 3,
+      "7": 7
+    },
+    "Id": 10,
+    "Deleted": false
+  },
+  {
+    "Name": "examination 1-3-0",
+    "Floor": 1,
+    "Type": 3,
+    "Equipment": {
+      "11": 7,
+      "8": 4,
+      "25": 0,
+      "26": 0,
+      "27": 7,
+      "28": 8,
+      "29": 1
+    },
+    "Id": 11,
+    "Deleted": false
+  },
+  {
+    "Name": "examination 1-3-1",
+    "Floor": 1,
+    "Type": 3,
+    "Equipment": {
+      "12": 4,
+      "9": 1,
+      "25": 0,
+      "26": 0,
+      "27": 13,
+      "28": 10,
+      "29": 10
+    },
+    "Id": 12,
+    "Deleted": false
+  },
+  {
+    "Name": "operation 1-1-0",
+    "Floor": 1,
+    "Type": 1,
+    "Equipment": {
+      "13": 7,
+      "10": 4
+    },
+    "Id": 13,
+    "Deleted": false
+  },
+  {
+    "Name": "recovery 1-2-0",
+    "Floor": 1,
+    "Type": 2,
+    "Equipment": {},
+    "Id": 14,
+    "Deleted": true
+  },
+  {
+    "Name": "bathroom 2-4-0",
+    "Floor": 2,
+    "Type": 4,
+    "Equipment": {
+      "15": 4,
+      "12": 8
+    },
+    "Id": 15,
+    "Deleted": false
+  },
+  {
+    "Name": "bathroom 2-4-1",
+    "Floor": 2,
+    "Type": 4,
+    "Equipment": {
+      "16": 1,
+      "13": 6
+    },
+    "Id": 16,
+    "Deleted": false
+  },
+  {
+    "Name": "bathroom 2-4-2",
+    "Floor": 2,
+    "Type": 4,
+    "Equipment": {
+      "17": 9,
+      "14": 2
+    },
+    "Id": 17,
+    "Deleted": false
+  },
+  {
+    "Name": "examination 2-3-0",
+    "Floor": 2,
+    "Type": 3,
+    "Equipment": {
+      "18": 7,
+      "15": 1
+    },
+    "Id": 18,
+    "Deleted": false
+  },
+  {
+    "Name": "examination 2-3-1",
+    "Floor": 2,
+    "Type": 3,
+    "Equipment": {
+      "19": 9,
+      "16": 9
+    },
+    "Id": 19,
+    "Deleted": false
+  },
+  {
+    "Name": "operation 2-1-0",
+    "Floor": 2,
+    "Type": 1,
+    "Equipment": {
+      "20": 1,
+      "17": 3,
+      "22": 1
+    },
+    "Id": 20,
+    "Deleted": false
+  },
+  {
+    "Name": "recovery 2-2-0",
+    "Floor": 2,
+    "Type": 2,
+    "Equipment": {},
+    "Id": 21,
+    "Deleted": false
+  },
+  {
+    "Name": "SobaTestTest",
+    "Floor": 1,
+    "Type": 4,
+    "Equipment": {},
+    "Id": 22,
+    "Deleted": true
+  },
+  {
+    "Name": "NEW_ROOM",
+    "Floor": 1,
+    "Type": 1,
+    "Equipment": {
+      "21": 6,
+      "18": 7,
+      "22": 3,
+      "0": 2,
+      "14": 8,
+      "11": 1
+    },
+    "Id": 23,
+    "Deleted": false
+  },
+  {
+    "Name": "split_01",
+    "Floor": 0,
+    "Type": 4,
+    "Equipment": {
+      "1": 1,
+      "23": 2,
+      "2": 3,
+      "24": 0,
+      "22": 0
+    },
+    "Id": 24,
+    "Deleted": false
+  },
+  {
+    "Name": "split_02",
+    "Floor": 0,
+    "Type": 4,
+    "Equipment": {
+      "1": 8,
+      "23": 2,
+      "2": 0,
+      "24": 4,
+      "22": 5
+    },
+    "Id": 25,
+    "Deleted": false
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "Equipment": 22,
+    "RoomTo": null,
+    "RoomFrom": 0,
+    "When": "2022-06-05T13:58:12",
+    "Id": 0,
+    "Deleted": true
+  },
+  {
+    "Equipment": 0,
+    "RoomTo": 4,
+    "RoomFrom": 0,
+    "When": "2022-06-16T14:48:39.8210058+02:00",
+    "Id": 1,
+    "Deleted": true
+  }
+]
