@@ -12,6 +12,7 @@ using HIS.Core.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HIS.Core.PersonModel.PatientModel.MedicalRecordModel;
 
 namespace HIS.CLI.View
 {
@@ -25,6 +26,8 @@ namespace HIS.CLI.View
 		private readonly IPatientAvailabilityService _patientAvailabilityService;
 		private readonly IRoomService _roomService;
 		private readonly IRoomAvailabilityService _roomAvailabilityService;
+		private readonly IMedicalRecordService _medicalRecordService;
+		private readonly MedicalRecordView _medicalRecordView;
 		private IEnumerable<AppointmentProperty> _properties;
 
 		private const string hintSelectAppointments = "Select appointments by their number, separated by whitespace.\nEnter a newline to finish";
@@ -77,7 +80,7 @@ namespace HIS.CLI.View
 		private const string hintInputAnamnesis = "Input anamnesis (newLine to finish)";
 
 		public AppointmentView(IAppointmentService service, IAppointmentAvailabilityService appointmentAvailabilityService, IDoctorService doctorService, IDoctorAvailabilityService doctorAvailabilityService, IPatientService patientService,
-			IPatientAvailabilityService patientAvailabilityService, IRoomService roomService, IRoomAvailabilityService roomAvailabilityService)
+			IPatientAvailabilityService patientAvailabilityService, IRoomService roomService, IRoomAvailabilityService roomAvailabilityService, IMedicalRecordService medicalRecordService, MedicalRecordView medicalRecordView)
 		{
 			_service = service;
 			_appointmentAvailabilityService = appointmentAvailabilityService;
@@ -87,6 +90,8 @@ namespace HIS.CLI.View
 			_patientAvailabilityService = patientAvailabilityService;
 			_roomService = roomService;
 			_roomAvailabilityService = roomAvailabilityService;
+			_medicalRecordService = medicalRecordService;
+			_medicalRecordView = medicalRecordView;
 			_properties = Utility.GetEnumValues<AppointmentProperty>();
 		}
 
@@ -452,9 +457,103 @@ namespace HIS.CLI.View
 			return EasyInput<AppointmentProperty>.Select(AppointmentPropertyHelpers.GetPrioritizableProperties(), _cancel);
 		}
 		
-		internal void CmdCreateUrgent()
+		internal void CmdViewAndStartAppointments()
+		{
+			DateTime firstRelevantDay = GetFirstRelevantDayOfAppointments();
+			List <Appointment> nextAppointments = _service.GetNextDoctorsAppointments(User, firstRelevantDay);
+			PrintAppointmentsAndMedicalRecords(nextAppointments);
+			if (nextAppointments.Count == 0) return;
+            
+			Hint(hintCheckStartingAppointment);
+			if (EasyInput<bool>.YesNo(_cancel)) //wants to start appointment
+			{
+				StartAppointment(nextAppointments);
+			}
+		}
+		
+		private DateTime GetFirstRelevantDayOfAppointments()
+		{
+			Hint(hintInputDate);
+            
+			DateTime firstRelevantDay = EasyInput<DateTime>.Get(
+				new List<Func<DateTime, bool>>()
+				{
+					newSchedule => newSchedule.CompareTo(DateTime.Now) > 0,
+				},
+				new string[]
+				{
+					hintDateTimeNotInFuture,
+				},
+				_cancel);
+            
+			return firstRelevantDay;
+		}
+		
+		private void PrintAppointmentsAndMedicalRecords(List<Appointment> appointments)
+		{
+			if (appointments.Count == 0)
+			{
+				Hint(hintNoScheduledAppoinments);
+			}
+			else
+			{
+				foreach (var appointment in appointments)
+				{
+					Console.WriteLine(appointment.ToString());
+					MedicalRecord medicalRecord = _medicalRecordService.GetPatientsMedicalRecord(appointment.Patient);
+					Print(medicalRecord.ToString());
+					Console.WriteLine("=====================================");
+				}
+			}
+		}
+		
+		private void StartAppointment(List<Appointment> startableAppointments)
+		{
+			Hint(hintSelectAppointment);
+			var appointmentToStart = EasyInput<Appointment>.Select(startableAppointments, _cancel);
+            
+			_medicalRecordView.UpdateMedicalRecord(appointmentToStart.Patient);
+			UpdateAnamnesis(appointmentToStart);
+            
+			/*
+			Hint(hintMakeReferral);
+			if (EasyInput<bool>.YesNo(_cancel)) //wants to create a referral
+			{
+				ReferralModel.CreateReferral(appointmentToStart);
+			}
+            
+			Hint(hintWritePrescription);
+			if (EasyInput<bool>.YesNo(_cancel)) //wants to create a prescription
+			{
+				PrescriptionModel.CreatePrescription(MedicalRecordController.GetPatientsMedicalRecord(appointmentToStart.Patient));
+			}
+            
+			Console.ForegroundColor = ConsoleColor.Green;
+			Print(hintAppointmentIsOver);
+			Console.ForegroundColor = ConsoleColor.Gray;
+            
+			EquipmentModel.DeleteEquipmentAfterAppointment(appointmentToStart.Room);
+			*/
+		}
+		
+		private void UpdateAnamnesis(Appointment appointment)
+		{
+			Appointment updatedAppointment = appointment;
+			updatedAppointment.Anamnesis = InputAnamnesis();
+			_service.Copy(appointment, updatedAppointment, _properties);
+			Print(hintAnamensisUpdated);
+		}
+        
+		private string InputAnamnesis()
+		{
+			Hint(hintInputAnamnesis);
+			return Console.ReadLine();
+		}
+		
+    internal void CmdCreateUrgent()
 		{
 			throw new NotImplementedException();
 		}
+
 	}
 }

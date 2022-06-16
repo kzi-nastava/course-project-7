@@ -27,7 +27,8 @@
       16,
       17,
       19,
-      20
+      20,
+      21
     ],
     "MinutesBeforeNotification": 20,
     "Id": 0,
@@ -59,10 +60,13 @@
   },
   {
     "Patient": 0,
-    "Height": 151.0,
-    "Weight": 45.0,
+    "Height": 150.0,
+    "Weight": 40.0,
     "Illnesses": [],
-    "IngredientAllergies": [],
+    "IngredientAllergies": [
+      1,
+      2
+    ],
     "OtherAllergies": [
       "Dust"
     ],

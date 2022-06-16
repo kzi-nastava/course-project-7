@@ -75,7 +75,7 @@ namespace HIS.CLI
 			IHospitalPollService hospitalPollService = new HospitalPollService(hospitalPollRepo);
 			IAppointmentPollService appointmentPollService = new AppointmentPollService(appointmentPollRepo);
 			IDoctorService doctorService = new DoctorService(doctorRepo, appointmentPollService);
-			IAppointmentService appointmentService = new AppointmentService(appointmentRepo, userAccountService, deleteRequestService, updateRequestService, medicalRecordService, appointmentPollService);
+			IAppointmentService appointmentService = new AppointmentService(appointmentRepo, userAccountService, deleteRequestService, updateRequestService, medicalRecordService, appointmentPollService, doctorService);
 			IDoctorAvailabilityService doctorAvailabilityService = new DoctorAvailabilityService(doctorService, appointmentService);
 			IRoomAvailabilityService roomAvailabilityService = new RoomAvailabilityService(roomService, renovationService, appointmentService);
 			IPatientAvailabilityService patientAvailabilityService = new PatientAvailabilityService(patientService, appointmentService);
@@ -89,8 +89,8 @@ namespace HIS.CLI
 			RenovationView renovationView = new RenovationView(renovationService, roomService, roomAvailabilityService, roomView);
 			IngredientView ingredientView = new IngredientView(ingredientService, medicationService, medicationRequestService);
 			MedicationView medicationView = new MedicationView(medicationService, ingredientService, medicationRequestService);
-			AppointmentView appointmentView = new AppointmentView(appointmentService, appointmentAvailabilityService, doctorService, doctorAvailabilityService, patientService, patientAvailabilityService, roomService, roomAvailabilityService);
-			MedicalRecordView medicalRecordView = new MedicalRecordView(medicalRecordService, patientService);
+			MedicalRecordView medicalRecordView = new MedicalRecordView(medicalRecordService, patientService, appointmentService, ingredientService);
+			AppointmentView appointmentView = new AppointmentView(appointmentService, appointmentAvailabilityService, doctorService, doctorAvailabilityService, patientService, patientAvailabilityService, roomService, roomAvailabilityService, medicalRecordService, medicalRecordView);
 			DoctorView doctorView = new DoctorView(doctorService, appointmentView);
 			PollView pollView = new PollView();
 			AppointmentPollView appointmentPollView = new AppointmentPollView(appointmentPollService, patientService, appointmentService, pollView);
@@ -123,6 +123,7 @@ namespace HIS.CLI
 						UserAccount.AccountType.MANAGER => new ManagerCommandView(roomView, equipmentView, equipmentRelocationView, renovationView, ingredientView, medicationView, pollSummaryView),
 						UserAccount.AccountType.PATIENT => new PatientCommandView(appointmentView, medicalRecordView, doctorView, hospitalPollView, appointmentPollView),
 						UserAccount.AccountType.SECRETARY => new SecretaryCommandView(userAccountView, appointmentView, medicalRecordView, requestView, equipmentView),
+						UserAccount.AccountType.DOCTOR => new DoctorCommandView(appointmentView),
 						UserAccount.AccountType.LOGGED_OUT => new LoggedOutCommandView(userAccountView),
 						_ => throw new NotImplementedException(),
 					};

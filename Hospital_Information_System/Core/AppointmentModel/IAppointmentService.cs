@@ -22,5 +22,6 @@ namespace HIS.Core.AppointmentModel
         bool AreColliding(DateTime schedule1, DateTime schedule2);
         void Copy(Appointment target, Appointment source, IEnumerable<AppointmentProperty> whichProperties);
         Appointment Get(int id);
+        List<Appointment> GetNextDoctorsAppointments(UserAccount user, DateTime firstRelevantDay);
     }
 }
