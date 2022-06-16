@@ -14,5 +14,9 @@ namespace HIS.Core.RoomModel
 		public void Copy(Room src, Room dest, IEnumerable<RoomProperty> properties);
 		Room GetWarehouse();
 		public void Move(Equipment equipment, int amount, Room src, Room dest);
+		public IEnumerable<Equipment> GetEquipment(Room room);
+		public IEnumerable<Room> GetExeminationAndOperationRooms();
+		bool DoesNotHaveEquipmentRightNow(Room room, Equipment equipment);
+		bool HasEquipmentLessThanFive(Room room, Equipment equipment);
 	}
 }

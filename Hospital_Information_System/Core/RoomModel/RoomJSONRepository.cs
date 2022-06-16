@@ -65,5 +65,10 @@ namespace HIS.Core.RoomModel
 		{
 			return GetModifiable().Where(r => r.Floor == comparedTo.Floor && r.Id != comparedTo.Id);
 		}
+		
+		public IEnumerable<Room> GetExeminationAndOperationRooms()
+		{
+			return _rooms.Where(room => room.Type == RoomType.EXAMINATION || room.Type == RoomType.OPERATION).ToList();
+		}
     }
 }

@@ -101,5 +101,11 @@ namespace HIS.Core.AppointmentModel
 		{
 			return GetAll(patient).Where(a => a.ScheduledFor < DateTime.Now);
 		}
+        
+        public IEnumerable<Appointment> GetFirstFiveModifiable(UserAccount user)
+        {
+	        var modifiableAppointments = GetAll().Where(a => CanModify(a, user) && a.ScheduledFor == DateTime.Now).ToList();
+	        return modifiableAppointments.OrderBy(a => a.ScheduledFor).ToList().Take(5).ToList();
+        }
     }
 }

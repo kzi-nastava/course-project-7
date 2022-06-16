@@ -81,6 +81,7 @@ namespace HIS.CLI.View
 		private const string hintAnamensisUpdated = "You've successfully updated appointment's anamnesis";
 
 		private const string hintInputAnamnesis = "Input anamnesis (newLine to finish)";
+		private const string hintSelectSpecialty = "Select a specialty for the referral: ";
 
 		public AppointmentView(IAppointmentService service, IAppointmentAvailabilityService appointmentAvailabilityService, IDoctorService doctorService, IDoctorAvailabilityService doctorAvailabilityService, IPatientService patientService,
 			IPatientAvailabilityService patientAvailabilityService, IRoomService roomService, IRoomAvailabilityService roomAvailabilityService, IMedicalRecordService medicalRecordService, MedicalRecordView medicalRecordView, ReferralView referralView,
@@ -559,9 +560,40 @@ namespace HIS.CLI.View
 		
     internal void CmdCreateUrgent()
 		{
-			throw new NotImplementedException();
+			try
+			{
+				Doctor.MedicineSpeciality speciality = InputSpecialty();
+				if (!_doctorService.ExistForSpecialty(speciality))
+					throw new NothingToSelectException();
+                
+				AppointmentSearchBundle sb = InputSearchBundleUrgent();
+				Appointment appointment = _appointmentAvailabilityService.FindUrgentAppointmentSlot(sb, speciality);
+
+				if (appointment.Room == null)
+				{
+					Appointment rescheduledAppointment = RescheduleAppointment(); // TODO
+					appointment = new Appointment(appointment.Doctor, appointment.Patient, rescheduledAppointment.Room, rescheduledAppointment.ScheduledFor);
+				}
+
+				Print(appointment.ToString());
+				Hint(askCreateAppointment);
+				if (EasyInput<bool>.YesNo(_cancel))
+				{
+					_service.Add(appointment, User);
+				}
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.Message);
+			}
 		}
-    
+
+
+    private Doctor.MedicineSpeciality InputSpecialty()
+    {
+	    Hint(hintSelectSpecialty);
+	    return EasyInput<Doctor.MedicineSpeciality>.Select(_doctorService.GetAllSpecialties(), _cancel);
+    }
     internal void Print(List<Appointment> appointments)
     {
 	    foreach (var appointment in appointments)
@@ -569,6 +601,54 @@ namespace HIS.CLI.View
 		    Print(appointment.ToString());
 	    }
     }
+	
+    private AppointmentSearchBundle InputSearchBundleUrgent()
+    {
+	    Patient patient = InputPatient(null);
+	    DateTime latestDate = DateTime.Today;
 
+	    var start = GetStartTime();
+	    var end = GetEndTime(start);
+
+	    if (end > TimeSpan.FromHours(0) && end < TimeSpan.FromHours(2))
+	    {
+		    start = new TimeSpan(0, 0, 0);
+		    end = new TimeSpan(start.Hours + 2, 0, 0);
+		    latestDate = DateTime.Today.AddDays(1);
+	    }
+
+	    return new AppointmentSearchBundle(null, patient, start, end, latestDate, true); 
+    }
+
+    private TimeSpan GetStartTime()
+    {
+	    TimeSpan start = TimeSpan.FromHours(DateTime.Now.TimeOfDay.TotalHours);
+	    return new TimeSpan(start.Hours, start.Minutes + 10, 0);
+    }
+
+    private TimeSpan GetEndTime(TimeSpan start)
+    {
+	    return new TimeSpan((start.Hours + 2) % 24, start.Minutes, 0);
+    }
+    private Appointment RescheduleAppointment()
+    {
+	    Appointment appointment = SelectAppointmentToReschedule();
+            
+	    AppointmentSearchBundle sb = new AppointmentSearchBundle(appointment.Doctor, appointment.Patient, AppointmentSearchBundle.DefaultStart, AppointmentSearchBundle.DefaultEnd, DateTime.Today);
+	    Appointment newAppointment = _appointmentAvailabilityService.FindRecommendedAppointment(sb);
+            
+	    _service.Add(newAppointment, User);
+	    _service.Remove(appointment, User);
+            
+	    return appointment;
+    }
+        
+    private Appointment SelectAppointmentToReschedule()
+    {
+	    Console.WriteLine(hintSelectAppointment);
+	    return EasyInput<Appointment>.Select(
+		    _service.GetFirstFiveModifiable(User), _cancel);
+    }
+    
 	}
 }

@@ -57,6 +57,11 @@ namespace HIS.Core.PersonModel.DoctorModel
         {
             return $"Doctor{{Id = {doctor.Id}, First name = {doctor.Person.FirstName}, Last name = {doctor.Person.LastName}, Specialty = {doctor.Specialty}, Rating = {Math.Round(CalculateRating(doctor), 2)}}}";
         }
+
+        public bool ExistForSpecialty(Doctor.MedicineSpeciality speciality)
+        {
+            return _repo.GetAll().Any(d => d.Specialty == speciality);
+        }
         
         public List<Doctor.MedicineSpeciality> GetAllSpecialties()
         {

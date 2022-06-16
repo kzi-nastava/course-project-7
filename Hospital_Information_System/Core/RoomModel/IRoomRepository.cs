@@ -23,5 +23,6 @@ namespace HIS.Core.RoomModel
 		}
 
 		IEnumerable<Room> GetOtherModifiableOnSameFloor(Room comparedTo);
+		IEnumerable<Room> GetExeminationAndOperationRooms();
 	}
 }

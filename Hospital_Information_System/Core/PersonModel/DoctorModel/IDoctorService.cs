@@ -15,7 +15,7 @@ namespace HIS.Core.PersonModel.DoctorModel
         IEnumerable<Doctor> MatchBySpecialty(string query, DoctorComparer comparer);
         double CalculateRating(Doctor doctor);
         string VerboseToString(Doctor doctor);
-
-        public List<Doctor.MedicineSpeciality> GetAllSpecialties();
+        bool ExistForSpecialty(Doctor.MedicineSpeciality speciality);
+        List<Doctor.MedicineSpeciality> GetAllSpecialties();
     }
 }
